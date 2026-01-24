@@ -8,6 +8,7 @@ export function ThemeToggle() {
 
     return (
         <button
+            type="button"
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === Theme.Light ? Theme.Dark : Theme.Light} mode`}
             className="p-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
@@ -20,6 +21,7 @@ export function ThemeToggle() {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="w-5 h-5 text-zinc-900 dark:text-zinc-100"
+                    aria-hidden="true"
                 >
                     <path
                         strokeLinecap="round"
@@ -35,6 +37,7 @@ export function ThemeToggle() {
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="w-5 h-5 text-zinc-900 dark:text-zinc-100"
+                    aria-hidden="true"
                 >
                     <path
                         strokeLinecap="round"

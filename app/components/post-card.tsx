@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Post } from "@/app/types/post";
 
 interface PostCardProps {
@@ -23,28 +24,30 @@ export function PostCard({ post }: PostCardProps) {
     const formattedDate = formatDate(post.date);
 
     return (
-        <article className="flex flex-col overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-shadow hover:shadow-lg">
-            <div className="relative w-full aspect-video">
-                <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-            </div>
-            <div className="flex flex-col gap-3 p-5">
-                <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2">
-                    {post.title}
-                </h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3">
-                    {truncatedDescription}
-                </p>
-                <div className="flex items-center justify-between mt-auto pt-2 text-xs text-zinc-500 dark:text-zinc-500">
-                    <span>{formattedDate}</span>
-                    <span className="font-medium">{post.author}</span>
+        <Link href={`/posts/${post.id}`}>
+            <article className="flex flex-col overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-shadow hover:shadow-lg cursor-pointer">
+                <div className="relative w-full aspect-video">
+                    <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
                 </div>
-            </div>
-        </article>
+                <div className="flex flex-col gap-3 p-5">
+                    <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2">
+                        {post.title}
+                    </h2>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3">
+                        {truncatedDescription}
+                    </p>
+                    <div className="flex items-center justify-between mt-auto pt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                        <span>{formattedDate}</span>
+                        <span className="font-medium">{post.author}</span>
+                    </div>
+                </div>
+            </article>
+        </Link>
     );
 }

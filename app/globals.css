@@ -26,7 +26,77 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Editor.js styles */
+.codex-editor {
+    color: inherit;
+}
+
+.codex-editor__redactor {
+    padding-bottom: 0 !important;
+}
+
+.ce-block__content {
+    max-width: 100% !important;
+}
+
+.ce-toolbar__content {
+    max-width: 100% !important;
+}
+
+.ce-block {
+    color: inherit;
+}
+
+.ce-paragraph {
+    color: inherit;
+}
+
+.ce-header {
+    color: inherit;
+}
+
+.ce-quote {
+    color: inherit;
+}
+
+.ce-code__textarea {
+    background: var(--background);
+    color: var(--foreground);
+}
+
+.ce-inline-toolbar {
+    background: var(--background);
+    border-color: var(--foreground);
+}
+
+.ce-conversion-toolbar {
+    background: var(--background);
+    border-color: var(--foreground);
+}
+
+.ce-settings {
+    background: var(--background);
+    border-color: var(--foreground);
+}
+
+.ce-popover {
+    background: var(--background);
+    border-color: var(--foreground);
+}
+
+.ce-popover__item {
+    color: var(--foreground);
+}
+
+.ce-popover__item:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.dark .ce-popover__item:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
