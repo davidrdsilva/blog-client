@@ -49,6 +49,7 @@ function renderBlock(block: EditorJsBlock) {
                         </h6>
                     );
             }
+            break;
         }
         case "paragraph": {
             const data = block.data as { text: string };
@@ -64,7 +65,7 @@ function renderBlock(block: EditorJsBlock) {
             return (
                 <ListTag className={className}>
                     {data.items.map((item, index) => (
-                        <li key={index}>{item}</li>
+                        <li key={`item-${index}-${item.slice(0, 20)}`}>{item}</li>
                     ))}
                 </ListTag>
             );
@@ -152,7 +153,7 @@ export function EditorJsRenderer({ content }: EditorJsRendererProps) {
     return (
         <div className="prose prose-zinc dark:prose-invert max-w-none">
             {content.blocks.map((block, index) => (
-                <div key={index}>{renderBlock(block)}</div>
+                <div key={block.id ?? `block-${index}`}>{renderBlock(block)}</div>
             ))}
         </div>
     );

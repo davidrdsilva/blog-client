@@ -1,13 +1,7 @@
 "use client";
 
-import CodeTool from "@editorjs/code";
-import EditorJS from "@editorjs/editorjs";
-import Header from "@editorjs/header";
-import ImageTool from "@editorjs/image";
-import LinkTool from "@editorjs/link";
-import List from "@editorjs/list";
-import Paragraph from "@editorjs/paragraph";
-import Quote from "@editorjs/quote";
+import type EditorJSType from "@editorjs/editorjs";
+import type { ToolConstructable } from "@editorjs/editorjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -16,7 +10,7 @@ import type { EditorJsContent } from "@/app/types/post";
 
 export default function NewPostPage() {
     const router = useRouter();
-    const editorRef = useRef<EditorJS | null>(null);
+    const editorRef = useRef<EditorJSType | null>(null);
     const [isReady, setIsReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [formData, setFormData] = useState({
@@ -27,13 +21,35 @@ export default function NewPostPage() {
     });
 
     useEffect(() => {
-        if (!editorRef.current) {
+        const initEditor = async () => {
+            if (editorRef.current) return;
+
+            const [
+                { default: EditorJS },
+                { default: Header },
+                { default: Paragraph },
+                { default: ImageTool },
+                { default: List },
+                { default: Quote },
+                { default: CodeTool },
+                { default: LinkTool },
+            ] = await Promise.all([
+                import("@editorjs/editorjs"),
+                import("@editorjs/header"),
+                import("@editorjs/paragraph"),
+                import("@editorjs/image"),
+                import("@editorjs/list"),
+                import("@editorjs/quote"),
+                import("@editorjs/code"),
+                import("@editorjs/link"),
+            ]);
+
             editorRef.current = new EditorJS({
                 holder: "editorjs",
                 placeholder: "Start writing your post...",
                 tools: {
                     header: {
-                        class: Header,
+                        class: Header as unknown as ToolConstructable,
                         config: {
                             placeholder: "Enter a header",
                             levels: [2, 3, 4],
@@ -41,11 +57,11 @@ export default function NewPostPage() {
                         },
                     },
                     paragraph: {
-                        class: Paragraph,
+                        class: Paragraph as unknown as ToolConstructable,
                         inlineToolbar: true,
                     },
                     image: {
-                        class: ImageTool,
+                        class: ImageTool as unknown as ToolConstructable,
                         config: {
                             endpoints: {
                                 byFile: "/api/upload",
@@ -55,21 +71,21 @@ export default function NewPostPage() {
                         },
                     },
                     list: {
-                        class: List,
+                        class: List as unknown as ToolConstructable,
                         inlineToolbar: true,
                     },
                     quote: {
-                        class: Quote,
+                        class: Quote as unknown as ToolConstructable,
                         inlineToolbar: true,
                     },
                     code: {
-                        class: CodeTool,
+                        class: CodeTool as unknown as ToolConstructable,
                         config: {
                             placeholder: "Enter code",
                         },
                     },
                     linkTool: {
-                        class: LinkTool,
+                        class: LinkTool as unknown as ToolConstructable,
                         config: {
                             endpoint: "/api/fetch-url",
                         },
@@ -79,10 +95,12 @@ export default function NewPostPage() {
                     setIsReady(true);
                 },
             });
-        }
+        };
+
+        initEditor();
 
         return () => {
-            if (editorRef.current && editorRef.current.destroy) {
+            if (editorRef.current?.destroy) {
                 editorRef.current.destroy();
                 editorRef.current = null;
             }
