@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Pagination } from "@/app/components/pagination";
+import { SearchablePosts } from "@/app/components/searchable-posts";
 import { ThemeToggle } from "@/app/components/theme-toggle";
 import { posts } from "@/app/data/posts";
 
@@ -21,7 +21,7 @@ export default function Home() {
                 </div>
             </header>
             <main className="container mx-auto px-4 py-12">
-                <Pagination allPosts={posts} />
+                <SearchablePosts allPosts={posts} />
             </main>
         </div>
     );
