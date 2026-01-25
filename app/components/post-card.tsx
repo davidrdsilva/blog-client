@@ -1,14 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Post } from "@/app/types/post";
+import { PostCardMenu } from "./post-card-menu";
 
 interface PostCardProps {
     post: Post;
+    onDelete?: (postId: string) => void;
 }
 
-function truncateDescription(description: string, maxLength: number = 100): string {
+function truncateDescription(description: string, maxLength = 100): string {
     if (description.length <= maxLength) return description;
-    return description.slice(0, maxLength).trim() + "...";
+    return `${description.slice(0, maxLength).trim()}...`;
 }
 
 function formatDate(date: Date): string {
@@ -19,13 +21,16 @@ function formatDate(date: Date): string {
     }).format(date);
 }
 
-export function PostCard({ post }: PostCardProps) {
+export function PostCard({ post, onDelete }: PostCardProps) {
     const truncatedDescription = truncateDescription(post.description, 100);
     const formattedDate = formatDate(post.date);
 
     return (
-        <Link href={`/posts/${post.id}`}>
-            <article className="flex flex-col overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-shadow hover:shadow-lg cursor-pointer">
+        <article className="relative flex flex-col overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-shadow hover:shadow-lg">
+            <div className="absolute top-3 right-3 z-10">
+                <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
+            </div>
+            <Link href={`/posts/${post.id}`} className="flex flex-col flex-1">
                 <div className="relative w-full aspect-video">
                     <Image
                         src={post.image}
@@ -35,7 +40,7 @@ export function PostCard({ post }: PostCardProps) {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 </div>
-                <div className="flex flex-col gap-3 p-5">
+                <div className="flex flex-col gap-3 p-5 flex-1">
                     <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2">
                         {post.title}
                     </h2>
@@ -47,7 +52,7 @@ export function PostCard({ post }: PostCardProps) {
                         <span className="font-medium">{post.author}</span>
                     </div>
                 </div>
-            </article>
-        </Link>
+            </Link>
+        </article>
     );
 }
