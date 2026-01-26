@@ -20,3 +20,17 @@ export interface Post {
     author: string;
     content?: EditorJsContent;
 }
+
+// API response type with ISO 8601 date strings
+export interface APIPost {
+    id: string;
+    title: string;
+    subtitle: string | null;
+    description: string;
+    image: string;
+    date: string;
+    author: string;
+    content: EditorJsContent | null;
+    createdAt: string;
+    updatedAt: string;
+}

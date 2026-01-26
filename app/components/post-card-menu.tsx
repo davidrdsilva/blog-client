@@ -55,7 +55,6 @@ export function PostCardMenu({ postId, postTitle, onDelete }: PostCardMenuProps)
     const handleConfirmDelete = () => {
         setShowDeleteModal(false);
         onDelete?.(postId);
-        console.log("Deleting post:", postId);
     };
 
     const handleCancelDelete = () => {

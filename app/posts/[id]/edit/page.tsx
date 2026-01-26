@@ -7,8 +7,18 @@ import Link from "next/link";
 import { notFound, useRouter } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/app/components/theme-toggle";
-import { posts } from "@/app/data/posts";
-import type { EditorJsContent } from "@/app/types/post";
+import {
+    APIClientError,
+    FETCH_URL_ENDPOINT,
+    getPost,
+    UPLOAD_ENDPOINT,
+    updatePost,
+} from "@/app/lib/api";
+import type { EditorJsContent, Post } from "@/app/types/post";
+
+function isLocalUrl(url: string): boolean {
+    return url.includes("localhost") || url.includes("127.0.0.1");
+}
 
 interface EditPostPageProps {
     params: Promise<{ id: string }>;
@@ -16,24 +26,44 @@ interface EditPostPageProps {
 
 export default function EditPostPage({ params }: EditPostPageProps) {
     const { id } = use(params);
-    const post = posts.find((p) => p.id === id);
-
-    if (!post) {
-        notFound();
-    }
-
     const router = useRouter();
     const editorRef = useRef<EditorJSType | null>(null);
+    const editorInitializing = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [post, setPost] = useState<Post | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [isReady, setIsReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [formData, setFormData] = useState({
-        title: post.title,
-        subtitle: post.subtitle ?? "",
-        description: post.description,
-        image: post.image,
+        title: "",
+        subtitle: "",
+        description: "",
+        image: "",
     });
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const fetchedPost = await getPost(id);
+                setPost(fetchedPost);
+                setFormData({
+                    title: fetchedPost.title,
+                    subtitle: fetchedPost.subtitle ?? "",
+                    description: fetchedPost.description,
+                    image: fetchedPost.image,
+                });
+            } catch (error) {
+                if (error instanceof APIClientError && error.code === "POST_NOT_FOUND") {
+                    notFound();
+                }
+                console.error("Failed to fetch post:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchPost();
+    }, [id]);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -45,7 +75,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
             const uploadData = new FormData();
             uploadData.append("file", file);
 
-            const response = await fetch("/api/upload", {
+            const response = await fetch(UPLOAD_ENDPOINT, {
                 method: "POST",
                 body: uploadData,
             });
@@ -72,8 +102,11 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     };
 
     useEffect(() => {
+        if (!post || isLoading) return;
+
         const initEditor = async () => {
-            if (editorRef.current) return;
+            if (editorRef.current || editorInitializing.current) return;
+            editorInitializing.current = true;
 
             const [
                 { default: EditorJS },
@@ -116,10 +149,12 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                         class: ImageTool as unknown as ToolConstructable,
                         config: {
                             endpoints: {
-                                byFile: "/api/upload",
+                                byFile: UPLOAD_ENDPOINT,
+                                byUrl: UPLOAD_ENDPOINT,
                             },
                             field: "file",
                             types: "image/*",
+                            captionPlaceholder: "Image caption",
                         },
                     },
                     list: {
@@ -139,7 +174,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                     linkTool: {
                         class: LinkTool as unknown as ToolConstructable,
                         config: {
-                            endpoint: "/api/fetch-url",
+                            endpoint: FETCH_URL_ENDPOINT,
                         },
                     },
                 },
@@ -157,33 +192,58 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 editorRef.current = null;
             }
         };
-    }, [post.content]);
+    }, [post, isLoading]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!editorRef.current || !isReady) return;
+        if (!editorRef.current || !isReady || !post) return;
 
         setIsSaving(true);
 
         try {
             const outputData = await editorRef.current.save();
-            const postData = {
-                id: post.id,
-                ...formData,
+            await updatePost(id, {
+                title: formData.title,
+                subtitle: formData.subtitle || undefined,
+                description: formData.description,
+                image: formData.image,
                 content: outputData as EditorJsContent,
-                date: post.date,
-                author: post.author,
-            };
+            });
 
-            console.log("Updated post data:", postData);
-
-            router.push(`/posts/${post.id}`);
+            router.push(`/posts/${id}`);
         } catch (error) {
             console.error("Error saving post:", error);
         } finally {
             setIsSaving(false);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-zinc-50 dark:bg-black">
+                <header className="sticky top-0 z-10 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+                    <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+                        <Link
+                            href="/"
+                            className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity"
+                        >
+                            Blog
+                        </Link>
+                        <ThemeToggle />
+                    </div>
+                </header>
+                <main className="container mx-auto px-4 py-12 max-w-4xl">
+                    <div className="flex items-center justify-center py-12">
+                        <div className="text-zinc-500 dark:text-zinc-400">Loading...</div>
+                    </div>
+                </main>
+            </div>
+        );
+    }
+
+    if (!post) {
+        return null;
+    }
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -280,6 +340,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                             fill
                                             className="object-cover"
                                             sizes="(max-width: 768px) 100vw, 800px"
+                                            unoptimized={isLocalUrl(formData.image)}
                                         />
                                     </div>
                                     <button
@@ -384,7 +445,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                             {isSaving ? "Saving..." : "Save Changes"}
                         </button>
                         <Link
-                            href={`/posts/${post.id}`}
+                            href={`/posts/${id}`}
                             className="px-6 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                         >
                             Cancel

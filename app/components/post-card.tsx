@@ -21,6 +21,10 @@ function formatDate(date: Date): string {
     }).format(date);
 }
 
+function isLocalUrl(url: string): boolean {
+    return url.includes("localhost") || url.includes("127.0.0.1");
+}
+
 export function PostCard({ post, onDelete }: PostCardProps) {
     const truncatedDescription = truncateDescription(post.description, 100);
     const formattedDate = formatDate(post.date);
@@ -38,6 +42,7 @@ export function PostCard({ post, onDelete }: PostCardProps) {
                         fill
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        unoptimized={isLocalUrl(post.image)}
                     />
                 </div>
                 <div className="flex flex-col gap-3 p-5 flex-1">

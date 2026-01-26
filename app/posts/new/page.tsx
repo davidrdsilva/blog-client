@@ -7,11 +7,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/app/components/theme-toggle";
+import { createPost, FETCH_URL_ENDPOINT, UPLOAD_ENDPOINT } from "@/app/lib/api";
 import type { EditorJsContent } from "@/app/types/post";
+
+function isLocalUrl(url: string): boolean {
+    return url.includes("localhost") || url.includes("127.0.0.1");
+}
 
 export default function NewPostPage() {
     const router = useRouter();
     const editorRef = useRef<EditorJSType | null>(null);
+    const editorInitializing = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isReady, setIsReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -33,7 +39,7 @@ export default function NewPostPage() {
             const uploadData = new FormData();
             uploadData.append("file", file);
 
-            const response = await fetch("/api/upload", {
+            const response = await fetch(UPLOAD_ENDPOINT, {
                 method: "POST",
                 body: uploadData,
             });
@@ -61,7 +67,8 @@ export default function NewPostPage() {
 
     useEffect(() => {
         const initEditor = async () => {
-            if (editorRef.current) return;
+            if (editorRef.current || editorInitializing.current) return;
+            editorInitializing.current = true;
 
             const [
                 { default: EditorJS },
@@ -103,10 +110,12 @@ export default function NewPostPage() {
                         class: ImageTool as unknown as ToolConstructable,
                         config: {
                             endpoints: {
-                                byFile: "/api/upload",
+                                byFile: UPLOAD_ENDPOINT,
+                                byUrl: UPLOAD_ENDPOINT,
                             },
                             field: "file",
                             types: "image/*",
+                            captionPlaceholder: "Image caption",
                         },
                     },
                     list: {
@@ -126,7 +135,7 @@ export default function NewPostPage() {
                     linkTool: {
                         class: LinkTool as unknown as ToolConstructable,
                         config: {
-                            endpoint: "/api/fetch-url",
+                            endpoint: FETCH_URL_ENDPOINT,
                         },
                     },
                 },
@@ -154,16 +163,16 @@ export default function NewPostPage() {
 
         try {
             const outputData = await editorRef.current.save();
-            const postData = {
-                ...formData,
-                content: outputData as EditorJsContent,
-                date: new Date(),
+            const post = await createPost({
+                title: formData.title,
+                subtitle: formData.subtitle || undefined,
+                description: formData.description,
+                image: formData.image,
                 author: "David",
-            };
+                content: outputData as EditorJsContent,
+            });
 
-            console.log("Post data:", postData);
-
-            router.push("/");
+            router.push(`/posts/${post.id}`);
         } catch (error) {
             console.error("Error saving post:", error);
         } finally {
@@ -263,6 +272,7 @@ export default function NewPostPage() {
                                             fill
                                             className="object-cover"
                                             sizes="(max-width: 768px) 100vw, 800px"
+                                            unoptimized={isLocalUrl(formData.image)}
                                         />
                                     </div>
                                     <button

@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import Image from "next/image";
 import type { EditorJsBlock, EditorJsContent } from "@/app/types/post";
 
@@ -5,68 +6,79 @@ interface EditorJsRendererProps {
     content: EditorJsContent;
 }
 
+function isLocalUrl(url: string): boolean {
+    return url.includes("localhost") || url.includes("127.0.0.1");
+}
+
+// Render HTML content safely (Editor.js inline tools produce HTML)
+function HtmlContent({
+    html,
+    className,
+    as: Tag = "span",
+}: {
+    html: string;
+    className?: string;
+    as?: keyof JSX.IntrinsicElements;
+}) {
+    return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
 function renderBlock(block: EditorJsBlock) {
     switch (block.type) {
         case "header": {
             const data = block.data as { text: string; level: number };
             const level = Math.min(Math.max(data.level, 1), 6) as 1 | 2 | 3 | 4 | 5 | 6;
-            const HeadingTag = `h${level}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-            switch (HeadingTag) {
-                case "h1":
-                    return (
-                        <h1 className="mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100">
-                            {data.text}
-                        </h1>
-                    );
-                case "h2":
-                    return (
-                        <h2 className="mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100">
-                            {data.text}
-                        </h2>
-                    );
-                case "h3":
-                    return (
-                        <h3 className="mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100">
-                            {data.text}
-                        </h3>
-                    );
-                case "h4":
-                    return (
-                        <h4 className="mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100">
-                            {data.text}
-                        </h4>
-                    );
-                case "h5":
-                    return (
-                        <h5 className="mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100">
-                            {data.text}
-                        </h5>
-                    );
-                case "h6":
-                    return (
-                        <h6 className="mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100">
-                            {data.text}
-                        </h6>
-                    );
+            const className = "mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100";
+            switch (level) {
+                case 1:
+                    return <HtmlContent as="h1" html={data.text} className={className} />;
+                case 2:
+                    return <HtmlContent as="h2" html={data.text} className={className} />;
+                case 3:
+                    return <HtmlContent as="h3" html={data.text} className={className} />;
+                case 4:
+                    return <HtmlContent as="h4" html={data.text} className={className} />;
+                case 5:
+                    return <HtmlContent as="h5" html={data.text} className={className} />;
+                case 6:
+                    return <HtmlContent as="h6" html={data.text} className={className} />;
             }
             break;
         }
         case "paragraph": {
             const data = block.data as { text: string };
-            return <p className="mb-4 text-zinc-700 dark:text-zinc-300 leading-7">{data.text}</p>;
+            return (
+                <HtmlContent
+                    as="p"
+                    html={data.text}
+                    className="mb-4 text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
+                />
+            );
         }
         case "list": {
-            const data = block.data as { style: string; items: string[] };
+            type ListItem = string | { content: string; items?: ListItem[] };
+            const data = block.data as { style: string; items: ListItem[] };
             const ListTag = data.style === "ordered" ? "ol" : "ul";
             const className =
                 data.style === "ordered"
                     ? "mb-4 ml-6 list-decimal space-y-2 text-zinc-700 dark:text-zinc-300"
                     : "mb-4 ml-6 list-disc space-y-2 text-zinc-700 dark:text-zinc-300";
+
+            const getItemText = (item: ListItem): string => {
+                if (typeof item === "string") return item;
+                return item.content;
+            };
+
             return (
                 <ListTag className={className}>
-                    {data.items.map((item, index) => (
-                        <li key={`item-${index}-${item.slice(0, 20)}`}>{item}</li>
-                    ))}
+                    {data.items.map((item, index) => {
+                        const text = getItemText(item);
+                        return (
+                            <li key={`item-${index}-${text.slice(0, 20)}`}>
+                                <HtmlContent as="span" html={text} />
+                            </li>
+                        );
+                    })}
                 </ListTag>
             );
         }
@@ -74,7 +86,7 @@ function renderBlock(block: EditorJsBlock) {
             const data = block.data as { text: string; caption?: string };
             return (
                 <blockquote className="mb-4 pl-4 border-l-4 border-zinc-300 dark:border-zinc-700 italic text-zinc-600 dark:text-zinc-400">
-                    <p>{data.text}</p>
+                    <HtmlContent as="p" html={data.text} />
                     {data.caption && (
                         <cite className="block mt-2 text-sm not-italic">— {data.caption}</cite>
                     )}
@@ -107,6 +119,7 @@ function renderBlock(block: EditorJsBlock) {
                             fill
                             className="object-cover"
                             sizes="(max-width: 768px) 100vw, 800px"
+                            unoptimized={isLocalUrl(imageUrl)}
                         />
                     </div>
                     {data.caption && (

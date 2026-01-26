@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { SearchablePosts } from "@/app/components/searchable-posts";
 import { ThemeToggle } from "@/app/components/theme-toggle";
-import { posts } from "@/app/data/posts";
+import { getPosts } from "@/app/lib/api";
 
-export default function Home() {
+export default async function Home() {
+    const { posts } = await getPosts({ limit: 50, sortBy: "date", sortOrder: "desc" });
+
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
             <header className="sticky top-0 z-10 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
@@ -21,7 +23,7 @@ export default function Home() {
                 </div>
             </header>
             <main className="container mx-auto px-4 py-12">
-                <SearchablePosts allPosts={posts} />
+                <SearchablePosts initialPosts={posts} />
             </main>
         </div>
     );
