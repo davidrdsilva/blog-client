@@ -4,17 +4,13 @@ const nextConfig: NextConfig = {
     images: {
         remotePatterns: [
             {
-                protocol: "https",
-                hostname: "images.unsplash.com",
-            },
-            {
                 protocol: "http",
                 hostname: "localhost",
                 port: "9000",
             },
             {
                 protocol: "http",
-                hostname: "192.168.255.107",
+                hostname: process.env.NEXT_PUBLIC_API_URL || "",
                 port: "9000",
             },
         ],

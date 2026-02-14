@@ -1,6 +1,6 @@
 import type { EditorJsContent, Post } from "@/app/types/post";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || null;
 
 // API response types matching the backend spec
 interface APIPost {

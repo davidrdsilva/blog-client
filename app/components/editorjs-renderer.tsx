@@ -112,12 +112,13 @@ function renderBlock(block: EditorJsBlock) {
             const imageUrl = data.file?.url || data.url || "";
             return (
                 <figure className="mb-4">
-                    <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <div className="relative w-full rounded-lg overflow-hidden">
                         <Image
                             src={imageUrl}
                             alt={data.caption || ""}
-                            fill
-                            className="object-cover"
+                            width={800}
+                            height={0}
+                            className="w-full h-auto"
                             sizes="(max-width: 768px) 100vw, 800px"
                             unoptimized={isLocalUrl(imageUrl)}
                         />
