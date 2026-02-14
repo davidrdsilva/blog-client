@@ -12,7 +12,15 @@ const nextConfig: NextConfig = {
                 hostname: "localhost",
                 port: "9000",
             },
+            {
+                protocol: "http",
+                hostname: "192.168.255.107",
+                port: "9000",
+            },
         ],
+        // Disable optimization for images from private IPs (MinIO server)
+        // This bypasses SSRF protection for local development
+        unoptimized: true,
     },
 };
 
