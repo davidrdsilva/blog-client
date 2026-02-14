@@ -127,6 +127,7 @@ export async function getPosts(
     const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
+        cache: "no-store", // Prevent Next.js from caching during build
     });
 
     const data = await handleResponse<PostsResponse>(response);
