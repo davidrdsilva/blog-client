@@ -112,30 +112,45 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export async function getPosts(
     params: GetPostsParams = {}
 ): Promise<{ posts: Post[]; meta: PaginationMeta }> {
-    const searchParams = new URLSearchParams();
+    try {
+        const searchParams = new URLSearchParams();
 
-    if (params.page) searchParams.set("page", String(params.page));
-    if (params.limit) searchParams.set("limit", String(params.limit));
-    if (params.search) searchParams.set("search", params.search);
-    if (params.author) searchParams.set("author", params.author);
-    if (params.sortBy) searchParams.set("sortBy", params.sortBy);
-    if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder);
+        if (params.page) searchParams.set("page", String(params.page));
+        if (params.limit) searchParams.set("limit", String(params.limit));
+        if (params.search) searchParams.set("search", params.search);
+        if (params.author) searchParams.set("author", params.author);
+        if (params.sortBy) searchParams.set("sortBy", params.sortBy);
+        if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder);
 
-    const queryString = searchParams.toString();
-    const url = `${API_BASE_URL}/api/posts${queryString ? `?${queryString}` : ""}`;
+        const queryString = searchParams.toString();
+        const url = `${API_BASE_URL}/api/posts${queryString ? `?${queryString}` : ""}`;
 
-    const response = await fetch(url, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store", // Prevent Next.js from caching during build
-    });
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store", // Prevent Next.js from caching during build
+        });
 
-    const data = await handleResponse<PostsResponse>(response);
+        const data = await handleResponse<PostsResponse>(response);
 
-    return {
-        posts: data.data.map(transformPost),
-        meta: data.meta,
-    };
+        return {
+            posts: data.data.map(transformPost),
+            meta: data.meta,
+        };
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+
+        return {
+            posts: [],
+            meta: {
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0,
+                hasMore: false,
+            },
+        };
+    }
 }
 
 // Get a single post by ID
@@ -186,6 +201,36 @@ export async function deletePost(id: string): Promise<void> {
             errorData?.error?.message || "Failed to delete post"
         );
     }
+}
+
+// Helper function to check if error indicates API is down/unreachable
+export function isAPIDownError(error: unknown): boolean {
+    // Check for TypeError which fetch throws for network failures
+    if (error instanceof TypeError) {
+        // Common network error messages
+        const networkErrorPatterns = [
+            "fetch failed",
+            "network request failed",
+            "failed to fetch",
+            "networkerror",
+            "load failed",
+            "ECONNREFUSED",
+            "ENOTFOUND",
+            "ETIMEDOUT",
+            "ERR_CONNECTION_REFUSED",
+        ];
+
+        const errorMessage = error.message.toLowerCase();
+        return networkErrorPatterns.some((pattern) => errorMessage.includes(pattern.toLowerCase()));
+    }
+
+    // Check for specific API errors that indicate server is down
+    if (error instanceof APIClientError) {
+        const downErrorCodes = ["SERVICE_UNAVAILABLE", "GATEWAY_TIMEOUT", "BAD_GATEWAY"];
+        return downErrorCodes.includes(error.code);
+    }
+
+    return false;
 }
 
 // Export API base URL for Editor.js configuration
