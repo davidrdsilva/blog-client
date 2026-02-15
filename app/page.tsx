@@ -1,32 +1,24 @@
-import Link from "next/link";
+import ApiError from "@/app/components/api-error";
+import NavBar from "@/app/components/navbar";
 import { SearchablePosts } from "@/app/components/searchable-posts";
-import { ThemeToggle } from "@/app/components/theme-toggle";
 import { getPosts } from "@/app/lib/api";
 
 // Force dynamic rendering - fetch data at request time, not build time
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
+
 // Disable caching for this page
 export const revalidate = 0;
 
 export default async function Home() {
-    const { posts } = await getPosts({ limit: 50, sortBy: "date", sortOrder: "desc" });
+    const { posts, error } = await getPosts({ limit: 50, sortBy: "date", sortOrder: "desc" });
+
+    if (error) {
+        return <ApiError />;
+    }
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
-            <header className="sticky top-0 z-10 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
-                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Blog</h1>
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="/posts/new"
-                            className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                        >
-                            New Post
-                        </Link>
-                        <ThemeToggle />
-                    </div>
-                </div>
-            </header>
+            <NavBar />
             <main className="container mx-auto px-4 py-12">
                 <SearchablePosts initialPosts={posts} />
             </main>

@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ThemeToggle } from "@/app/components/theme-toggle";
+import NavBar from "@/app/components/navbar";
 import { createPost, FETCH_URL_ENDPOINT, UPLOAD_ENDPOINT } from "@/app/lib/api";
 import type { EditorJsContent } from "@/app/types/post";
 
@@ -182,17 +182,7 @@ export default function NewPostPage() {
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
-            <header className="sticky top-0 z-10 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
-                <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <Link
-                        href="/"
-                        className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity"
-                    >
-                        Blog
-                    </Link>
-                    <ThemeToggle />
-                </div>
-            </header>
+            <NavBar />
             <main className="container mx-auto px-4 py-12 max-w-4xl">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">

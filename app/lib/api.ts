@@ -111,7 +111,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 // Get paginated list of posts
 export async function getPosts(
     params: GetPostsParams = {}
-): Promise<{ posts: Post[]; meta: PaginationMeta }> {
+): Promise<{ posts: Post[]; meta: PaginationMeta; error?: unknown }> {
     try {
         const searchParams = new URLSearchParams();
 
@@ -149,6 +149,7 @@ export async function getPosts(
                 totalPages: 0,
                 hasMore: false,
             },
+            error,
         };
     }
 }
