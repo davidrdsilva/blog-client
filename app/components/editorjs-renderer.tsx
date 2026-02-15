@@ -1,5 +1,5 @@
-import type { JSX } from "react";
 import Image from "next/image";
+import type { JSX } from "react";
 import type { EditorJsBlock, EditorJsContent } from "@/app/types/post";
 
 interface EditorJsRendererProps {
@@ -27,23 +27,36 @@ function renderBlock(block: EditorJsBlock) {
     switch (block.type) {
         case "header": {
             const data = block.data as { text: string; level: number };
-            const level = Math.min(Math.max(data.level, 1), 6) as 1 | 2 | 3 | 4 | 5 | 6;
+            const level = Math.min(Math.max(data.level, 2), 4) as number;
             const className = "mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100";
             switch (level) {
-                case 1:
-                    return <HtmlContent as="h1" html={data.text} className={className} />;
                 case 2:
-                    return <HtmlContent as="h2" html={data.text} className={className} />;
+                    return (
+                        <HtmlContent
+                            as="h2"
+                            html={data.text}
+                            className={`${className} text-3xl md:text-4xl`}
+                        />
+                    );
                 case 3:
-                    return <HtmlContent as="h3" html={data.text} className={className} />;
+                    return (
+                        <HtmlContent
+                            as="h3"
+                            html={data.text}
+                            className={`${className} text-2xl md:text-3xl`}
+                        />
+                    );
                 case 4:
-                    return <HtmlContent as="h4" html={data.text} className={className} />;
-                case 5:
-                    return <HtmlContent as="h5" html={data.text} className={className} />;
-                case 6:
-                    return <HtmlContent as="h6" html={data.text} className={className} />;
+                    return (
+                        <HtmlContent
+                            as="h4"
+                            html={data.text}
+                            className={`${className} text-xl md:text-2xl`}
+                        />
+                    );
+                default:
+                    return null;
             }
-            break;
         }
         case "paragraph": {
             const data = block.data as { text: string };
@@ -51,7 +64,7 @@ function renderBlock(block: EditorJsBlock) {
                 <HtmlContent
                     as="p"
                     html={data.text}
-                    className="mb-4 text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
+                    className="mb-4 text-lg text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
                 />
             );
         }
