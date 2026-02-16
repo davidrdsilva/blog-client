@@ -9,10 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import NavBar from "@/app/components/navbar";
 import { createPost, FETCH_URL_ENDPOINT, UPLOAD_ENDPOINT } from "@/app/lib/api";
 import type { EditorJsContent } from "@/app/types/post";
-
-function isLocalUrl(url: string): boolean {
-    return url.includes("localhost") || url.includes("127.0.0.1");
-}
+import isLocalUrl from "@/app/utils/is-local-url";
 
 export default function NewPostPage() {
     const router = useRouter();
@@ -168,7 +165,7 @@ export default function NewPostPage() {
                 subtitle: formData.subtitle || undefined,
                 description: formData.description,
                 image: formData.image,
-                author: "David",
+                author: "Redação",
                 content: outputData as EditorJsContent,
             });
 
@@ -189,7 +186,7 @@ export default function NewPostPage() {
                         <div>
                             <label
                                 htmlFor="title"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Title
                             </label>
@@ -201,14 +198,14 @@ export default function NewPostPage() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, title: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
+                                className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
                                 placeholder="Enter post title"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="subtitle"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Subtitle (optional)
                             </label>
@@ -219,14 +216,14 @@ export default function NewPostPage() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, subtitle: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
+                                className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
                                 placeholder="Enter post subtitle"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="description"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Description
                             </label>
@@ -238,18 +235,18 @@ export default function NewPostPage() {
                                 onChange={(e) =>
                                     setFormData({ ...formData, description: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400 resize-none"
+                                className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400 resize-none"
                                 placeholder="Enter short description (max 100 characters)"
                                 rows={3}
                             />
-                            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
+                            <p className="mt-1 text-zinc-500 dark:text-zinc-500">
                                 {formData.description.length}/100
                             </p>
                         </div>
                         <div>
                             <label
                                 htmlFor="image"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Featured Image
                             </label>
@@ -268,7 +265,7 @@ export default function NewPostPage() {
                                     <button
                                         type="button"
                                         onClick={handleRemoveImage}
-                                        className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                                        className="px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                                     >
                                         Remove Image
                                     </button>
@@ -349,13 +346,13 @@ export default function NewPostPage() {
                     <div>
                         <label
                             htmlFor="editorjs"
-                            className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                            className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                         >
                             Content
                         </label>
                         <div
                             id="editorjs"
-                            className="min-h-[400px] px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                            className="min-h-[400px] md:text-xl text-lg selection:bg-zinc-400 selection:text-black px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
                         />
                     </div>
                     <div className="flex gap-4">

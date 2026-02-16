@@ -1,28 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Post } from "@/app/types/post";
+import formatDate from "@/app/utils/format-date";
+import isLocalUrl from "@/app/utils/is-local-url";
+import truncateDescription from "@/app/utils/truncate-description";
 import { PostCardMenu } from "./post-card-menu";
 
 interface PostCardProps {
     post: Post;
     onDelete?: (postId: string) => void;
-}
-
-function truncateDescription(description: string, maxLength = 100): string {
-    if (description.length <= maxLength) return description;
-    return `${description.slice(0, maxLength).trim()}...`;
-}
-
-function formatDate(date: Date): string {
-    return new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-    }).format(date);
-}
-
-function isLocalUrl(url: string): boolean {
-    return url.includes("localhost") || url.includes("127.0.0.1");
 }
 
 export function PostCard({ post, onDelete }: PostCardProps) {
@@ -52,9 +38,9 @@ export function PostCard({ post, onDelete }: PostCardProps) {
                     <p className="text-lg text-zinc-600 dark:text-zinc-400 line-clamp-3">
                         {truncatedDescription}
                     </p>
-                    <div className="flex items-center justify-between mt-auto pt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                    <div className="flex items-center justify-between mt-auto pt-2 text-zinc-500 dark:text-zinc-500">
                         <span>{formattedDate}</span>
-                        <span className="font-medium">{post.author}</span>
+                        <span className="font-bold">{post.author}</span>
                     </div>
                 </div>
             </Link>

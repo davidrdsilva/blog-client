@@ -2,13 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { JSX } from "react";
 import type { EditorJsBlock, EditorJsContent } from "@/app/types/post";
+import isLocalUrl from "@/app/utils/is-local-url";
 
 interface EditorJsRendererProps {
     content: EditorJsContent;
-}
-
-function isLocalUrl(url: string): boolean {
-    return url.includes("localhost") || url.includes("127.0.0.1");
 }
 
 // Render HTML content safely (Editor.js inline tools produce HTML)

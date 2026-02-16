@@ -38,7 +38,7 @@ export default function ApiError({
                 className={`flex flex-col items-center justify-center min-h-[400px] w-full p-8 ${className}`}
             >
                 <div className="text-center max-w-[500px] animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex justify-center text-red-500 mx-auto mb-6">
+                    <div className="flex justify-center mx-auto mb-6">
                         <Image
                             src="/icons/broken.svg"
                             alt="Broken"

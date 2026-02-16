@@ -3,9 +3,9 @@ import "./globals.css";
 import { ThemeProvider } from "./providers/theme-provider";
 
 export const metadata: Metadata = {
-    title: "Blog - Personal Diary",
+    title: "The Falls Post",
     description:
-        "A personal blog about philosophy, politics, gaming, software development, and random thoughts",
+        "Your daily dose of news about politics, crime world, culture, entertainment and more",
 };
 
 export default function RootLayout({

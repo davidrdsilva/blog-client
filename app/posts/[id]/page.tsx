@@ -4,18 +4,8 @@ import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
 import NavBar from "@/app/components/navbar";
 import { APIClientError, getPost } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
-
-function formatDate(date: Date): string {
-    return new Intl.DateTimeFormat("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-    }).format(date);
-}
-
-function isLocalUrl(url: string): boolean {
-    return url.includes("localhost") || url.includes("127.0.0.1");
-}
+import formatDate from "@/app/utils/format-date";
+import isLocalUrl from "@/app/utils/is-local-url";
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -49,7 +39,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                         />
                     </div>
                     <header className="mb-8">
-                        <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+                        <h1 className="text-4xl md:text-5xl tracking-wide font-bold text-zinc-900 dark:text-zinc-100 mb-4">
                             {post.title}
                         </h1>
                         {post.subtitle && (

@@ -16,16 +16,16 @@ export function ThemeToggle() {
         >
             {theme === Theme.Light ? (
                 <Image
-                    src="/icons/light-mode.svg"
-                    alt="Light mode"
+                    src="/icons/night-mode.svg"
+                    alt="Dark mode"
                     className="cursor-pointer"
                     width={24}
                     height={24}
                 />
             ) : (
                 <Image
-                    src="/icons/night-mode.svg"
-                    alt="Dark mode"
+                    src="/icons/light-mode.svg"
+                    alt="Light mode"
                     className="cursor-pointer"
                     width={24}
                     height={24}

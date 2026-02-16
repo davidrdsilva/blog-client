@@ -15,10 +15,7 @@ import {
     updatePost,
 } from "@/app/lib/api";
 import type { EditorJsContent, Post } from "@/app/types/post";
-
-function isLocalUrl(url: string): boolean {
-    return url.includes("localhost") || url.includes("127.0.0.1");
-}
+import isLocalUrl from "@/app/utils/is-local-url";
 
 interface EditPostPageProps {
     params: Promise<{ id: string }>;
