@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { useTheme } from "@/app/providers/theme-provider";
 import NavBar from "./navbar";
 
 interface ApiErrorProps {
@@ -27,6 +29,8 @@ export default function ApiError({
     showRetry = false,
     className = "",
 }: ApiErrorProps) {
+    const { theme } = useTheme();
+
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
             <NavBar />
@@ -35,23 +39,15 @@ export default function ApiError({
             >
                 <div className="text-center max-w-[500px] animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="flex justify-center text-red-500 mx-auto mb-6">
-                        <svg
-                            width="64"
-                            height="64"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            role="img"
-                            aria-labelledby="error-icon-title"
-                        >
-                            <title id="error-icon-title">Error Icon</title>
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
+                        <Image
+                            src="/icons/broken.svg"
+                            alt="Broken"
+                            style={{
+                                filter: theme === "dark" ? "invert(1)" : "invert(0)",
+                            }}
+                            width={64}
+                            height={64}
+                        />
                     </div>
                     <h2 className="text-4xl font-bold mb-4 text-zinc-900 dark:text-zinc-100">
                         Oops!

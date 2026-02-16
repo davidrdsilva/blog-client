@@ -67,7 +67,7 @@ export function PostCardMenu({ postId, postTitle, onDelete }: PostCardMenuProps)
                 <button
                     type="button"
                     onClick={handleMenuClick}
-                    className="p-1.5 rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="p-1.5 rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                     aria-label="Post options"
                     aria-expanded={isOpen}
                     aria-haspopup="menu"
@@ -97,7 +97,7 @@ export function PostCardMenu({ postId, postTitle, onDelete }: PostCardMenuProps)
                         <button
                             type="button"
                             onClick={handleEdit}
-                            className="w-full px-3 py-2 text-left text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-2 transition-colors"
+                            className="w-full px-3 py-2 text-left text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-2 transition-colors cursor-pointer"
                             role="menuitem"
                         >
                             <svg
@@ -120,7 +120,7 @@ export function PostCardMenu({ postId, postTitle, onDelete }: PostCardMenuProps)
                         <button
                             type="button"
                             onClick={handleDeleteClick}
-                            className="w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 transition-colors"
+                            className="w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2 transition-colors cursor-pointer"
                             role="menuitem"
                         >
                             <svg

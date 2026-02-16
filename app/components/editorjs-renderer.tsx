@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { JSX } from "react";
 import type { EditorJsBlock, EditorJsContent } from "@/app/types/post";
 
@@ -20,6 +21,7 @@ function HtmlContent({
     className?: string;
     as?: keyof JSX.IntrinsicElements;
 }) {
+    // biome-ignore lint/security/noDangerouslySetInnerHtml: the content is sanitized on back-end
     return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
@@ -64,7 +66,7 @@ function renderBlock(block: EditorJsBlock) {
                 <HtmlContent
                     as="p"
                     html={data.text}
-                    className="mb-4 text-lg text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
+                    className="mb-4 md:text-lg text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
                 />
             );
         }
@@ -132,9 +134,14 @@ function renderBlock(block: EditorJsBlock) {
                             width={800}
                             height={0}
                             className="w-full h-auto"
-                            sizes="(max-width: 768px) 100vw, 800px"
+                            // sizes="(max-width: 768px) 100vw, 800px"
                             unoptimized={isLocalUrl(imageUrl)}
                         />
+                        <div className="absolute bottom-0 left-0 w-full pl-2 bg-zinc-900/50 text-sm text-white py-2">
+                            <Link href={imageUrl} target="_blank" rel="noopener noreferrer">
+                                See image in full size
+                            </Link>
+                        </div>
                     </div>
                     {data.caption && (
                         <figcaption className="mt-2 text-sm text-center text-zinc-500 dark:text-zinc-500">

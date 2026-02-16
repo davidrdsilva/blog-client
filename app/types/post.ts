@@ -21,7 +21,6 @@ export interface Post {
     content?: EditorJsContent;
 }
 
-// API response type with ISO 8601 date strings
 export interface APIPost {
     id: string;
     title: string;
