@@ -1,6 +1,6 @@
 import type { EditorJsContent, Post } from "@/app/types/post";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || null;
+const API_BASE_URL = typeof window === "undefined" ? process.env.NEXT_PUBLIC_API_URL || "" : "";
 
 // API response types matching the backend spec
 interface APIPost {
