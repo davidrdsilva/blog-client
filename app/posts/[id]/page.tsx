@@ -57,7 +57,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                                 {post.subtitle}
                             </p>
                         )}
-                        <div className="flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-500">
+                        <div className="flex items-center gap-4 text-zinc-500 dark:text-zinc-500">
                             <span>{formattedDate}</span>
                             <span>•</span>
                             <span className="font-medium">{post.author}</span>

@@ -46,10 +46,10 @@ export function PostCard({ post, onDelete }: PostCardProps) {
                     />
                 </div>
                 <div className="flex flex-col gap-3 p-5 flex-1">
-                    <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2">
+                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 line-clamp-2">
                         {post.title}
                     </h2>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-3">
+                    <p className="text-lg text-zinc-600 dark:text-zinc-400 line-clamp-3">
                         {truncatedDescription}
                     </p>
                     <div className="flex items-center justify-between mt-auto pt-2 text-xs text-zinc-500 dark:text-zinc-500">

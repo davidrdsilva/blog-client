@@ -57,7 +57,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 if (error instanceof APIClientError && error.code === "POST_NOT_FOUND") {
                     notFound();
                 }
-                console.error("Failed to fetch post:", error);
+                console.error("Failed to fetch post ERRO:", error);
             } finally {
                 setIsLoading(false);
             }
