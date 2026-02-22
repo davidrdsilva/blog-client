@@ -97,10 +97,12 @@ function renderBlock(block: EditorJsBlock) {
         case "quote": {
             const data = block.data as { text: string; caption?: string };
             return (
-                <blockquote className="mb-4 pl-4 border-l-4 border-zinc-300 dark:border-zinc-700 italic text-zinc-600 dark:text-zinc-400">
+                <blockquote className="font-serif mb-4 p-4 md:ml-10 rounded-r-2xl border-l-10 border-blue-600 text-lg md:text-2xl bg-blue-50 dark:bg-blue-900/20 text-zinc-600 dark:text-zinc-100">
                     <HtmlContent as="p" html={data.text} />
                     {data.caption && (
-                        <cite className="block mt-2 text-sm not-italic">— {data.caption}</cite>
+                        <cite className="block mt-2 text-blue-600 text-lg dark:text-blue-400 not-italic">
+                            — {data.caption}
+                        </cite>
                     )}
                 </blockquote>
             );

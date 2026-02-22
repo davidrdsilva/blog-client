@@ -25,6 +25,7 @@ export default function NewPostPage() {
         description: "",
         image: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -46,10 +47,13 @@ export default function NewPostPage() {
             if (result.success === 1 && result.file?.url) {
                 setFormData({ ...formData, image: result.file.url });
             } else {
-                console.error("Upload failed:", result.error);
+                if (result.error) {
+                    setErrorMessage(result.error.message);
+                }
             }
         } catch (error) {
             console.error("Error uploading image:", error);
+            setErrorMessage("Error uploading image. Just try again will you?");
         } finally {
             setIsUploading(false);
         }
@@ -334,6 +338,12 @@ export default function NewPostPage() {
                                                 </span>
                                                 <span className="text-xs text-zinc-400 dark:text-zinc-500">
                                                     JPEG, PNG, GIF, WebP (max 5MB)
+                                                </span>
+                                                <span
+                                                    id="error-message"
+                                                    className="text-red-500 dark:text-red-400"
+                                                >
+                                                    {errorMessage}
                                                 </span>
                                             </div>
                                         )}

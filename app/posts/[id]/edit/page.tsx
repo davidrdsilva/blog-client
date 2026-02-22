@@ -38,6 +38,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         description: "",
         image: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -67,6 +68,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         if (!file) return;
 
         setIsUploading(true);
+        setErrorMessage("");
 
         try {
             const uploadData = new FormData();
@@ -82,10 +84,13 @@ export default function EditPostPage({ params }: EditPostPageProps) {
             if (result.success === 1 && result.file?.url) {
                 setFormData({ ...formData, image: result.file.url });
             } else {
-                console.error("Upload failed:", result.error);
+                if (result.error) {
+                    setErrorMessage(result.error.message);
+                }
             }
         } catch (error) {
             console.error("Error uploading image:", error);
+            setErrorMessage("Error uploading image. Just try again will you?");
         } finally {
             setIsUploading(false);
         }
@@ -244,7 +249,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                         <div>
                             <label
                                 htmlFor="title"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Title
                             </label>
@@ -256,14 +261,14 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, title: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
+                                className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
                                 placeholder="Enter post title"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="subtitle"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Subtitle (optional)
                             </label>
@@ -274,14 +279,14 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, subtitle: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
+                                className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
                                 placeholder="Enter post subtitle"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="description"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Description
                             </label>
@@ -293,18 +298,18 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                 onChange={(e) =>
                                     setFormData({ ...formData, description: e.target.value })
                                 }
-                                className="w-full px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400 resize-none"
+                                className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400 resize-none"
                                 placeholder="Enter short description (max 100 characters)"
                                 rows={3}
                             />
-                            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-500">
+                            <p className="mt-1 text-zinc-500 dark:text-zinc-500">
                                 {formData.description.length}/100
                             </p>
                         </div>
                         <div>
                             <label
                                 htmlFor="image"
-                                className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                                className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                             >
                                 Featured Image
                             </label>
@@ -323,7 +328,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                     <button
                                         type="button"
                                         onClick={handleRemoveImage}
-                                        className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                                        className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                                     >
                                         Change Image
                                     </button>
@@ -393,6 +398,12 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                                                 <span className="text-xs text-zinc-400 dark:text-zinc-500">
                                                     JPEG, PNG, GIF, WebP (max 5MB)
                                                 </span>
+                                                <span
+                                                    id="error-message"
+                                                    className="text-red-500 dark:text-red-400"
+                                                >
+                                                    {errorMessage}
+                                                </span>
                                             </div>
                                         )}
                                     </label>
@@ -404,13 +415,13 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                     <div>
                         <label
                             htmlFor="editorjs"
-                            className="block mb-2 text-sm font-medium text-zinc-900 dark:text-zinc-100"
+                            className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                         >
                             Content
                         </label>
                         <div
                             id="editorjs"
-                            className="min-h-[400px] px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                            className="min-h-[400px] md:text-xl text-lg selection:bg-zinc-400 selection:text-black px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
                         />
                     </div>
                     <div className="flex gap-4">
