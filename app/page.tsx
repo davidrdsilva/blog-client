@@ -1,4 +1,5 @@
 import ApiError from "@/app/components/api-error";
+import Footer from "@/app/components/footer";
 import NavBar from "@/app/components/navbar";
 import { SearchablePosts } from "@/app/components/searchable-posts";
 import { getPosts } from "@/app/lib/api";
@@ -22,6 +23,7 @@ export default async function Home() {
             <main className="container mx-auto px-4 py-12">
                 <SearchablePosts initialPosts={posts} />
             </main>
+            <Footer />
         </div>
     );
 }

@@ -9,7 +9,7 @@ export default function NavBar() {
     const { theme } = useTheme();
 
     return (
-        <header className="sticky top-0 z-10 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+        <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
                 <Link href="/">
                     <Image
