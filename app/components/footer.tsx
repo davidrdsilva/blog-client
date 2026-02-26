@@ -152,7 +152,7 @@ export default function Footer() {
                     <div className="flex items-center gap-4">
                         <p>© {new Date().getFullYear()} The Falls Post. All rights reserved.</p>
                         <span className="bg-zinc-100 dark:bg-zinc-800/80 px-2 py-1 rounded text-zinc-500 dark:text-zinc-400 font-mono text-[10px]">
-                            v{process.env.NEXT_PUBLIC_APP_VERSION}
+                            v{require("../../package.json").version}
                         </span>
                     </div>
                 </div>
