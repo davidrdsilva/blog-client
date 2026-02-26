@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
+import Footer from "@/app/components/footer";
 import NavBar from "@/app/components/navbar";
 import { APIClientError, getPost } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
@@ -64,6 +65,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                     </div>
                 </article>
             </main>
+            <Footer />
         </div>
     );
 }
