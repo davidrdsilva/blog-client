@@ -11,7 +11,7 @@ export default function Footer() {
         <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-12 md:py-16 mt-20">
             <div className="container mx-auto px-4 max-w-6xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12 border-b border-zinc-200 dark:border-zinc-800 pb-12">
-                    <div className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col space-y-4">
+                    <div className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col items-center md:items-start text-center md:text-left space-y-4">
                         <Link href="/">
                             <Image
                                 src="/images/logo.png"
@@ -31,7 +31,7 @@ export default function Footer() {
                         </p>
                     </div>
 
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3">
                         <h3 className="font-bold text-zinc-900 dark:text-white uppercase tracking-wider text-xs mb-2">
                             Sections
                         </h3>
@@ -67,7 +67,7 @@ export default function Footer() {
                         </Link>
                     </div>
 
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3">
                         <h3 className="font-bold text-zinc-900 dark:text-white uppercase tracking-wider text-xs mb-2">
                             About Us
                         </h3>
@@ -97,7 +97,7 @@ export default function Footer() {
                         </Link>
                     </div>
 
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3">
                         <h3 className="font-bold text-zinc-900 dark:text-white uppercase tracking-wider text-xs mb-2">
                             Connect
                         </h3>
