@@ -10,6 +10,12 @@ export default function NewPostPage() {
 
     const handleSubmit = async (data: PostFormData) => {
         try {
+            let formattedDate: string | undefined;
+            if (data.date && data.date.length === 10) {
+                const [d, m, y] = data.date.split("/");
+                formattedDate = `${y}-${m}-${d}T00:00:00Z`;
+            }
+
             const post = await createPost({
                 title: data.title,
                 subtitle: data.subtitle || undefined,
@@ -17,6 +23,7 @@ export default function NewPostPage() {
                 image: data.image,
                 author: "Redação",
                 content: data.content,
+                date: formattedDate,
             });
 
             router.push(`/posts/${post.id}`);

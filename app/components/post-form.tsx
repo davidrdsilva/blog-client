@@ -15,6 +15,7 @@ export interface PostFormData {
     description: string;
     image: string;
     content: EditorJsContent;
+    date?: string;
 }
 
 interface PostFormProps {
@@ -24,6 +25,7 @@ interface PostFormProps {
         description: string;
         image: string;
         content?: EditorJsContent;
+        date?: string;
     };
     onSubmit: (data: PostFormData) => Promise<void>;
     submitLabel: string;
@@ -49,6 +51,7 @@ export default function PostForm({
         subtitle: initialData?.subtitle || "",
         description: initialData?.description || "",
         image: initialData?.image || "",
+        date: initialData?.date || "",
     });
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -90,6 +93,19 @@ export default function PostForm({
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
+    };
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 8) value = value.slice(0, 8);
+
+        if (value.length > 4) {
+            value = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
+        } else if (value.length > 2) {
+            value = `${value.slice(0, 2)}/${value.slice(2)}`;
+        }
+
+        setFormData({ ...formData, date: value });
     };
 
     useEffect(() => {
@@ -237,6 +253,22 @@ export default function PostForm({
                 </div>
                 <div>
                     <label
+                        htmlFor="date"
+                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
+                    >
+                        Date (optional)
+                    </label>
+                    <input
+                        type="text"
+                        id="date"
+                        value={formData.date}
+                        onChange={handleDateChange}
+                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
+                        placeholder="DD/MM/YYYY"
+                    />
+                </div>
+                <div>
+                    <label
                         htmlFor="description"
                         className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
                     >
@@ -278,7 +310,7 @@ export default function PostForm({
                             <button
                                 type="button"
                                 onClick={handleRemoveImage}
-                                className="px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                                className="px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                             >
                                 {initialData ? "Change Image" : "Remove Image"}
                             </button>

@@ -59,6 +59,7 @@ export interface CreatePostData {
     image: string;
     author: string;
     content?: EditorJsContent;
+    date?: string;
 }
 
 export interface UpdatePostData {
@@ -67,6 +68,7 @@ export interface UpdatePostData {
     description?: string;
     image?: string;
     content?: EditorJsContent;
+    date?: string;
 }
 
 // Transform API post to frontend Post type

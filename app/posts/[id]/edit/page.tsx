@@ -36,12 +36,19 @@ export default function EditPostPage({ params }: EditPostPageProps) {
 
     const handleSubmit = async (data: PostFormData) => {
         try {
+            let formattedDate: string | undefined;
+            if (data.date && data.date.length === 10) {
+                const [d, m, y] = data.date.split("/");
+                formattedDate = `${y}-${m}-${d}T00:00:00Z`;
+            }
+
             await updatePost(id, {
                 title: data.title,
                 subtitle: data.subtitle || undefined,
                 description: data.description,
                 image: data.image,
                 content: data.content,
+                date: formattedDate,
             });
 
             router.push(`/posts/${id}`);
@@ -68,6 +75,14 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         return null;
     }
 
+    const formatDate = (date: Date) => {
+        if (Number.isNaN(date.getTime())) return "";
+        const d = date.getUTCDate().toString().padStart(2, "0");
+        const m = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+        const y = date.getUTCFullYear();
+        return `${d}/${m}/${y}`;
+    };
+
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
             <NavBar />
@@ -82,6 +97,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                         description: post.description,
                         image: post.image,
                         content: post.content,
+                        date: post.date ? formatDate(post.date) : "",
                     }}
                     onSubmit={handleSubmit}
                     submitLabel="Save Changes"
