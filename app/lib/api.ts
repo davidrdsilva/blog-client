@@ -33,6 +33,18 @@ interface SinglePostResponse {
     data: APIPost;
 }
 
+export interface Comment {
+    id: string;
+    postId: string;
+    author: string;
+    content: string;
+    createdAt: string;
+}
+
+interface CommentsResponse {
+    data: Comment[];
+}
+
 interface APIError {
     error: {
         code: string;
@@ -165,6 +177,17 @@ export async function getPost(id: string): Promise<Post> {
 
     const data = await handleResponse<SinglePostResponse>(response);
     return transformPost(data.data);
+}
+
+// Get comments for a post
+export async function getComments(postId: string): Promise<Comment[]> {
+    const response = await fetch(`${API_BASE_URL}/api/comments?postId=${postId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await handleResponse<CommentsResponse>(response);
+    return data.data || [];
 }
 
 // Create a new post
