@@ -26,7 +26,7 @@ NEXT_PUBLIC_API_URL=http://your-api-url:8080
 ### 2. Build and Run with Docker Compose
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will:
@@ -45,27 +45,27 @@ http://localhost:3000
 
 ### Build the image
 ```bash
-docker-compose build
+docker compose build
 ```
 
 ### Start the container
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Stop the container
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### View logs
 ```bash
-docker-compose logs -f blog-client
+docker compose logs -f blog-client
 ```
 
 ### Rebuild and restart
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Docker Image Details
