@@ -63,7 +63,7 @@ function renderBlock(block: EditorJsBlock) {
                 <HtmlContent
                     as="p"
                     html={data.text}
-                    className="mb-4 text-lg md:text-2xl text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
+                    className="mb-4 text-xl text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
                 />
             );
         }
@@ -73,8 +73,8 @@ function renderBlock(block: EditorJsBlock) {
             const ListTag = data.style === "ordered" ? "ol" : "ul";
             const className =
                 data.style === "ordered"
-                    ? "mb-4 ml-6 text-lg md:text-2xl list-decimal space-y-2 text-zinc-700 dark:text-zinc-300"
-                    : "mb-4 ml-6 text-lg md:text-2xl list-disc space-y-2 text-zinc-700 dark:text-zinc-300";
+                    ? "mb-4 ml-6 text-xl md:text-2xl list-decimal space-y-2 text-zinc-700 dark:text-zinc-300"
+                    : "mb-4 ml-6 text-xl md:text-2xl list-disc space-y-2 text-zinc-700 dark:text-zinc-300";
 
             const getItemText = (item: ListItem): string => {
                 if (typeof item === "string") return item;
