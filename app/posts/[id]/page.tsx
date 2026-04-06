@@ -17,9 +17,9 @@ function calculateReadingTime(post: Post): string {
             .map((block) => {
                 const data = block.data || {};
                 let text = "";
-                if (typeof data.text === "string") text += data.text + " ";
-                if (Array.isArray(data.items)) text += data.items.join(" ") + " ";
-                if (typeof data.caption === "string") text += data.caption + " ";
+                if (typeof data.text === "string") text += `${data.text} `;
+                if (Array.isArray(data.items)) text += `${data.items.join(" ")} `;
+                if (typeof data.caption === "string") text += `${data.caption} `;
                 return text;
             })
             .join(" ");
