@@ -79,7 +79,7 @@ export default function Comments({ postId }: CommentsProps) {
                 }`}
             >
                 <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-[#09090b] sticky top-0 z-10">
-                    <h3 className="text-xl font-bold font-serif text-zinc-900 dark:text-zinc-100">
+                    <h3 className="text-xl font-serif text-zinc-900 dark:text-zinc-100">
                         Comments{" "}
                         {comments.length > 0 && (
                             <span className="text-zinc-500 font-normal ml-1">
@@ -145,7 +145,7 @@ export default function Comments({ postId }: CommentsProps) {
                                         {formatDate(new Date(comment.createdAt))}
                                     </time>
                                 </div>
-                                <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap text-sm font-serif">
+                                <p className="text-zinc-700 dark:text-zinc-300 leading-relaxed whitespace-pre-wrap text-lg">
                                     {comment.content}
                                 </p>
                             </div>

@@ -27,7 +27,7 @@ function renderBlock(block: EditorJsBlock) {
         case "header": {
             const data = block.data as { text: string; level: number };
             const level = Math.min(Math.max(data.level, 2), 4) as number;
-            const className = "mt-8 mb-4 font-bold text-zinc-900 dark:text-zinc-100";
+            const className = "mt-8 mb-4 font-serif text-zinc-900 dark:text-zinc-100";
             switch (level) {
                 case 2:
                     return (
@@ -97,10 +97,12 @@ function renderBlock(block: EditorJsBlock) {
         case "quote": {
             const data = block.data as { text: string; caption?: string };
             return (
-                <blockquote className="font-serif mb-4 p-4 md:ml-10 rounded-r-2xl border-l-10 border-blue-600 text-lg md:text-2xl bg-blue-50 dark:bg-blue-900/20 text-zinc-600 dark:text-zinc-100">
-                    <HtmlContent as="p" html={data.text} />
+                <blockquote className="my-10 pl-6 md:pl-8 border-l-[3px] border-black dark:border-white">
+                    <div className="font-serif text-2xl md:text-4xl text-zinc-900 dark:text-zinc-100 mb-4 leading-tight">
+                        <HtmlContent as="p" html={data.text} />
+                    </div>
                     {data.caption && (
-                        <cite className="block mt-2 text-blue-600 text-lg dark:text-blue-400 not-italic">
+                        <cite className="block font-bold uppercase tracking-widest text-xs text-zinc-500 dark:text-zinc-400 not-italic mt-4">
                             — {data.caption}
                         </cite>
                     )}

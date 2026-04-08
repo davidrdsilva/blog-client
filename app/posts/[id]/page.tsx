@@ -43,11 +43,11 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                         />
                     </div>
                     <header className="mb-8">
-                        <h1 className="text-4xl md:text-5xl tracking-wide font-bold font-serif text-zinc-900 dark:text-zinc-100 mb-4">
+                        <h1 className="text-4xl md:text-5xl tracking-wide font-serif text-zinc-900 dark:text-zinc-100 mb-4">
                             {post.title}
                         </h1>
                         {post.subtitle && (
-                            <p className="text-xl text-zinc-600 font-serif dark:text-zinc-400 mb-6">
+                            <p className="text-lg text-zinc-600 font-serif-light dark:text-zinc-400 mb-6">
                                 {post.subtitle}
                             </p>
                         )}

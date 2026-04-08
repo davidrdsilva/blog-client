@@ -22,7 +22,7 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                     <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
                 </div>
                 <Link href={`/posts/${post.id}`} className="flex flex-col gap-4">
-                    <h2 className="text-3xl md:text-5xl font-bold font-serif text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
+                    <h2 className="text-3xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
                         {post.title}
                     </h2>
                     <div className="relative w-full aspect-2/1 md:aspect-video overflow-hidden mt-2">
@@ -36,7 +36,7 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                             priority
                         />
                     </div>
-                    <p className="text-lg md:text-xl text-zinc-700 dark:text-zinc-300 font-serif line-clamp-3">
+                    <p className="text-zinc-700 dark:text-zinc-300 font-serif-light line-clamp-3">
                         {post.description}
                     </p>
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mt-2">
@@ -66,10 +66,10 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                             unoptimized={isLocalUrl(post.image)}
                         />
                     </div>
-                    <h2 className="text-xl font-bold font-serif text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
+                    <h2 className="text-xl font-serif text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
                         {post.title}
                     </h2>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-400 font-serif line-clamp-2">
+                    <p className="text-sm text-zinc-700 dark:text-zinc-400 font-serif-light line-clamp-2">
                         {truncateDescription(post.description, 80)}
                     </p>
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mt-1">
@@ -87,10 +87,10 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                     <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
                 </div>
                 <Link href={`/posts/${post.id}`} className="flex flex-col gap-2">
-                    <h2 className="text-lg font-bold font-serif text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors pr-6">
+                    <h2 className="text-lg font-serif text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors pr-6">
                         {post.title}
                     </h2>
-                    <p className="text-sm text-zinc-700 dark:text-zinc-400 font-serif line-clamp-2">
+                    <p className="text-sm text-zinc-700 dark:text-zinc-400 font-serif-light line-clamp-2">
                         {truncateDescription(post.description, 100)}
                     </p>
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mt-1">
@@ -118,10 +118,10 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                         unoptimized={isLocalUrl(post.image)}
                     />
                 </div>
-                <h2 className="text-lg font-bold font-serif text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors line-clamp-2">
+                <h2 className="text-lg font-serif text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors line-clamp-2">
                     {post.title}
                 </h2>
-                <p className="text-sm text-zinc-700 dark:text-zinc-400 font-serif line-clamp-3 mb-2">
+                <p className="text-sm text-zinc-700 dark:text-zinc-400 font-serif-light line-clamp-3 mb-2">
                     {truncateDescription(post.description, 120)}
                 </p>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mt-auto pt-2">
