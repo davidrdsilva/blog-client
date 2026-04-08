@@ -6,34 +6,9 @@ import Footer from "@/app/components/footer";
 import NavBar from "@/app/components/navbar";
 import { APIClientError, getPost } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
+import { calculateReadingTime } from "@/app/utils/calculate-reading-time";
 import formatDate from "@/app/utils/format-date";
 import isLocalUrl from "@/app/utils/is-local-url";
-
-function calculateReadingTime(post: Post): string {
-    let textContent = "";
-
-    if (post.content?.blocks?.length) {
-        textContent = post.content.blocks
-            .map((block) => {
-                const data = block.data || {};
-                let text = "";
-                if (typeof data.text === "string") text += `${data.text} `;
-                if (Array.isArray(data.items)) text += `${data.items.join(" ")} `;
-                if (typeof data.caption === "string") text += `${data.caption} `;
-                return text;
-            })
-            .join(" ");
-    } else {
-        textContent = post.description || "";
-    }
-
-    // Strip HTML tags commonly found in Editor.js strings (like <b>, <i>, <a>)
-    const cleanText = textContent.replace(/<[^>]*>/g, " ");
-    const wordCount = cleanText.split(/\s+/).filter((word) => word.length > 0).length;
-    const minutes = Math.max(1, Math.ceil(wordCount / 200));
-
-    return `${minutes} min read`;
-}
 
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -68,11 +43,11 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                         />
                     </div>
                     <header className="mb-8">
-                        <h1 className="text-4xl md:text-5xl tracking-wide font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+                        <h1 className="text-4xl md:text-5xl tracking-wide font-bold font-serif text-zinc-900 dark:text-zinc-100 mb-4">
                             {post.title}
                         </h1>
                         {post.subtitle && (
-                            <p className="text-xl text-zinc-600 dark:text-zinc-400 mb-6">
+                            <p className="text-xl text-zinc-600 font-serif dark:text-zinc-400 mb-6">
                                 {post.subtitle}
                             </p>
                         )}
