@@ -12,7 +12,7 @@ interface SearchablePostsProps {
     initialCount?: number;
 }
 
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 13;
 
 function extractTextFromContent(post: Post): string {
     if (!post.content?.blocks) return "";
@@ -85,37 +85,42 @@ export function SearchablePosts({
     };
 
     return (
-        <div className="space-y-8">
-            <SearchBar
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder="Search by title, description, or content..."
-            />
+        <div className="space-y-6 pb-12">
+            <div className="flex justify-end mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+                <div className="w-full max-w-sm">
+                    <SearchBar
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        placeholder="Search the archives..."
+                    />
+                </div>
+            </div>
 
             {filteredPosts.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-zinc-500 dark:text-zinc-400">
+                <div className="text-center py-20 border-b border-zinc-200 dark:border-zinc-800">
+                    <p className="text-lg font-serif text-zinc-500 dark:text-zinc-400">
                         {searchQuery
                             ? `No posts found matching "${searchQuery}"`
-                            : "No posts yet. Create your first post!"}
+                            : "No stories printed yet. Create your first post!"}
                     </p>
                 </div>
             ) : (
                 <>
                     {searchQuery && (
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                            Found {filteredPosts.length} post{filteredPosts.length !== 1 ? "s" : ""}
+                        <p className="text-sm font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-6">
+                            Found {filteredPosts.length} result
+                            {filteredPosts.length !== 1 ? "s" : ""}
                         </p>
                     )}
                     <PostGrid posts={visiblePosts} onDelete={handleDelete} isDeleting={isPending} />
                     {hasMore && (
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800">
                             <button
                                 type="button"
                                 onClick={handleLoadMore}
-                                className="px-6 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                                className="px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest text-sm hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors cursor-pointer"
                             >
-                                Load More
+                                Load More Stories
                             </button>
                         </div>
                     )}
