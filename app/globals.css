@@ -28,7 +28,7 @@
   font-style: normal;
 }
 
-@variant dark (.dark &);
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;

@@ -21,6 +21,7 @@
         "@editorjs/list": "^2.0.9",
         "@editorjs/paragraph": "^2.11.7",
         "@editorjs/quote": "^2.7.6",
+        "jimp": "^1.6.1",
         "next": "16.1.4",
         "react": "19.2.3",
         "react-dom": "19.2.3"
