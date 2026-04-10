@@ -142,7 +142,7 @@ export function GalleryProvider({
                                     e.stopPropagation();
                                     goToPrev();
                                 }}
-                                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 p-2 md:p-4 text-white/50 hover:text-white transition-colors"
+                                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 p-2 md:p-4 text-white/50 hover:text-white transition-colors cursor-pointer"
                                 aria-label="Previous image"
                             >
                                 <svg
@@ -166,7 +166,7 @@ export function GalleryProvider({
                                     e.stopPropagation();
                                     goToNext();
                                 }}
-                                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-50 p-2 md:p-4 text-white/50 hover:text-white transition-colors"
+                                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-50 p-2 md:p-4 text-white/50 hover:text-white transition-colors cursor-pointer"
                                 aria-label="Next image"
                             >
                                 <svg
@@ -216,7 +216,7 @@ export function GalleryProvider({
                         )}
                     </div>
                     {images.length > 1 && (
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/50 font-mono text-xs md:text-sm tracking-widest z-50 select-none pointer-events-none bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-sm">
+                        <div className="absolute bottom-6 right-10 text-white/50 font-mono text-xs md:text-sm tracking-widest z-50 select-none pointer-events-none bg-black/40 px-4 py-1.5 rounded-full backdrop-blur-sm">
                             {currentIndex + 1} / {images.length}
                         </div>
                     )}
