@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { JSX } from "react";
+import { GalleryImage } from "@/app/components/image-gallery";
 import type { EditorJsBlock, EditorJsContent } from "@/app/types/post";
-import isLocalUrl from "@/app/utils/is-local-url";
 
 interface EditorJsRendererProps {
     content: EditorJsContent;
@@ -128,14 +127,15 @@ function renderBlock(block: EditorJsBlock) {
             const imageUrl = data.file?.url || data.url || "";
             return (
                 <figure className="mb-4">
-                    <div className="relative w-fit mx-auto rounded-lg overflow-hidden">
-                        <Image
+                    <div className="relative w-fit mx-auto flex justify-center rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                        <GalleryImage
                             src={imageUrl}
                             alt={data.caption || ""}
                             width={0}
                             height={0}
-                            className="max-h-[500px] w-fit mx-auto"
-                            unoptimized={isLocalUrl(imageUrl)}
+                            className="max-w-full max-h-[500px] object-contain"
+                            sizes="(max-width: 768px) 100vw, 800px"
+                            style={{ width: "auto", height: "auto" }}
                         />
                         <div className="absolute bottom-0 left-0 w-full pl-2 bg-zinc-900/50 text-sm text-white py-2">
                             <Link href={imageUrl} target="_blank" rel="noopener noreferrer">
