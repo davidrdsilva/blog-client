@@ -35,23 +35,6 @@ export default function Comments({ postId }: CommentsProps) {
         fetchComments();
     }, [postId]);
 
-    // Handle closing on Escape and preventing scroll
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === "Escape") setIsOpen(false);
-        };
-        if (isOpen) {
-            window.addEventListener("keydown", handleKeyDown);
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "unset";
-        }
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-            document.body.style.overflow = "unset";
-        };
-    }, [isOpen]);
-
     return (
         <div className="mt-16 pt-8 border-t border-zinc-200 dark:border-zinc-800">
             <button
@@ -63,20 +46,16 @@ export default function Comments({ postId }: CommentsProps) {
                 Show Comments {comments.length > 0 && `(${comments.length})`}
             </button>
 
-            {/* Backdrop */}
-            <div
-                className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ${
-                    isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                }`}
-                onClick={() => setIsOpen(false)}
-                aria-hidden="true"
-            />
-
             {/* Sidebar */}
             <div
-                className={`fixed inset-y-0 right-0 w-full md:w-[30%] bg-white dark:bg-[#09090b] shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-in-out border-l border-zinc-200 dark:border-zinc-800 ${
+                className={`fixed inset-y-0 right-0 w-full md:w-[30%] bg-white dark:bg-[#09090b] shadow-2xl z-50 flex flex-col border-l border-zinc-200 dark:border-zinc-800 ${
                     isOpen ? "translate-x-0" : "translate-x-full"
                 }`}
+                style={{
+                    transitionProperty: "transform, translate",
+                    transitionDuration: "300ms",
+                    transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
             >
                 <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-[#09090b] sticky top-0 z-10">
                     <h3 className="text-xl font-serif text-zinc-900 dark:text-zinc-100">

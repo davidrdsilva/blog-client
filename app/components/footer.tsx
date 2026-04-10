@@ -43,25 +43,25 @@ export default function Footer() {
                             Front Page
                         </Link>
                         <Link
-                            href="/world"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             World
                         </Link>
                         <Link
-                            href="/politics"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Politics
                         </Link>
                         <Link
-                            href="/business"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Business
                         </Link>
                         <Link
-                            href="/tech"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Technology
@@ -73,25 +73,25 @@ export default function Footer() {
                             About Us
                         </h3>
                         <Link
-                            href="/about"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Our Story
                         </Link>
                         <Link
-                            href="/careers"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Careers
                         </Link>
                         <Link
-                            href="/contact"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Contact Us
                         </Link>
                         <Link
-                            href="/advertise"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Advertise
@@ -109,13 +109,13 @@ export default function Footer() {
                             Publish with Us
                         </Link>
                         <Link
-                            href="/subscribe"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Newsletters
                         </Link>
                         <Link
-                            href="/podcasts"
+                            href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Podcasts
@@ -126,25 +126,25 @@ export default function Footer() {
                 <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
                     <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                         <Link
-                            href="/privacy"
+                            href="/"
                             className="hover:text-black dark:hover:text-white transition-colors"
                         >
                             Privacy Policy
                         </Link>
                         <Link
-                            href="/terms"
+                            href="/"
                             className="hover:text-black dark:hover:text-white transition-colors"
                         >
                             Terms of Service
                         </Link>
                         <Link
-                            href="/cookie-policy"
+                            href="/"
                             className="hover:text-black dark:hover:text-white transition-colors"
                         >
                             Cookie Policy
                         </Link>
                         <Link
-                            href="/accessibility"
+                            href="/"
                             className="hover:text-black dark:hover:text-white transition-colors"
                         >
                             Accessibility Help
