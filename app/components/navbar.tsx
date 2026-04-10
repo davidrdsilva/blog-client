@@ -2,12 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "@/app/providers/theme-provider";
 import { ThemeToggle } from "./theme-toggle";
 
 export default function NavBar() {
-    const { theme } = useTheme();
-
     return (
         <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -18,9 +15,7 @@ export default function NavBar() {
                         width={200}
                         height={100}
                         sizes="(max-width: 768px) 100vw, 1200px"
-                        style={{
-                            filter: theme === "dark" ? "invert(0)" : "invert(1)",
-                        }}
+                        className="invert dark:invert-0"
                     />
                 </Link>
                 <div className="flex items-center gap-4">

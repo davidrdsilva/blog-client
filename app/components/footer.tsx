@@ -2,12 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "@/app/providers/theme-provider";
 import packageJson from "../../package.json";
 
 export default function Footer() {
-    const { theme } = useTheme();
-
     return (
         <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-12 md:py-16 mt-20">
             <div className="container mx-auto px-4 max-w-6xl">
@@ -19,10 +16,7 @@ export default function Footer() {
                                 alt="The Falls Post"
                                 width={180}
                                 height={90}
-                                style={{
-                                    filter: theme === "dark" ? "invert(1)" : "invert(0)",
-                                }}
-                                className="mb-2"
+                                className="mb-2 dark:invert"
                             />
                         </Link>
                         <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
