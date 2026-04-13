@@ -6,8 +6,8 @@ import packageJson from "../../package.json";
 
 export default function Footer() {
     return (
-        <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-12 md:py-16 mt-20">
-            <div className="container mx-auto px-4 max-w-6xl">
+        <footer className="max-w-[1400px] mx-auto border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-12 md:py-16 mt-20">
+            <div className="container mx-auto justify-between px-4 max-w-6xl">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12 mb-12 border-b border-zinc-200 dark:border-zinc-800 pb-12">
                     <div className="col-span-1 md:col-span-2 lg:col-span-1 flex flex-col items-center md:items-start text-center md:text-left space-y-4">
                         <Link href="/">

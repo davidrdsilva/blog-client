@@ -86,7 +86,7 @@ export function SearchablePosts({
 
     return (
         <div className="space-y-6 pb-12">
-            <div className="flex justify-end mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+            <div className="flex justify-center md:justify-end mb-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
                 <div className="w-full max-w-sm">
                     <SearchBar
                         value={searchQuery}
