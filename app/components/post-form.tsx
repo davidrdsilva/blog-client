@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FETCH_URL_ENDPOINT, UPLOAD_ENDPOINT } from "@/app/lib/api";
+import PostPreviewSidebar from "@/app/components/post-preview-sidebar";
 import type { EditorJsContent } from "@/app/types/post";
 import isLocalUrl from "@/app/utils/is-local-url";
 
@@ -46,6 +47,10 @@ export default function PostForm({
     const [isReady, setIsReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [previewContent, setPreviewContent] = useState<EditorJsContent | null>(
+        initialData?.content ?? null,
+    );
     const [formData, setFormData] = useState({
         title: initialData?.title || "",
         subtitle: initialData?.subtitle || "",
@@ -185,6 +190,10 @@ export default function PostForm({
                 },
                 onReady: () => {
                     setIsReady(true);
+                },
+                onChange: async (api) => {
+                    const data = await api.saver.save();
+                    setPreviewContent(data as EditorJsContent);
                 },
             });
         };
@@ -406,7 +415,7 @@ export default function PostForm({
                     className="min-h-[400px] md:text-xl text-lg selection:bg-zinc-400 selection:text-black px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
                 />
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-4 items-center">
                 <button
                     type="submit"
                     disabled={!isReady || isSaving || !formData.image}
@@ -420,7 +429,34 @@ export default function PostForm({
                 >
                     Cancel
                 </Link>
+                <button
+                    type="button"
+                    onClick={() => setIsPreviewOpen(true)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    Post Preview
+                </button>
             </div>
+            <PostPreviewSidebar
+                content={previewContent}
+                isOpen={isPreviewOpen}
+                onClose={() => setIsPreviewOpen(false)}
+            />
         </form>
     );
 }
