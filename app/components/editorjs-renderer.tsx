@@ -151,6 +151,26 @@ function renderBlock(block: EditorJsBlock) {
                 </figure>
             );
         }
+        case "video": {
+            const data = block.data as { file?: { url: string }; caption?: string };
+            const videoUrl = data.file?.url ?? "";
+            if (!videoUrl) return null;
+            return (
+                <figure className="mb-4">
+                    <video
+                        src={videoUrl}
+                        controls
+                        preload="metadata"
+                        className="w-full rounded-lg max-h-[500px] bg-zinc-100 dark:bg-zinc-900"
+                    />
+                    {data.caption && (
+                        <figcaption className="mt-2 text-center text-sm text-zinc-500 dark:text-zinc-500">
+                            {data.caption}
+                        </figcaption>
+                    )}
+                </figure>
+            );
+        }
         case "linkTool": {
             const data = block.data as {
                 link: string;

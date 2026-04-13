@@ -127,6 +127,7 @@ export default function PostForm({
                 { default: Quote },
                 { default: CodeTool },
                 { default: LinkTool },
+                { default: VideoTool },
             ] = await Promise.all([
                 import("@editorjs/editorjs"),
                 import("@editorjs/header"),
@@ -136,6 +137,7 @@ export default function PostForm({
                 import("@editorjs/quote"),
                 import("@editorjs/code"),
                 import("@editorjs/link"),
+                import("@/app/components/editorjs-video-tool"),
             ]);
 
             editorRef.current = new EditorJS({
@@ -185,6 +187,15 @@ export default function PostForm({
                         class: LinkTool as unknown as ToolConstructable,
                         config: {
                             endpoint: FETCH_URL_ENDPOINT,
+                        },
+                    },
+                    video: {
+                        class: VideoTool as unknown as ToolConstructable,
+                        config: {
+                            endpoint: UPLOAD_ENDPOINT,
+                            field: "file",
+                            types: "video/mp4,video/webm,video/ogg,video/quicktime",
+                            captionPlaceholder: "Video caption",
                         },
                     },
                 },

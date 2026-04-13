@@ -132,3 +132,14 @@ body {
 .dark .ce-popover__item:hover {
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* Video tool caption placeholder */
+.video-caption:empty::before {
+    content: attr(data-placeholder);
+    color: #a1a1aa;
+    pointer-events: none;
+}
+
+.dark .video-caption:empty::before {
+    color: #52525b;
+}

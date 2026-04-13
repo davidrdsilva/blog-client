@@ -1,6 +1,7 @@
 "use client";
 
 import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
+import { GalleryProvider } from "@/app/components/image-gallery";
 import type { EditorJsContent } from "@/app/types/post";
 
 interface PostPreviewSidebarProps {
@@ -61,6 +62,18 @@ function computeMetrics(content: EditorJsContent | null) {
     const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
     return { wordCount, paragraphCount, readingTime };
+}
+
+function contentImages(content: EditorJsContent | null) {
+    return (
+        content?.blocks
+            ?.filter((b) => b.type === "image")
+            .map((b) => {
+                const data = b.data as { file?: { url: string }; url?: string; caption?: string };
+                return { src: data.file?.url ?? data.url ?? "", alt: data.caption ?? "" };
+            })
+            .filter((img) => img.src) ?? []
+    );
 }
 
 export default function PostPreviewSidebar({ content, isOpen, onClose }: PostPreviewSidebarProps) {
@@ -144,7 +157,9 @@ export default function PostPreviewSidebar({ content, isOpen, onClose }: PostPre
                             Start writing to see the preview...
                         </p>
                     ) : (
-                        <EditorJsRenderer content={content ?? { blocks: [] }} />
+                        <GalleryProvider images={contentImages(content)}>
+                            <EditorJsRenderer content={content ?? { blocks: [] }} />
+                        </GalleryProvider>
                     )}
                 </div>
             </div>
