@@ -11,7 +11,10 @@ interface PostPreviewSidebarProps {
 }
 
 function stripHtml(html: string): string {
-    return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    return html
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
 function computeMetrics(content: EditorJsContent | null) {
@@ -84,7 +87,7 @@ export default function PostPreviewSidebar({ content, isOpen, onClose }: PostPre
         <>
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black/20 z-40"
+                    className="fixed inset-0 h-screen bg-black/20 z-40"
                     onClick={onClose}
                     aria-hidden="true"
                 />
@@ -101,9 +104,7 @@ export default function PostPreviewSidebar({ content, isOpen, onClose }: PostPre
                 }}
             >
                 <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-[#09090b] sticky top-0 z-10">
-                    <h3 className="text-xl font-serif text-zinc-900 dark:text-zinc-100">
-                        Post Preview
-                    </h3>
+                    <h3 className="text-xl text-zinc-900 dark:text-zinc-100">Post Preview</h3>
                     <button
                         onClick={onClose}
                         className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors p-2 cursor-pointer"
@@ -153,7 +154,7 @@ export default function PostPreviewSidebar({ content, isOpen, onClose }: PostPre
 
                 <div className="flex-1 overflow-y-auto p-6">
                     {isEmpty ? (
-                        <p className="text-zinc-500 dark:text-zinc-400 p-6 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg text-center border border-zinc-100 dark:border-zinc-800/50 font-serif">
+                        <p className="text-zinc-500 dark:text-zinc-400 p-6 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg text-center border border-zinc-100 dark:border-zinc-800/50">
                             Start writing to see the preview...
                         </p>
                     ) : (

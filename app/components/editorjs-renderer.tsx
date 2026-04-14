@@ -33,7 +33,7 @@ function renderBlock(block: EditorJsBlock) {
                         <HtmlContent
                             as="h2"
                             html={data.text}
-                            className={`${className} text-3xl md:text-4xl`}
+                            className={`${className} text-3xl md:text-4xl uppercase`}
                         />
                     );
                 case 3:
@@ -41,7 +41,7 @@ function renderBlock(block: EditorJsBlock) {
                         <HtmlContent
                             as="h3"
                             html={data.text}
-                            className={`${className} text-2xl md:text-3xl`}
+                            className={`${className} text-2xl md:text-3xl uppercase`}
                         />
                     );
                 case 4:
@@ -49,7 +49,7 @@ function renderBlock(block: EditorJsBlock) {
                         <HtmlContent
                             as="h4"
                             html={data.text}
-                            className={`${className} text-xl md:text-2xl`}
+                            className={`${className} text-xl md:text-2xl uppercase`}
                         />
                     );
                 default:
@@ -62,7 +62,7 @@ function renderBlock(block: EditorJsBlock) {
                 <HtmlContent
                     as="p"
                     html={data.text}
-                    className="mb-4 text-xl text-zinc-700 dark:text-zinc-300 leading-7 [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
+                    className="mb-4 text-xl md:text-2xl text-zinc-700 dark:text-zinc-300 leading-normal [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
                 />
             );
         }
@@ -72,8 +72,8 @@ function renderBlock(block: EditorJsBlock) {
             const ListTag = data.style === "ordered" ? "ol" : "ul";
             const className =
                 data.style === "ordered"
-                    ? "mb-4 ml-6 text-xl md:text-2xl list-decimal space-y-2 text-zinc-700 dark:text-zinc-300"
-                    : "mb-4 ml-6 text-xl md:text-2xl list-disc space-y-2 text-zinc-700 dark:text-zinc-300";
+                    ? "mb-4 ml-6 text-xl md:text-2xl leading-normal list-decimal space-y-2 text-zinc-700 dark:text-zinc-300"
+                    : "mb-4 ml-6 text-xl md:text-2xl leading-normal list-disc space-y-2 text-zinc-700 dark:text-zinc-300";
 
             const getItemText = (item: ListItem): string => {
                 if (typeof item === "string") return item;
@@ -97,7 +97,7 @@ function renderBlock(block: EditorJsBlock) {
             const data = block.data as { text: string; caption?: string };
             return (
                 <blockquote className="my-10 pl-6 md:pl-8 border-l-[3px] border-black dark:border-white">
-                    <div className="font-serif text-2xl md:text-4xl text-zinc-900 dark:text-zinc-100 mb-4 leading-tight">
+                    <div className="font-serif text-2xl md:text-4xl text-zinc-900 dark:text-zinc-100 mb-4 tracking-tight">
                         <HtmlContent as="p" html={data.text} />
                     </div>
                     {data.caption && (
@@ -162,9 +162,11 @@ function renderBlock(block: EditorJsBlock) {
                         controls
                         preload="metadata"
                         className="w-full rounded-lg max-h-[500px] bg-zinc-100 dark:bg-zinc-900"
-                    />
+                    >
+                        <track kind="captions" />
+                    </video>
                     {data.caption && (
-                        <figcaption className="mt-2 text-center text-sm text-zinc-500 dark:text-zinc-500">
+                        <figcaption className="mt-2 text-center text-zinc-500 dark:text-zinc-500">
                             {data.caption}
                         </figcaption>
                     )}
