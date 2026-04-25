@@ -36,7 +36,7 @@ export default function Comments({ postId }: CommentsProps) {
     }, [postId]);
 
     return (
-        <div className="mt-16 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="mt-5 pt-8 border-t border-zinc-200 dark:border-zinc-800">
             <button
                 onClick={() => setIsOpen(true)}
                 className="px-6 py-3 border w-full md:w-fit border-black dark:border-white text-zinc-900 dark:text-zinc-100 font-bold uppercase tracking-widest text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors cursor-pointer"

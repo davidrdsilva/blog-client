@@ -12,8 +12,13 @@ interface PostCardProps {
     variant?: "hero" | "standard" | "compact" | "text-only";
 }
 
+function formatViews(views: number): string {
+    return `${views.toLocaleString()} ${views === 1 ? "view" : "views"}`;
+}
+
 export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps) {
     const formattedDate = formatDate(post.date);
+    const viewsLabel = formatViews(post.totalViews);
 
     if (variant === "hero") {
         return (
@@ -43,6 +48,8 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                         <span>{post.author}</span>
                         <span>•</span>
                         <span>{formattedDate}</span>
+                        <span>•</span>
+                        <span>{viewsLabel}</span>
                     </div>
                 </Link>
             </article>
@@ -74,6 +81,8 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                     </p>
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mt-1">
                         <span>{formattedDate}</span>
+                        <span>•</span>
+                        <span>{viewsLabel}</span>
                     </div>
                 </Link>
             </article>
@@ -95,6 +104,8 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                     </p>
                     <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mt-1">
                         <span>{formattedDate}</span>
+                        <span>•</span>
+                        <span>{viewsLabel}</span>
                     </div>
                 </Link>
             </article>
@@ -126,6 +137,8 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
                 </p>
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mt-auto pt-2">
                     <span>{post.author}</span>
+                    <span>•</span>
+                    <span>{viewsLabel}</span>
                 </div>
             </Link>
         </article>

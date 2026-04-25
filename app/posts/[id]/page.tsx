@@ -80,6 +80,11 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                                 <span className="font-medium">{post.author}</span>
                                 <span>•</span>
                                 <span>{readingTime}</span>
+                                <span>•</span>
+                                <span>
+                                    {post.totalViews.toLocaleString()}{" "}
+                                    {post.totalViews === 1 ? "view" : "views"}
+                                </span>
                             </div>
                         </header>
                         <div className="prose prose-lg prose-zinc dark:prose-invert max-w-none">
@@ -93,9 +98,6 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                         </div>
                         {post.tags.length > 0 && (
                             <section className="mt-12 pt-6 border-t border-zinc-200 dark:border-zinc-800">
-                                <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-3">
-                                    Tags
-                                </h2>
                                 <div className="flex flex-wrap gap-2">
                                     {post.tags.map((tag) => (
                                         <Link

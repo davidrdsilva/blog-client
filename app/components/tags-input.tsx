@@ -109,7 +109,7 @@ export default function TagsInput({ value, onChange, placeholder }: TagsInputPro
                     onFocus={() => setIsOpen(true)}
                     onKeyDown={handleKeyDown}
                     placeholder={value.length === 0 ? placeholder : ""}
-                    className="flex-1 min-w-[8rem] bg-transparent text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                    className="flex-1 min-w-32 bg-transparent text-zinc-900 dark:text-zinc-100 focus:outline-none"
                 />
             </div>
 

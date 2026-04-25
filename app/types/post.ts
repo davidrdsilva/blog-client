@@ -38,6 +38,7 @@ export interface Post {
     categoryId: number;
     category?: Category;
     tags: Tag[];
+    totalViews: number;
 }
 
 export interface APIPost {
@@ -52,6 +53,7 @@ export interface APIPost {
     category_id: number;
     category?: Category | null;
     tags?: Tag[] | null;
+    total_views: number;
     createdAt: string;
     updatedAt: string;
 }

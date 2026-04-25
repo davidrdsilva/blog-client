@@ -15,6 +15,7 @@ interface APIPost {
     category_id: number;
     category?: Category | null;
     tags?: Tag[] | null;
+    total_views: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -118,6 +119,7 @@ function transformPost(apiPost: APIPost): Post {
         categoryId: apiPost.category_id,
         category: apiPost.category ?? undefined,
         tags: apiPost.tags ?? [],
+        totalViews: apiPost.total_views ?? 0,
     };
 }
 
@@ -195,6 +197,22 @@ export async function getPosts(
             },
             error,
         };
+    }
+}
+
+// Get the 5 most viewed posts of all time (no pagination).
+export async function getMostViewedPosts(): Promise<Post[]> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/posts/most-viewed`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+        const data = await handleResponse<PostsResponse>(response);
+        return data.data.map(transformPost);
+    } catch (error) {
+        console.error("Error fetching most viewed posts:", error);
+        return [];
     }
 }
 

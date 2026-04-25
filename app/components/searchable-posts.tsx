@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { deletePost } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
 import { PostGrid } from "./post-grid";
@@ -57,6 +57,12 @@ export function SearchablePosts({
     const [posts, setPosts] = useState(initialPosts);
     const [searchQuery, setSearchQuery] = useState("");
     const [visibleCount, setVisibleCount] = useState(initialCount);
+
+    useEffect(() => {
+        setPosts(initialPosts);
+        setVisibleCount(initialCount);
+        setSearchQuery("");
+    }, [initialPosts, initialCount]);
 
     const filteredPosts = useMemo(() => searchPosts(posts, searchQuery), [posts, searchQuery]);
 

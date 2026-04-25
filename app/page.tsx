@@ -1,9 +1,10 @@
 import ApiError from "@/app/components/api-error";
 import CategoriesStrip from "@/app/components/categories-strip";
 import Footer from "@/app/components/footer";
+import MostViewedSection from "@/app/components/most-viewed-section";
 import NavBar from "@/app/components/navbar";
 import { SearchablePosts } from "@/app/components/searchable-posts";
-import { getPostCountByCategory, getPosts } from "@/app/lib/api";
+import { getMostViewedPosts, getPostCountByCategory, getPosts } from "@/app/lib/api";
 
 // Force dynamic rendering - fetch data at request time, not build time
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ export default async function Home({ searchParams }: HomeProps) {
         return flat.length > 0 ? flat : undefined;
     })();
 
-    const [{ posts, error }, categoryCounts] = await Promise.all([
+    const [{ posts, error }, categoryCounts, mostViewedPosts] = await Promise.all([
         getPosts({
             limit: 50,
             sortBy: "date",
@@ -42,6 +43,7 @@ export default async function Home({ searchParams }: HomeProps) {
             tags: tagFilters,
         }),
         getPostCountByCategory(),
+        getMostViewedPosts(),
     ]);
 
     if (error) {
@@ -66,6 +68,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     <span className="hidden md:inline-block">Today's Paper</span>
                 </div>
                 <CategoriesStrip categories={categoryCounts} activeId={activeCategoryId} />
+                <MostViewedSection posts={mostViewedPosts} />
                 <SearchablePosts initialPosts={posts} />
             </main>
             <Footer />
