@@ -1,4 +1,4 @@
-import type { EditorJsContent, Post } from "@/app/types/post";
+import type { Category, CategoryWithCount, EditorJsContent, Post, Tag } from "@/app/types/post";
 
 const API_BASE_URL = typeof window === "undefined" ? process.env.NEXT_PUBLIC_API_URL || "" : "";
 
@@ -12,8 +12,23 @@ interface APIPost {
     date: string;
     author: string;
     content: EditorJsContent | null;
+    category_id: number;
+    category?: Category | null;
+    tags?: Tag[] | null;
     createdAt: string;
     updatedAt: string;
+}
+
+interface CategoriesResponse {
+    data: Category[];
+}
+
+interface CategoriesCountResponse {
+    data: CategoryWithCount[];
+}
+
+interface TagsResponse {
+    data: Tag[];
 }
 
 interface PaginationMeta {
@@ -61,6 +76,8 @@ export interface GetPostsParams {
     author?: string;
     sortBy?: "date" | "title" | "createdAt" | "updatedAt";
     sortOrder?: "asc" | "desc";
+    categoryId?: number;
+    tags?: string[];
 }
 
 // Request body for creating/updating posts
@@ -72,6 +89,8 @@ export interface CreatePostData {
     author: string;
     content?: EditorJsContent;
     date?: string;
+    category_id: number;
+    tags?: string[];
 }
 
 export interface UpdatePostData {
@@ -81,6 +100,8 @@ export interface UpdatePostData {
     image?: string;
     content?: EditorJsContent;
     date?: string;
+    category_id?: number;
+    tags?: string[];
 }
 
 // Transform API post to frontend Post type
@@ -94,6 +115,9 @@ function transformPost(apiPost: APIPost): Post {
         date: new Date(apiPost.date),
         author: apiPost.author,
         content: apiPost.content ?? undefined,
+        categoryId: apiPost.category_id,
+        category: apiPost.category ?? undefined,
+        tags: apiPost.tags ?? [],
     };
 }
 
@@ -135,6 +159,12 @@ export async function getPosts(
         if (params.author) searchParams.set("author", params.author);
         if (params.sortBy) searchParams.set("sortBy", params.sortBy);
         if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder);
+        if (params.categoryId) searchParams.set("category_id", String(params.categoryId));
+        if (params.tags && params.tags.length > 0) {
+            for (const tag of params.tags) {
+                searchParams.append("tags", tag);
+            }
+        }
 
         const queryString = searchParams.toString();
         const url = `${API_BASE_URL}/api/posts${queryString ? `?${queryString}` : ""}`;
@@ -257,6 +287,60 @@ export function isAPIDownError(error: unknown): boolean {
     }
 
     return false;
+}
+
+// List categories with optional case-insensitive name search.
+export async function getCategories(search?: string): Promise<Category[]> {
+    try {
+        const url = new URL(`${API_BASE_URL}/api/categories`, "http://placeholder");
+        if (search) url.searchParams.set("search", search);
+        const fetchUrl = `${API_BASE_URL}/api/categories${url.search}`;
+        const response = await fetch(fetchUrl, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+        const data = await handleResponse<CategoriesResponse>(response);
+        return data.data;
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        return [];
+    }
+}
+
+// List tags with optional case-insensitive name search.
+export async function getTags(search?: string): Promise<Tag[]> {
+    try {
+        const fetchUrl = search
+            ? `${API_BASE_URL}/api/tags?search=${encodeURIComponent(search)}`
+            : `${API_BASE_URL}/api/tags`;
+        const response = await fetch(fetchUrl, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+        const data = await handleResponse<TagsResponse>(response);
+        return data.data;
+    } catch (error) {
+        console.error("Error fetching tags:", error);
+        return [];
+    }
+}
+
+// Total posts grouped by category (used by the homepage categories strip).
+export async function getPostCountByCategory(): Promise<CategoryWithCount[]> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/posts/count/by-category`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+        const data = await handleResponse<CategoriesCountResponse>(response);
+        return data.data;
+    } catch (error) {
+        console.error("Error fetching post count by category:", error);
+        return [];
+    }
 }
 
 // Export API base URL for Editor.js configuration

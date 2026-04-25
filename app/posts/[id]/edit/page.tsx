@@ -49,6 +49,8 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 image: data.image,
                 content: data.content,
                 date: formattedDate,
+                category_id: data.categoryId,
+                tags: data.tags,
             });
 
             router.push(`/posts/${id}`);
@@ -98,6 +100,8 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                         image: post.image,
                         content: post.content,
                         date: post.date ? formatDate(post.date) : "",
+                        categoryId: post.categoryId,
+                        tags: post.tags.map((t) => t.name),
                     }}
                     onSubmit={handleSubmit}
                     submitLabel="Save Changes"

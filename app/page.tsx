@@ -1,8 +1,9 @@
 import ApiError from "@/app/components/api-error";
+import CategoriesStrip from "@/app/components/categories-strip";
 import Footer from "@/app/components/footer";
 import NavBar from "@/app/components/navbar";
 import { SearchablePosts } from "@/app/components/searchable-posts";
-import { getPosts } from "@/app/lib/api";
+import { getPostCountByCategory, getPosts } from "@/app/lib/api";
 
 // Force dynamic rendering - fetch data at request time, not build time
 export const dynamic = "force-dynamic";
@@ -10,8 +11,38 @@ export const dynamic = "force-dynamic";
 // Disable caching for this page
 export const revalidate = 0;
 
-export default async function Home() {
-    const { posts, error } = await getPosts({ limit: 50, sortBy: "date", sortOrder: "desc" });
+interface HomeProps {
+    searchParams: Promise<{ category?: string; tags?: string | string[] }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+    const { category, tags } = await searchParams;
+    const parsedCategoryId = category ? Number(category) : undefined;
+    const activeCategoryId =
+        parsedCategoryId && !Number.isNaN(parsedCategoryId) && parsedCategoryId > 0
+            ? parsedCategoryId
+            : undefined;
+
+    const tagFilters = (() => {
+        if (!tags) return undefined;
+        const arr = Array.isArray(tags) ? tags : [tags];
+        const flat = arr
+            .flatMap((t) => t.split(","))
+            .map((t) => t.trim())
+            .filter(Boolean);
+        return flat.length > 0 ? flat : undefined;
+    })();
+
+    const [{ posts, error }, categoryCounts] = await Promise.all([
+        getPosts({
+            limit: 50,
+            sortBy: "date",
+            sortOrder: "desc",
+            categoryId: activeCategoryId,
+            tags: tagFilters,
+        }),
+        getPostCountByCategory(),
+    ]);
 
     if (error) {
         return <ApiError />;
@@ -34,6 +65,7 @@ export default async function Home() {
                     <span>{formattedDate}</span>
                     <span className="hidden md:inline-block">Today's Paper</span>
                 </div>
+                <CategoriesStrip categories={categoryCounts} activeId={activeCategoryId} />
                 <SearchablePosts initialPosts={posts} />
             </main>
             <Footer />

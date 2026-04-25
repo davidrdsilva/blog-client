@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import Comments from "@/app/components/comments";
 import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
@@ -57,6 +58,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                             />
                         </div>
                         <header className="mb-8">
+                            {post.category && (
+                                <Link
+                                    href={`/?category=${post.category.id}`}
+                                    className="inline-block mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-80 transition-opacity"
+                                >
+                                    {post.category.name}
+                                </Link>
+                            )}
                             <h1 className="text-4xl md:text-5xl tracking-wide font-serif text-zinc-900 dark:text-zinc-100 mb-4">
                                 {post.title}
                             </h1>
@@ -82,6 +91,24 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                                 </p>
                             )}
                         </div>
+                        {post.tags.length > 0 && (
+                            <section className="mt-12 pt-6 border-t border-zinc-200 dark:border-zinc-800">
+                                <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-3">
+                                    Tags
+                                </h2>
+                                <div className="flex flex-wrap gap-2">
+                                    {post.tags.map((tag) => (
+                                        <Link
+                                            key={tag.id}
+                                            href={`/?tags=${encodeURIComponent(tag.name)}`}
+                                            className="px-3 py-1 rounded-full text-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                        >
+                                            #{tag.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
                     </article>
                     <Comments postId={post.id} />
                 </main>

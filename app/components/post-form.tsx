@@ -5,9 +5,10 @@ import type { ToolConstructable } from "@editorjs/editorjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { FETCH_URL_ENDPOINT, UPLOAD_ENDPOINT } from "@/app/lib/api";
 import PostPreviewSidebar from "@/app/components/post-preview-sidebar";
-import type { EditorJsContent } from "@/app/types/post";
+import TagsInput from "@/app/components/tags-input";
+import { FETCH_URL_ENDPOINT, getCategories, UPLOAD_ENDPOINT } from "@/app/lib/api";
+import type { Category, EditorJsContent } from "@/app/types/post";
 import isLocalUrl from "@/app/utils/is-local-url";
 
 export interface PostFormData {
@@ -17,6 +18,8 @@ export interface PostFormData {
     image: string;
     content: EditorJsContent;
     date?: string;
+    categoryId: number;
+    tags: string[];
 }
 
 interface PostFormProps {
@@ -27,6 +30,8 @@ interface PostFormProps {
         image: string;
         content?: EditorJsContent;
         date?: string;
+        categoryId?: number;
+        tags?: string[];
     };
     onSubmit: (data: PostFormData) => Promise<void>;
     submitLabel: string;
@@ -49,7 +54,7 @@ export default function PostForm({
     const [isUploading, setIsUploading] = useState(false);
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [previewContent, setPreviewContent] = useState<EditorJsContent | null>(
-        initialData?.content ?? null,
+        initialData?.content ?? null
     );
     const [formData, setFormData] = useState({
         title: initialData?.title || "",
@@ -58,7 +63,16 @@ export default function PostForm({
         image: initialData?.image || "",
         date: initialData?.date || "",
     });
+    const [categoryId, setCategoryId] = useState<number | "">(initialData?.categoryId ?? "");
+    const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
+
+    useEffect(() => {
+        getCategories()
+            .then(setCategories)
+            .catch(() => setCategories([]));
+    }, []);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -222,6 +236,10 @@ export default function PostForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editorRef.current || !isReady) return;
+        if (categoryId === "") {
+            setErrorMessage("Please select a category.");
+            return;
+        }
 
         setIsSaving(true);
         try {
@@ -229,6 +247,8 @@ export default function PostForm({
             await onSubmit({
                 ...formData,
                 content: outputData as EditorJsContent,
+                categoryId: Number(categoryId),
+                tags,
             });
         } finally {
             setIsSaving(false);
@@ -285,6 +305,43 @@ export default function PostForm({
                         onChange={handleDateChange}
                         className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
                         placeholder="DD/MM/YYYY"
+                    />
+                </div>
+                <div>
+                    <label
+                        htmlFor="category"
+                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
+                    >
+                        Category
+                    </label>
+                    <select
+                        id="category"
+                        required
+                        value={categoryId === "" ? "" : String(categoryId)}
+                        onChange={(e) =>
+                            setCategoryId(e.target.value ? Number(e.target.value) : "")
+                        }
+                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
+                    >
+                        <option value="">Select a category</option>
+                        {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div>
+                    <label
+                        htmlFor="tags"
+                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
+                    >
+                        Tags (optional)
+                    </label>
+                    <TagsInput
+                        value={tags}
+                        onChange={setTags}
+                        placeholder="Type a tag and press Enter"
                     />
                 </div>
                 <div>

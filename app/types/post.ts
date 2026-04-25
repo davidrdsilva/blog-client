@@ -10,6 +10,22 @@ export interface EditorJsContent {
     version?: string;
 }
 
+export interface Category {
+    id: number;
+    name: string;
+}
+
+export interface Tag {
+    id: string;
+    name: string;
+}
+
+export interface CategoryWithCount {
+    id: number;
+    name: string;
+    total_posts: number;
+}
+
 export interface Post {
     id: string;
     title: string;
@@ -19,6 +35,9 @@ export interface Post {
     date: Date;
     author: string;
     content?: EditorJsContent;
+    categoryId: number;
+    category?: Category;
+    tags: Tag[];
 }
 
 export interface APIPost {
@@ -30,6 +49,9 @@ export interface APIPost {
     date: string;
     author: string;
     content: EditorJsContent | null;
+    category_id: number;
+    category?: Category | null;
+    tags?: Tag[] | null;
     createdAt: string;
     updatedAt: string;
 }

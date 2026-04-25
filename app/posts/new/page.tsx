@@ -24,6 +24,8 @@ export default function NewPostPage() {
                 author: "Redação",
                 content: data.content,
                 date: formattedDate,
+                category_id: data.categoryId,
+                tags: data.tags,
             });
 
             router.push(`/posts/${post.id}`);
