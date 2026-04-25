@@ -4,6 +4,7 @@ import Footer from "@/app/components/footer";
 import MostViewedSection from "@/app/components/most-viewed-section";
 import NavBar from "@/app/components/navbar";
 import { SearchablePosts } from "@/app/components/searchable-posts";
+import WhitenestInvite from "@/app/components/whitenest-invite";
 import { getMostViewedPosts, getPostCountByCategory, getPosts } from "@/app/lib/api";
 
 // Force dynamic rendering - fetch data at request time, not build time
@@ -69,6 +70,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 </div>
                 <CategoriesStrip categories={categoryCounts} activeId={activeCategoryId} />
                 <SearchablePosts initialPosts={posts} />
+                <WhitenestInvite />
                 <MostViewedSection posts={mostViewedPosts} />
             </main>
             <Footer />

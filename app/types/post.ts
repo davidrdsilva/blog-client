@@ -39,6 +39,19 @@ export interface Post {
     category?: Category;
     tags: Tag[];
     totalViews: number;
+    whitenestChapterNumber?: number;
+}
+
+export interface WhitenestChapterRef {
+    id: string;
+    title: string;
+    whitenestChapterNumber: number;
+}
+
+export interface WhitenestChapter {
+    chapter: Post;
+    previous?: WhitenestChapterRef;
+    next?: WhitenestChapterRef;
 }
 
 export interface APIPost {
@@ -54,6 +67,7 @@ export interface APIPost {
     category?: Category | null;
     tags?: Tag[] | null;
     total_views: number;
+    whitenest_chapter_number?: number | null;
     createdAt: string;
     updatedAt: string;
 }

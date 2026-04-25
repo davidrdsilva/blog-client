@@ -1,4 +1,12 @@
-import type { Category, CategoryWithCount, EditorJsContent, Post, Tag } from "@/app/types/post";
+import type {
+    Category,
+    CategoryWithCount,
+    EditorJsContent,
+    Post,
+    Tag,
+    WhitenestChapter,
+    WhitenestChapterRef,
+} from "@/app/types/post";
 
 const API_BASE_URL = typeof window === "undefined" ? process.env.NEXT_PUBLIC_API_URL || "" : "";
 
@@ -16,6 +24,7 @@ interface APIPost {
     category?: Category | null;
     tags?: Tag[] | null;
     total_views: number;
+    whitenest_chapter_number?: number | null;
     createdAt: string;
     updatedAt: string;
 }
@@ -75,10 +84,11 @@ export interface GetPostsParams {
     limit?: number;
     search?: string;
     author?: string;
-    sortBy?: "date" | "title" | "createdAt" | "updatedAt";
+    sortBy?: "date" | "title" | "createdAt" | "updatedAt" | "whitenest_chapter_number";
     sortOrder?: "asc" | "desc";
     categoryId?: number;
     tags?: string[];
+    isWhitenestChapter?: boolean;
 }
 
 // Request body for creating/updating posts
@@ -120,6 +130,7 @@ function transformPost(apiPost: APIPost): Post {
         category: apiPost.category ?? undefined,
         tags: apiPost.tags ?? [],
         totalViews: apiPost.total_views ?? 0,
+        whitenestChapterNumber: apiPost.whitenest_chapter_number ?? undefined,
     };
 }
 
@@ -166,6 +177,9 @@ export async function getPosts(
             for (const tag of params.tags) {
                 searchParams.append("tags", tag);
             }
+        }
+        if (params.isWhitenestChapter !== undefined) {
+            searchParams.set("is_whitenest_chapter", String(params.isWhitenestChapter));
         }
 
         const queryString = searchParams.toString();
@@ -374,6 +388,64 @@ export async function getPostCountByCategory(): Promise<CategoryWithCount[]> {
     } catch (error) {
         console.error("Error fetching post count by category:", error);
         return [];
+    }
+}
+
+interface APIWhitenestChapterRef {
+    id: string;
+    title: string;
+    whitenest_chapter_number: number;
+}
+
+interface APIWhitenestChapterResponse {
+    data: {
+        chapter: APIPost;
+        previous: APIWhitenestChapterRef | null;
+        next: APIWhitenestChapterRef | null;
+    };
+}
+
+function transformChapterRef(ref: APIWhitenestChapterRef | null): WhitenestChapterRef | undefined {
+    if (!ref) return undefined;
+    return {
+        id: ref.id,
+        title: ref.title,
+        whitenestChapterNumber: ref.whitenest_chapter_number,
+    };
+}
+
+// Get a Whitenest chapter by its serial number along with prev/next refs.
+// Returns null when no chapter has that number.
+export async function getWhitenestChapter(number: number): Promise<WhitenestChapter | null> {
+    const response = await fetch(`${API_BASE_URL}/api/whitenest/chapters/${number}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+
+    if (response.status === 404) return null;
+
+    const data = await handleResponse<APIWhitenestChapterResponse>(response);
+    return {
+        chapter: transformPost(data.data.chapter),
+        previous: transformChapterRef(data.data.previous),
+        next: transformChapterRef(data.data.next),
+    };
+}
+
+// Get the most recent Whitenest chapter, or null if the series has no chapters yet.
+export async function getLatestWhitenestChapter(): Promise<Post | null> {
+    try {
+        const { posts } = await getPosts({
+            isWhitenestChapter: true,
+            sortBy: "whitenest_chapter_number",
+            sortOrder: "desc",
+            limit: 1,
+        });
+        return posts[0] ?? null;
+    } catch (error) {
+        console.error("Error fetching latest Whitenest chapter:", error);
+        return null;
     }
 }
 
