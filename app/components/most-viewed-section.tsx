@@ -18,7 +18,7 @@ export default function MostViewedSection({ posts }: MostViewedSectionProps) {
     return (
         <section
             aria-label="Most viewed posts"
-            className="pb-12 mb-6 border-b border-zinc-200 dark:border-zinc-800"
+            className="pt-8 pb-12 border-t border-zinc-200 dark:border-zinc-800"
         >
             <div className="flex items-baseline justify-between mb-6">
                 <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-200">

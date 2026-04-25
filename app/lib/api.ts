@@ -200,6 +200,22 @@ export async function getPosts(
     }
 }
 
+// Get up to 5 posts similar to the given one (ranked by shared tag count).
+export async function getSimilarPosts(id: string): Promise<Post[]> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/posts/${id}/similar`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+        const data = await handleResponse<PostsResponse>(response);
+        return data.data.map(transformPost);
+    } catch (error) {
+        console.error("Error fetching similar posts:", error);
+        return [];
+    }
+}
+
 // Get the 5 most viewed posts of all time (no pagination).
 export async function getMostViewedPosts(): Promise<Post[]> {
     try {

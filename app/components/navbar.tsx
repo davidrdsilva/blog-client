@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import StockTicker from "./stock-ticker";
 import { ThemeToggle } from "./theme-toggle";
 
 export default function NavBar() {
@@ -20,7 +21,8 @@ export default function NavBar() {
                         className="invert dark:invert-0"
                     />
                 </Link>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
+                    <StockTicker />
                     {currentPath !== "/posts/new" && (
                         <Link
                             href="/posts/new"

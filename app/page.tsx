@@ -68,8 +68,8 @@ export default async function Home({ searchParams }: HomeProps) {
                     <span className="hidden md:inline-block">Today's Paper</span>
                 </div>
                 <CategoriesStrip categories={categoryCounts} activeId={activeCategoryId} />
-                <MostViewedSection posts={mostViewedPosts} />
                 <SearchablePosts initialPosts={posts} />
+                <MostViewedSection posts={mostViewedPosts} />
             </main>
             <Footer />
         </div>

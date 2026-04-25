@@ -5,7 +5,8 @@ import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
 import Footer from "@/app/components/footer";
 import { GalleryImage, GalleryProvider } from "@/app/components/image-gallery";
 import NavBar from "@/app/components/navbar";
-import { APIClientError, getPost } from "@/app/lib/api";
+import SimilarPosts from "@/app/components/similar-posts";
+import { APIClientError, getPost, getSimilarPosts } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
 import { calculateReadingTime } from "@/app/utils/calculate-reading-time";
 import formatDate from "@/app/utils/format-date";
@@ -25,6 +26,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
     const formattedDate = formatDate(post.date);
     const readingTime = calculateReadingTime(post);
+    const similarPosts = await getSimilarPosts(post.id);
 
     const contentImages =
         post.content?.blocks
@@ -112,6 +114,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                             </section>
                         )}
                     </article>
+                    <SimilarPosts posts={similarPosts} />
                     <Comments postId={post.id} />
                 </main>
                 <Footer />
