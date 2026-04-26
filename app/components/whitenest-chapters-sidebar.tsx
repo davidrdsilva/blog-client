@@ -59,7 +59,7 @@ export default function WhitenestChaptersSidebar({
             <aside
                 aria-label="Whitenest chapters"
                 aria-hidden={!isOpen}
-                className={`fixed inset-y-0 left-0 z-50 w-full md:w-[20%] bg-white dark:bg-[#09090b] shadow-2xl flex flex-col md:border-r md:border-zinc-200 dark:border-zinc-800 transform transition-transform duration-300 ease-in-out ${
+                className={`fixed inset-y-0 left-0 z-50 w-full md:w-100 bg-white dark:bg-[#09090b] shadow-2xl flex flex-col md:border-r md:border-zinc-200 dark:border-zinc-800 transform transition-transform duration-300 ease-in-out ${
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 }`}
             >

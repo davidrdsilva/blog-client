@@ -94,7 +94,7 @@ export default function PostPreviewSidebar({ content, isOpen, onClose }: PostPre
             )}
 
             <div
-                className={`fixed inset-y-0 right-0 w-full md:w-[42%] bg-white dark:bg-[#09090b] shadow-2xl z-50 flex flex-col md:border-l md:border-zinc-200 dark:border-zinc-800 ${
+                className={`fixed inset-y-0 right-0 w-full md:w-1/2 bg-white dark:bg-[#09090b] shadow-2xl z-50 flex flex-col md:border-l md:border-zinc-200 dark:border-zinc-800 ${
                     isOpen ? "translate-x-0" : "translate-x-full"
                 }`}
                 style={{
