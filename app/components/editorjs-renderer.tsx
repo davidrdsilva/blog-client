@@ -3,8 +3,11 @@ import type { JSX } from "react";
 import { GalleryImage } from "@/app/components/image-gallery";
 import type { EditorJsBlock, EditorJsContent } from "@/app/types/post";
 
+type EditorJsVariant = "article" | "whitenest";
+
 interface EditorJsRendererProps {
     content: EditorJsContent;
+    variant?: EditorJsVariant;
 }
 
 // Render HTML content safely (Editor.js inline tools produce HTML)
@@ -21,7 +24,7 @@ function HtmlContent({
     return <Tag className={className} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-function renderBlock(block: EditorJsBlock) {
+function renderBlock(block: EditorJsBlock, variant: EditorJsVariant) {
     switch (block.type) {
         case "header": {
             const data = block.data as { text: string; level: number };
@@ -58,11 +61,12 @@ function renderBlock(block: EditorJsBlock) {
         }
         case "paragraph": {
             const data = block.data as { text: string };
+            const spacing = variant === "whitenest" ? "indent-8 mb-1" : "mb-4";
             return (
                 <HtmlContent
                     as="p"
                     html={data.text}
-                    className="mb-4 text-xl md:text-2xl text-zinc-700 dark:text-zinc-300 leading-normal [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline"
+                    className={`${spacing} text-xl md:text-2xl text-zinc-700 dark:text-zinc-300 leading-normal [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline`}
                 />
             );
         }
@@ -201,7 +205,7 @@ function renderBlock(block: EditorJsBlock) {
     }
 }
 
-export function EditorJsRenderer({ content }: EditorJsRendererProps) {
+export function EditorJsRenderer({ content, variant = "article" }: EditorJsRendererProps) {
     if (!content?.blocks || content.blocks.length === 0) {
         return <p className="text-zinc-500 dark:text-zinc-500">No content available.</p>;
     }
@@ -209,7 +213,7 @@ export function EditorJsRenderer({ content }: EditorJsRendererProps) {
     return (
         <div className="prose prose-zinc dark:prose-invert max-w-none">
             {content.blocks.map((block, index) => (
-                <div key={block.id ?? `block-${index}`}>{renderBlock(block)}</div>
+                <div key={block.id ?? `block-${index}`}>{renderBlock(block, variant)}</div>
             ))}
         </div>
     );
