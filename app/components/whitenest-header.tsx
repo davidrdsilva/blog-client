@@ -31,9 +31,7 @@ export default function WhitenestHeader({ variant = "overlay" }: WhitenestHeader
                         priority
                     />
                 </Link>
-                <div className={isOverlay ? "[&_img]:invert" : ""}>
-                    <ThemeToggle />
-                </div>
+                <ThemeToggle />
             </div>
         </header>
     );

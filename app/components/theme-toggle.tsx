@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useTheme } from "@/app/providers/theme-provider";
 
 export function ThemeToggle() {
@@ -11,22 +10,10 @@ export function ThemeToggle() {
             type="button"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="transition-colors"
+            className="cursor-pointer font-bold uppercase tracking-[0.4em] text-sm transition-colors"
         >
-            <Image
-                src="/icons/night-mode.svg"
-                alt="Dark mode"
-                className="cursor-pointer block dark:hidden"
-                width={24}
-                height={24}
-            />
-            <Image
-                src="/icons/light-mode.svg"
-                alt="Light mode"
-                className="cursor-pointer hidden dark:block"
-                width={24}
-                height={24}
-            />
+            <span className="block dark:hidden">light</span>
+            <span className="hidden dark:block">dark</span>
         </button>
     );
 }
