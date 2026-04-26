@@ -22,21 +22,14 @@ export default function NewCharacterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-black">
+        <div className="min-h-screen bg-white dark:bg-black">
             <NavBar />
-            <main className="container mx-auto px-4 py-12 max-w-4xl">
-                <header className="mb-8">
-                    <p className="text-xs font-bold uppercase tracking-[0.4em] text-zinc-500 mb-2">
-                        Admin · Cast
-                    </p>
-                    <h1 className="text-3xl md:text-4xl font-serif text-zinc-900 dark:text-zinc-100">
-                        New character
-                    </h1>
-                </header>
+            <main className="container mx-auto px-6 lg:px-10 py-16 lg:py-24 max-w-7xl">
                 <CharacterForm
+                    title="New character"
                     onSubmit={handleSubmit}
-                    submitLabel="Create"
-                    savingLabel="Creating…"
+                    submitLabel="Commit to roster"
+                    savingLabel="Committing…"
                     cancelHref="/admin/characters"
                 />
             </main>

@@ -55,26 +55,28 @@ export default function EditCharacterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-black">
+        <div className="min-h-screen bg-white dark:bg-black">
             <NavBar />
-            <main className="container mx-auto px-4 py-12 max-w-4xl">
-                <header className="mb-8">
-                    <p className="text-xs font-bold uppercase tracking-[0.4em] text-zinc-500 mb-2">
-                        Admin · Cast
-                    </p>
-                    <h1 className="text-3xl md:text-4xl font-serif text-zinc-900 dark:text-zinc-100">
-                        Edit character
-                    </h1>
-                </header>
+            <main className="container mx-auto px-6 lg:px-10 py-16 lg:py-24 max-w-7xl">
                 {error && (
-                    <div className="p-4 rounded-lg bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900">
-                        {error}
+                    <div className="mb-8 text-sm text-red-700 dark:text-red-300 border-l-2 border-red-700 dark:border-red-400 pl-4 py-2">
+                        <span className="font-bold uppercase tracking-[0.3em] text-[10px] mr-3">
+                            Error
+                        </span>
+                        <span className="font-serif">{error}</span>
                     </div>
                 )}
                 {!initial && !error ? (
-                    <p className="text-zinc-500 dark:text-zinc-500">Loading…</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500">
+                        Loading…
+                    </p>
                 ) : initial ? (
                     <CharacterForm
+                        title={
+                            initial.fullName
+                                ? `Edit · ${initial.shortName || initial.fullName}`
+                                : "Edit character"
+                        }
                         initialData={initial}
                         onSubmit={handleSubmit}
                         submitLabel="Save changes"
