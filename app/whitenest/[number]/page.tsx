@@ -5,6 +5,7 @@ import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
 import Footer from "@/app/components/footer";
 import { GalleryProvider } from "@/app/components/image-gallery";
 import WhitenestChaptersSidebar from "@/app/components/whitenest-chapters-sidebar";
+import WhitenestCharacters from "@/app/components/whitenest-characters";
 import WhitenestHeader from "@/app/components/whitenest-header";
 import { APIClientError, getWhitenestChapter, getWhitenestChapters } from "@/app/lib/api";
 import { calculateReadingTime } from "@/app/utils/calculate-reading-time";
@@ -142,6 +143,8 @@ export default async function WhitenestChapterPage({
                             </p>
                         )}
                     </div>
+
+                    <WhitenestCharacters characters={result.cast} />
 
                     {chapter.tags.length > 0 && (
                         <section className="mt-12 pt-6 border-t border-zinc-200 dark:border-zinc-800">

@@ -51,6 +51,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 date: formattedDate,
                 category_id: data.categoryId,
                 tags: data.tags,
+                character_ids: data.characterIds,
             });
 
             router.push(`/posts/${id}`);
@@ -102,6 +103,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                         date: post.date ? formatDate(post.date) : "",
                         categoryId: post.categoryId,
                         tags: post.tags.map((t) => t.name),
+                        characterIds: post.characters.map((c) => c.id),
                     }}
                     onSubmit={handleSubmit}
                     submitLabel="Save Changes"

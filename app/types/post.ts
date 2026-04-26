@@ -38,8 +38,29 @@ export interface Post {
     categoryId: number;
     category?: Category;
     tags: Tag[];
+    characters: Character[];
     totalViews: number;
     whitenestChapterNumber?: number;
+}
+
+export interface CharacterSkills {
+    melee: number;
+    guns: number;
+    stealth: number;
+    persuasion: number;
+    intellect: number;
+    endurance: number;
+}
+
+export interface Character {
+    id: string;
+    fullName: string;
+    shortName: string;
+    description: string;
+    occupation: string;
+    location: string;
+    portrait: string;
+    skills: CharacterSkills;
 }
 
 export interface WhitenestChapterRef {
@@ -60,6 +81,20 @@ export interface WhitenestChapter {
     chapter: Post;
     previous?: WhitenestChapterRef;
     next?: WhitenestChapterRef;
+    cast: Character[];
+}
+
+export interface APICharacter {
+    id: string;
+    full_name: string;
+    short_name: string;
+    description: string;
+    occupation: string;
+    location: string;
+    portrait: string;
+    skills: CharacterSkills;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface APIPost {
@@ -74,6 +109,7 @@ export interface APIPost {
     category_id: number;
     category?: Category | null;
     tags?: Tag[] | null;
+    characters?: APICharacter[] | null;
     total_views: number;
     whitenest_chapter_number?: number | null;
     createdAt: string;

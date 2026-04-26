@@ -103,6 +103,12 @@ export default function Footer() {
                             Publish with Us
                         </Link>
                         <Link
+                            href="/admin/characters"
+                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
+                        >
+                            Manage Cast
+                        </Link>
+                        <Link
                             href="/"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >

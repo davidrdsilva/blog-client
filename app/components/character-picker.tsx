@@ -1,0 +1,179 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { getCharacters } from "@/app/lib/api";
+import type { Character } from "@/app/types/post";
+
+interface CharacterPickerProps {
+    value: string[]; // ordered list of character IDs
+    onChange: (next: string[]) => void;
+    placeholder?: string;
+}
+
+/**
+ * CharacterPicker is a multi-select that appends characters to an ordered
+ * list. Unlike TagsInput it doesn't allow freetext creation — only existing
+ * characters can be picked. New ones are created via the admin page.
+ */
+export default function CharacterPicker({ value, onChange, placeholder }: CharacterPickerProps) {
+    const [query, setQuery] = useState("");
+    const [suggestions, setSuggestions] = useState<Character[]>([]);
+    const [cache, setCache] = useState<Record<string, Character>>({});
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+
+    // Hydrate the cache for any selected IDs we don't yet have full data for —
+    // e.g. when editing an existing post.
+    useEffect(() => {
+        const missing = value.filter((id) => !cache[id]);
+        if (missing.length === 0) return;
+        let cancelled = false;
+        (async () => {
+            const all = await getCharacters();
+            if (cancelled) return;
+            setCache((prev) => {
+                const next = { ...prev };
+                for (const c of all) next[c.id] = c;
+                return next;
+            });
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [value, cache]);
+
+    // Suggestions debounce. When the query is empty we leave the cached
+    // suggestions in place; the render path filters them out below.
+    useEffect(() => {
+        const trimmed = query.trim();
+        if (!trimmed) return;
+        const handle = setTimeout(async () => {
+            const results = await getCharacters(trimmed);
+            setSuggestions(results);
+        }, 200);
+        return () => clearTimeout(handle);
+    }, [query]);
+
+    useEffect(() => {
+        const onClickOutside = (e: MouseEvent) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", onClickOutside);
+        return () => document.removeEventListener("mousedown", onClickOutside);
+    }, []);
+
+    const addCharacter = (character: Character) => {
+        if (value.includes(character.id)) {
+            setQuery("");
+            return;
+        }
+        onChange([...value, character.id]);
+        setCache((prev) => ({ ...prev, [character.id]: character }));
+        setQuery("");
+    };
+
+    const removeAt = (index: number) => {
+        const nextValue = [...value];
+        nextValue.splice(index, 1);
+        onChange(nextValue);
+    };
+
+    const selected = value
+        .map((id) => cache[id])
+        .filter((c): c is Character => Boolean(c));
+    const filteredSuggestions = query.trim()
+        ? suggestions.filter((s) => !value.includes(s.id))
+        : [];
+
+    return (
+        <div ref={wrapperRef} className="relative">
+            <div className="flex flex-wrap items-center gap-2 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus-within:ring-2 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-400">
+                {selected.map((character, i) => (
+                    <span
+                        key={character.id}
+                        className="inline-flex items-center gap-2 pl-1 pr-2 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 text-sm"
+                    >
+                        <Image
+                            src={character.portrait}
+                            alt=""
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-full object-cover"
+                            unoptimized
+                        />
+                        {character.shortName}
+                        <button
+                            type="button"
+                            onClick={() => removeAt(i)}
+                            aria-label={`Remove ${character.shortName}`}
+                            className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 cursor-pointer"
+                        >
+                            ×
+                        </button>
+                    </span>
+                ))}
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setIsOpen(true);
+                    }}
+                    onFocus={() => setIsOpen(true)}
+                    placeholder={selected.length === 0 ? placeholder : ""}
+                    className="flex-1 min-w-32 bg-transparent text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                />
+            </div>
+
+            {isOpen && filteredSuggestions.length > 0 && (
+                <ul className="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg">
+                    {filteredSuggestions.map((s) => (
+                        <li key={s.id}>
+                            <button
+                                type="button"
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    addCharacter(s);
+                                }}
+                                className="w-full text-left px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
+                            >
+                                <Image
+                                    src={s.portrait}
+                                    alt=""
+                                    width={32}
+                                    height={32}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                    unoptimized
+                                />
+                                <span className="flex-1">
+                                    <span className="block text-zinc-900 dark:text-zinc-100">
+                                        {s.shortName}
+                                    </span>
+                                    <span className="block text-xs text-zinc-500 dark:text-zinc-500">
+                                        {s.fullName} — {s.occupation}
+                                    </span>
+                                </span>
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
+
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">
+                Type to search.{" "}
+                <Link
+                    href="/admin/characters/new"
+                    target="_blank"
+                    className="underline hover:text-zinc-800 dark:hover:text-zinc-200"
+                >
+                    Create a new character
+                </Link>{" "}
+                if the one you need isn&apos;t here.
+            </p>
+        </div>
+    );
+}

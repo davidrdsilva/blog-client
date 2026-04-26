@@ -5,10 +5,13 @@ import type { ToolConstructable } from "@editorjs/editorjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import CharacterPicker from "@/app/components/character-picker";
 import PostPreviewSidebar from "@/app/components/post-preview-sidebar";
 import TagsInput from "@/app/components/tags-input";
 import { FETCH_URL_ENDPOINT, getCategories, UPLOAD_ENDPOINT } from "@/app/lib/api";
 import type { Category, EditorJsContent } from "@/app/types/post";
+
+const WHITENEST_CATEGORY_NAME = "Whitenest";
 import isLocalUrl from "@/app/utils/is-local-url";
 
 export interface PostFormData {
@@ -20,6 +23,8 @@ export interface PostFormData {
     date?: string;
     categoryId: number;
     tags: string[];
+    // Cast for Whitenest chapters; empty/ignored on other categories.
+    characterIds: string[];
 }
 
 interface PostFormProps {
@@ -32,6 +37,7 @@ interface PostFormProps {
         date?: string;
         categoryId?: number;
         tags?: string[];
+        characterIds?: string[];
     };
     onSubmit: (data: PostFormData) => Promise<void>;
     submitLabel: string;
@@ -65,6 +71,7 @@ export default function PostForm({
     });
     const [categoryId, setCategoryId] = useState<number | "">(initialData?.categoryId ?? "");
     const [tags, setTags] = useState<string[]>(initialData?.tags ?? []);
+    const [characterIds, setCharacterIds] = useState<string[]>(initialData?.characterIds ?? []);
     const [categories, setCategories] = useState<Category[]>([]);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -249,11 +256,15 @@ export default function PostForm({
                 content: outputData as EditorJsContent,
                 categoryId: Number(categoryId),
                 tags,
+                characterIds,
             });
         } finally {
             setIsSaving(false);
         }
     };
+
+    const selectedCategory = categories.find((c) => c.id === categoryId);
+    const isWhitenest = selectedCategory?.name === WHITENEST_CATEGORY_NAME;
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -344,6 +355,18 @@ export default function PostForm({
                         placeholder="Type a tag and press Enter"
                     />
                 </div>
+                {isWhitenest && (
+                    <div>
+                        <p className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100">
+                            Cast (optional)
+                        </p>
+                        <CharacterPicker
+                            value={characterIds}
+                            onChange={setCharacterIds}
+                            placeholder="Search characters by name"
+                        />
+                    </div>
+                )}
                 <div>
                     <label
                         htmlFor="description"

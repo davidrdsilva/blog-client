@@ -26,6 +26,7 @@ export default function NewPostPage() {
                 date: formattedDate,
                 category_id: data.categoryId,
                 tags: data.tags,
+                character_ids: data.characterIds.length > 0 ? data.characterIds : undefined,
             });
 
             router.push(`/posts/${post.id}`);

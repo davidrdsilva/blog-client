@@ -1,6 +1,9 @@
 import type {
+    APICharacter,
     Category,
     CategoryWithCount,
+    Character,
+    CharacterSkills,
     EditorJsContent,
     Post,
     Tag,
@@ -24,6 +27,7 @@ interface APIPost {
     category_id: number;
     category?: Category | null;
     tags?: Tag[] | null;
+    characters?: APICharacter[] | null;
     total_views: number;
     whitenest_chapter_number?: number | null;
     createdAt: string;
@@ -103,6 +107,7 @@ export interface CreatePostData {
     date?: string;
     category_id: number;
     tags?: string[];
+    character_ids?: string[];
 }
 
 export interface UpdatePostData {
@@ -114,6 +119,20 @@ export interface UpdatePostData {
     date?: string;
     category_id?: number;
     tags?: string[];
+    character_ids?: string[];
+}
+
+function transformCharacter(apiCharacter: APICharacter): Character {
+    return {
+        id: apiCharacter.id,
+        fullName: apiCharacter.full_name,
+        shortName: apiCharacter.short_name,
+        description: apiCharacter.description,
+        occupation: apiCharacter.occupation,
+        location: apiCharacter.location,
+        portrait: apiCharacter.portrait,
+        skills: apiCharacter.skills,
+    };
 }
 
 // Transform API post to frontend Post type
@@ -130,6 +149,7 @@ function transformPost(apiPost: APIPost): Post {
         categoryId: apiPost.category_id,
         category: apiPost.category ?? undefined,
         tags: apiPost.tags ?? [],
+        characters: (apiPost.characters ?? []).map(transformCharacter),
         totalViews: apiPost.total_views ?? 0,
         whitenestChapterNumber: apiPost.whitenest_chapter_number ?? undefined,
     };
@@ -403,6 +423,7 @@ interface APIWhitenestChapterResponse {
         chapter: APIPost;
         previous: APIWhitenestChapterRef | null;
         next: APIWhitenestChapterRef | null;
+        cast?: APICharacter[] | null;
     };
 }
 
@@ -431,6 +452,7 @@ export async function getWhitenestChapter(number: number): Promise<WhitenestChap
         chapter: transformPost(data.data.chapter),
         previous: transformChapterRef(data.data.previous),
         next: transformChapterRef(data.data.next),
+        cast: (data.data.cast ?? []).map(transformCharacter),
     };
 }
 
@@ -478,6 +500,113 @@ export async function getLatestWhitenestChapter(): Promise<Post | null> {
         console.error("Error fetching latest Whitenest chapter:", error);
         return null;
     }
+}
+
+// ---------- Characters ----------
+
+interface APICharacterListResponse {
+    data: APICharacter[];
+}
+
+interface APICharacterSingleResponse {
+    data: APICharacter;
+}
+
+export interface CharacterPayload {
+    full_name: string;
+    short_name: string;
+    description: string;
+    occupation: string;
+    location: string;
+    portrait: string;
+    skills: CharacterSkills;
+}
+
+export type CharacterUpdatePayload = Partial<CharacterPayload>;
+
+export async function getCharacters(search?: string): Promise<Character[]> {
+    const url = new URL(`${API_BASE_URL}/api/characters`, "http://placeholder");
+    if (search) url.searchParams.set("search", search);
+    const path = url.pathname + url.search;
+    const response = await fetch(path, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+    const data = await handleResponse<APICharacterListResponse>(response);
+    return (data.data ?? []).map(transformCharacter);
+}
+
+export async function getCharacter(id: string): Promise<Character> {
+    const response = await fetch(`${API_BASE_URL}/api/characters/${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+    const data = await handleResponse<APICharacterSingleResponse>(response);
+    return transformCharacter(data.data);
+}
+
+export async function createCharacter(payload: CharacterPayload): Promise<Character> {
+    const response = await fetch(`${API_BASE_URL}/api/characters`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    const data = await handleResponse<APICharacterSingleResponse>(response);
+    return transformCharacter(data.data);
+}
+
+export async function updateCharacter(
+    id: string,
+    payload: CharacterUpdatePayload
+): Promise<Character> {
+    const response = await fetch(`${API_BASE_URL}/api/characters/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+    const data = await handleResponse<APICharacterSingleResponse>(response);
+    return transformCharacter(data.data);
+}
+
+export async function deleteCharacter(id: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/characters/${id}`, {
+        method: "DELETE",
+    });
+    if (!response.ok && response.status !== 204) {
+        const errorData = (await response.json().catch(() => null)) as APIError | null;
+        throw new APIClientError(
+            errorData?.error?.code || "UNKNOWN_ERROR",
+            errorData?.error?.message || `Request failed with status ${response.status}`,
+            errorData?.error?.details
+        );
+    }
+}
+
+// uploadImage POSTs a file to /api/upload using the Editor.js Image Tool's
+// FormData shape and returns the resulting URL. Shared by post + character forms.
+interface EditorJsUploadResponse {
+    success: number;
+    file?: { url: string };
+    error?: { code: string; message: string };
+}
+
+export async function uploadImage(file: File): Promise<string> {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch(`${API_BASE_URL}/api/upload`, {
+        method: "POST",
+        body: form,
+    });
+    const data = (await response.json().catch(() => null)) as EditorJsUploadResponse | null;
+    if (!response.ok || !data || data.success !== 1 || !data.file?.url) {
+        throw new APIClientError(
+            data?.error?.code ?? "UPLOAD_FAILED",
+            data?.error?.message ?? `Upload failed with status ${response.status}`
+        );
+    }
+    return data.file.url;
 }
 
 // Export API base URL for Editor.js configuration
