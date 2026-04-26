@@ -6,6 +6,7 @@ import type {
     Tag,
     WhitenestChapter,
     WhitenestChapterRef,
+    WhitenestChapterSummary,
 } from "@/app/types/post";
 
 const API_BASE_URL = typeof window === "undefined" ? process.env.NEXT_PUBLIC_API_URL || "" : "";
@@ -431,6 +432,36 @@ export async function getWhitenestChapter(number: number): Promise<WhitenestChap
         previous: transformChapterRef(data.data.previous),
         next: transformChapterRef(data.data.next),
     };
+}
+
+interface APIWhitenestChapterSummary {
+    id: string;
+    title: string;
+    image: string;
+    tags: Tag[] | null;
+    whitenest_chapter_number: number;
+}
+
+interface APIWhitenestChaptersResponse {
+    data: APIWhitenestChapterSummary[];
+}
+
+// List every Whitenest chapter, ordered by chapter number ASC.
+export async function getWhitenestChapters(): Promise<WhitenestChapterSummary[]> {
+    const response = await fetch(`${API_BASE_URL}/api/whitenest/chapters`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+
+    const data = await handleResponse<APIWhitenestChaptersResponse>(response);
+    return data.data.map((c) => ({
+        id: c.id,
+        title: c.title,
+        image: c.image,
+        tags: c.tags ?? [],
+        whitenestChapterNumber: c.whitenest_chapter_number,
+    }));
 }
 
 // Get the most recent Whitenest chapter, or null if the series has no chapters yet.

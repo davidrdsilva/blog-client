@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { EditorJsRenderer } from "@/app/components/editorjs-renderer";
 import Footer from "@/app/components/footer";
 import { GalleryProvider } from "@/app/components/image-gallery";
+import WhitenestChaptersSidebar from "@/app/components/whitenest-chapters-sidebar";
 import WhitenestHeader from "@/app/components/whitenest-header";
-import { APIClientError, getWhitenestChapter } from "@/app/lib/api";
+import { APIClientError, getWhitenestChapter, getWhitenestChapters } from "@/app/lib/api";
 import { calculateReadingTime } from "@/app/utils/calculate-reading-time";
 import formatDate from "@/app/utils/format-date";
 import isLocalUrl from "@/app/utils/is-local-url";
@@ -41,6 +42,7 @@ export default async function WhitenestChapterPage({
 
     const { chapter, previous, next } = result;
     const chapterNumber = chapter.whitenestChapterNumber ?? parsed;
+    const allChapters = await getWhitenestChapters().catch(() => []);
     const formattedDate = formatDate(chapter.date);
     const readingTime = calculateReadingTime(chapter);
 
@@ -114,6 +116,10 @@ export default async function WhitenestChapterPage({
                             >
                                 Edit chapter
                             </Link>
+                            <WhitenestChaptersSidebar
+                                chapters={allChapters}
+                                currentChapter={chapterNumber}
+                            />
                         </div>
                         <h2 className="text-3xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 leading-tight">
                             Chapter {chapterNumber} — {chapter.title}

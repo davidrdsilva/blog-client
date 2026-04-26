@@ -48,6 +48,14 @@ export interface WhitenestChapterRef {
     whitenestChapterNumber: number;
 }
 
+export interface WhitenestChapterSummary {
+    id: string;
+    title: string;
+    image: string;
+    tags: Tag[];
+    whitenestChapterNumber: number;
+}
+
 export interface WhitenestChapter {
     chapter: Post;
     previous?: WhitenestChapterRef;
