@@ -6,6 +6,7 @@ import Footer from "@/app/components/footer";
 import { GalleryProvider } from "@/app/components/image-gallery";
 import WhitenestHeader from "@/app/components/whitenest-header";
 import { APIClientError, getWhitenestChapter } from "@/app/lib/api";
+import { calculateReadingTime } from "@/app/utils/calculate-reading-time";
 import formatDate from "@/app/utils/format-date";
 import isLocalUrl from "@/app/utils/is-local-url";
 
@@ -41,6 +42,7 @@ export default async function WhitenestChapterPage({
     const { chapter, previous, next } = result;
     const chapterNumber = chapter.whitenestChapterNumber ?? parsed;
     const formattedDate = formatDate(chapter.date);
+    const readingTime = calculateReadingTime(chapter);
 
     const contentImages =
         chapter.content?.blocks
@@ -89,6 +91,8 @@ export default async function WhitenestChapterPage({
                         <span>{formattedDate}</span>
                         <span aria-hidden="true">•</span>
                         <span>{chapter.author}</span>
+                        <span aria-hidden="true">•</span>
+                        <span>{readingTime}</span>
                     </div>
                     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/70 text-xs font-bold uppercase tracking-[0.3em] flex flex-col items-center gap-2 animate-pulse">
                         <span>Scroll to read</span>
@@ -99,12 +103,20 @@ export default async function WhitenestChapterPage({
 
             <article className="container mx-auto px-4 py-16 md:py-24 max-w-3xl">
                 <header className="mb-12">
-                    <Link
-                        href="/"
-                        className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-80 transition-opacity"
-                    >
-                        {WHITENEST_CATEGORY}
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                        <Link
+                            href="/"
+                            className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-80 transition-opacity"
+                        >
+                            {WHITENEST_CATEGORY}
+                        </Link>
+                        <Link
+                            href={`/posts/${chapter.id}/edit`}
+                            className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        >
+                            Edit chapter
+                        </Link>
+                    </div>
                     <h2 className="text-3xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 leading-tight">
                         Chapter {chapterNumber} — {chapter.title}
                     </h2>
@@ -112,6 +124,8 @@ export default async function WhitenestChapterPage({
                         <span>{formattedDate}</span>
                         <span aria-hidden="true">•</span>
                         <span className="font-medium">{chapter.author}</span>
+                        <span aria-hidden="true">•</span>
+                        <span>{readingTime}</span>
                     </div>
                 </header>
 
