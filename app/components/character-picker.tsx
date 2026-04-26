@@ -3,11 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { getCharacters } from "@/app/lib/api";
 import type { Character } from "@/app/types/post";
 
 interface CharacterPickerProps {
-    value: string[]; // ordered list of character IDs
+    value: string[];
     onChange: (next: string[]) => void;
     placeholder?: string;
 }
@@ -22,7 +23,27 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
     const [suggestions, setSuggestions] = useState<Character[]>([]);
     const [cache, setCache] = useState<Record<string, Character>>({});
     const [isOpen, setIsOpen] = useState(false);
+    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const anchorRef = useRef<HTMLDivElement>(null);
+
+    // Track the input container's position so the portaled dropdown can
+    // anchor under it. Updates on open and on scroll/resize while open.
+    useEffect(() => {
+        if (!isOpen) return;
+        const measure = () => {
+            if (anchorRef.current) {
+                setAnchorRect(anchorRef.current.getBoundingClientRect());
+            }
+        };
+        measure();
+        window.addEventListener("scroll", measure, true);
+        window.addEventListener("resize", measure);
+        return () => {
+            window.removeEventListener("scroll", measure, true);
+            window.removeEventListener("resize", measure);
+        };
+    }, [isOpen]);
 
     // Hydrate the cache for any selected IDs we don't yet have full data for —
     // e.g. when editing an existing post.
@@ -82,16 +103,17 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
         onChange(nextValue);
     };
 
-    const selected = value
-        .map((id) => cache[id])
-        .filter((c): c is Character => Boolean(c));
+    const selected = value.map((id) => cache[id]).filter((c): c is Character => Boolean(c));
     const filteredSuggestions = query.trim()
         ? suggestions.filter((s) => !value.includes(s.id))
         : [];
 
     return (
         <div ref={wrapperRef} className="relative">
-            <div className="flex flex-wrap items-center gap-2 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus-within:ring-2 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-400">
+            <div
+                ref={anchorRef}
+                className="flex flex-wrap items-center gap-2 px-0 py-3 border-0 border-b border-zinc-300 dark:border-zinc-700 bg-transparent focus-within:border-zinc-900 dark:focus-within:border-zinc-100 transition-colors"
+            >
                 {selected.map((character, i) => (
                     <span
                         key={character.id}
@@ -129,50 +151,60 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
                 />
             </div>
 
-            {isOpen && filteredSuggestions.length > 0 && (
-                <ul className="absolute z-10 mt-1 w-full max-h-64 overflow-auto rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg">
-                    {filteredSuggestions.map((s) => (
-                        <li key={s.id}>
-                            <button
-                                type="button"
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    addCharacter(s);
-                                }}
-                                className="w-full text-left px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
-                            >
-                                <Image
-                                    src={s.portrait}
-                                    alt=""
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8 rounded-full object-cover"
-                                    unoptimized
-                                />
-                                <span className="flex-1">
-                                    <span className="block text-zinc-900 dark:text-zinc-100">
-                                        {s.shortName}
+            {isOpen &&
+                anchorRect &&
+                filteredSuggestions.length > 0 &&
+                createPortal(
+                    <ul
+                        className="fixed z-50 max-h-64 overflow-auto border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#0a0a0a] shadow-2xl"
+                        style={{
+                            top: anchorRect.bottom + 4,
+                            left: anchorRect.left,
+                            width: anchorRect.width,
+                        }}
+                    >
+                        {filteredSuggestions.map((s) => (
+                            <li key={s.id}>
+                                <button
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        addCharacter(s);
+                                    }}
+                                    className="w-full text-left px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center gap-3 cursor-pointer"
+                                >
+                                    <Image
+                                        src={s.portrait}
+                                        alt=""
+                                        width={32}
+                                        height={32}
+                                        className="w-8 h-8 rounded-full object-cover"
+                                        unoptimized
+                                    />
+                                    <span className="flex-1">
+                                        <span className="block text-zinc-900 dark:text-zinc-100">
+                                            {s.shortName}
+                                        </span>
+                                        <span className="block text-xs text-zinc-500 dark:text-zinc-500">
+                                            {s.fullName} — {s.occupation}
+                                        </span>
                                     </span>
-                                    <span className="block text-xs text-zinc-500 dark:text-zinc-500">
-                                        {s.fullName} — {s.occupation}
-                                    </span>
-                                </span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            )}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>,
+                    document.body,
+                )}
 
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">
-                Type to search.{" "}
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-500">
+                Type to search ·{" "}
                 <Link
                     href="/admin/characters/new"
                     target="_blank"
-                    className="underline hover:text-zinc-800 dark:hover:text-zinc-200"
+                    className="underline hover:text-zinc-900 dark:hover:text-zinc-100"
                 >
-                    Create a new character
-                </Link>{" "}
-                if the one you need isn&apos;t here.
+                    Create new
+                </Link>
             </p>
         </div>
     );

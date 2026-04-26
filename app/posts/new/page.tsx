@@ -37,13 +37,14 @@ export default function NewPostPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-black">
+        <div className="min-h-screen bg-white dark:bg-black">
             <NavBar />
-            <main className="container mx-auto px-4 py-12 max-w-4xl">
+            <main className="container mx-auto px-5 sm:px-6 lg:px-10 py-10 lg:py-24 max-w-4xl">
                 <PostForm
+                    title="New post"
                     onSubmit={handleSubmit}
-                    submitLabel="Publish Post"
-                    savingLabel="Publishing..."
+                    submitLabel="Publish"
+                    savingLabel="Publishing…"
                     cancelHref="/"
                 />
             </main>

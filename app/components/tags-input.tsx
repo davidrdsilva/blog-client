@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { getTags } from "@/app/lib/api";
 import type { Tag } from "@/app/types/post";
 
@@ -20,14 +21,33 @@ export default function TagsInput({ value, onChange, placeholder }: TagsInputPro
     const [query, setQuery] = useState("");
     const [suggestions, setSuggestions] = useState<Tag[]>([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
+    const anchorRef = useRef<HTMLDivElement>(null);
 
+    // Track the input container's position so the portaled dropdown can
+    // anchor under it. Updates on open and on scroll/resize while open.
+    useEffect(() => {
+        if (!isOpen) return;
+        const measure = () => {
+            if (anchorRef.current) {
+                setAnchorRect(anchorRef.current.getBoundingClientRect());
+            }
+        };
+        measure();
+        window.addEventListener("scroll", measure, true);
+        window.addEventListener("resize", measure);
+        return () => {
+            window.removeEventListener("scroll", measure, true);
+            window.removeEventListener("resize", measure);
+        };
+    }, [isOpen]);
+
+    // Suggestions debounce. When the query is empty we leave the cached
+    // suggestions in place; the render path filters them out below.
     useEffect(() => {
         const trimmed = query.trim();
-        if (!trimmed) {
-            setSuggestions([]);
-            return;
-        }
+        if (!trimmed) return;
         const handle = setTimeout(async () => {
             const results = await getTags(trimmed);
             setSuggestions(results);
@@ -55,7 +75,6 @@ export default function TagsInput({ value, onChange, placeholder }: TagsInputPro
         }
         onChange([...value, tag]);
         setQuery("");
-        setSuggestions([]);
     };
 
     const removeTag = (index: number) => {
@@ -76,13 +95,16 @@ export default function TagsInput({ value, onChange, placeholder }: TagsInputPro
         }
     };
 
-    const filteredSuggestions = suggestions.filter(
-        (s) => !value.some((v) => v.toLowerCase() === s.name.toLowerCase())
-    );
+    const filteredSuggestions = !query.trim()
+        ? []
+        : suggestions.filter((s) => !value.some((v) => v.toLowerCase() === s.name.toLowerCase()));
 
     return (
         <div ref={wrapperRef} className="relative">
-            <div className="flex flex-wrap items-center gap-2 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus-within:ring-2 focus-within:ring-zinc-500 dark:focus-within:ring-zinc-400">
+            <div
+                ref={anchorRef}
+                className="flex flex-wrap items-center gap-2 px-0 py-3 border-0 border-b border-zinc-300 dark:border-zinc-700 bg-transparent focus-within:border-zinc-900 dark:focus-within:border-zinc-100 transition-colors"
+            >
                 {value.map((tag, i) => (
                     <span
                         key={tag.toLowerCase()}
@@ -113,28 +135,39 @@ export default function TagsInput({ value, onChange, placeholder }: TagsInputPro
                 />
             </div>
 
-            {isOpen && filteredSuggestions.length > 0 && (
-                <ul className="absolute z-10 mt-1 w-full max-h-48 overflow-auto rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg">
-                    {filteredSuggestions.map((s) => (
-                        <li key={s.id}>
-                            <button
-                                type="button"
-                                onMouseDown={(e) => {
-                                    // mouseDown so the input doesn't blur first
-                                    e.preventDefault();
-                                    addTag(s.name);
-                                }}
-                                className="w-full text-left px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 cursor-pointer"
-                            >
-                                {s.name}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            )}
+            {isOpen &&
+                anchorRect &&
+                filteredSuggestions.length > 0 &&
+                createPortal(
+                    <ul
+                        className="fixed z-50 max-h-48 overflow-auto border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#0a0a0a] shadow-2xl"
+                        style={{
+                            top: anchorRect.bottom + 4,
+                            left: anchorRect.left,
+                            width: anchorRect.width,
+                        }}
+                    >
+                        {filteredSuggestions.map((s) => (
+                            <li key={s.id}>
+                                <button
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                        // mouseDown so the input doesn't blur first
+                                        e.preventDefault();
+                                        addTag(s.name);
+                                    }}
+                                    className="w-full text-left px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 cursor-pointer"
+                                >
+                                    {s.name}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>,
+                    document.body,
+                )}
 
-            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">
-                Press Enter or comma to add a tag.
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-500">
+                Press Enter or comma to add
             </p>
         </div>
     );

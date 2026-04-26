@@ -26,7 +26,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 if (error instanceof APIClientError && error.code === "POST_NOT_FOUND") {
                     notFound();
                 }
-                console.error("Failed to fetch post ERRO:", error);
+                console.error("Failed to fetch post:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -63,20 +63,18 @@ export default function EditPostPage({ params }: EditPostPageProps) {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-zinc-50 dark:bg-black">
+            <div className="min-h-screen bg-white dark:bg-black">
                 <NavBar />
-                <main className="container mx-auto px-4 py-12 max-w-4xl">
-                    <div className="flex items-center justify-center py-12">
-                        <div className="text-zinc-500 dark:text-zinc-400">Loading...</div>
-                    </div>
+                <main className="container mx-auto px-5 sm:px-6 lg:px-10 py-10 lg:py-24 max-w-4xl">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500">
+                        Loading…
+                    </p>
                 </main>
             </div>
         );
     }
 
-    if (!post) {
-        return null;
-    }
+    if (!post) return null;
 
     const formatDate = (date: Date) => {
         if (Number.isNaN(date.getTime())) return "";
@@ -86,14 +84,14 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         return `${d}/${m}/${y}`;
     };
 
+    const editTitle = post.title ? `Edit · ${post.title}` : "Edit post";
+
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-black">
+        <div className="min-h-screen bg-white dark:bg-black">
             <NavBar />
-            <main className="container mx-auto px-4 py-12 max-w-4xl">
-                <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-8">
-                    Edit Post
-                </h1>
+            <main className="container mx-auto px-5 sm:px-6 lg:px-10 py-10 lg:py-24 max-w-4xl">
                 <PostForm
+                    title={editTitle}
                     initialData={{
                         title: post.title,
                         subtitle: post.subtitle ?? "",
@@ -106,8 +104,8 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                         characterIds: post.characters.map((c) => c.id),
                     }}
                     onSubmit={handleSubmit}
-                    submitLabel="Save Changes"
-                    savingLabel="Saving..."
+                    submitLabel="Save changes"
+                    savingLabel="Saving…"
                     cancelHref={`/posts/${id}`}
                 />
             </main>

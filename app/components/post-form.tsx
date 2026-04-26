@@ -10,9 +10,10 @@ import PostPreviewSidebar from "@/app/components/post-preview-sidebar";
 import TagsInput from "@/app/components/tags-input";
 import { FETCH_URL_ENDPOINT, getCategories, UPLOAD_ENDPOINT } from "@/app/lib/api";
 import type { Category, EditorJsContent } from "@/app/types/post";
+import isLocalUrl from "@/app/utils/is-local-url";
 
 const WHITENEST_CATEGORY_NAME = "Whitenest";
-import isLocalUrl from "@/app/utils/is-local-url";
+const DESCRIPTION_LIMIT = 100;
 
 export interface PostFormData {
     title: string;
@@ -43,6 +44,8 @@ interface PostFormProps {
     submitLabel: string;
     savingLabel: string;
     cancelHref: string;
+    title: string;
+    eyebrow?: string;
 }
 
 export default function PostForm({
@@ -51,6 +54,8 @@ export default function PostForm({
     submitLabel,
     savingLabel,
     cancelHref,
+    title,
+    eyebrow = "Admin · Posts",
 }: PostFormProps) {
     const editorRef = useRef<EditorJSType | null>(null);
     const editorInitializing = useRef(false);
@@ -100,38 +105,36 @@ export default function PostForm({
             const result = await response.json();
 
             if (result.success === 1 && result.file?.url) {
-                setFormData({ ...formData, image: result.file.url });
-            } else {
-                if (result.error) {
-                    setErrorMessage(result.error.message);
-                }
+                setFormData((prev) => ({ ...prev, image: result.file.url }));
+            } else if (result.error) {
+                setErrorMessage(result.error.message);
             }
         } catch (error) {
             console.error("Error uploading image:", error);
-            setErrorMessage("Error uploading image. Just try again will you?");
+            setErrorMessage("Error uploading image. Just try again, will you?");
         } finally {
             setIsUploading(false);
         }
     };
 
     const handleRemoveImage = () => {
-        setFormData({ ...formData, image: "" });
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
+        setFormData((prev) => ({ ...prev, image: "" }));
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const triggerImagePicker = () => {
+        fileInputRef.current?.click();
     };
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value.replace(/\D/g, "");
         if (value.length > 8) value = value.slice(0, 8);
-
         if (value.length > 4) {
             value = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4)}`;
         } else if (value.length > 2) {
             value = `${value.slice(0, 2)}/${value.slice(2)}`;
         }
-
-        setFormData({ ...formData, date: value });
+        setFormData((prev) => ({ ...prev, date: value }));
     };
 
     useEffect(() => {
@@ -163,13 +166,13 @@ export default function PostForm({
 
             editorRef.current = new EditorJS({
                 holder: "editorjs",
-                placeholder: "Start writing your post...",
+                placeholder: "Begin the article…",
                 data: initialData?.content,
                 tools: {
                     header: {
                         class: Header as unknown as ToolConstructable,
                         config: {
-                            placeholder: "Enter a header",
+                            placeholder: "Section heading",
                             levels: [2, 3, 4],
                             defaultLevel: 2,
                         },
@@ -181,10 +184,7 @@ export default function PostForm({
                     image: {
                         class: ImageTool as unknown as ToolConstructable,
                         config: {
-                            endpoints: {
-                                byFile: UPLOAD_ENDPOINT,
-                                byUrl: UPLOAD_ENDPOINT,
-                            },
+                            endpoints: { byFile: UPLOAD_ENDPOINT, byUrl: UPLOAD_ENDPOINT },
                             field: "file",
                             types: "image/*",
                             captionPlaceholder: "Image caption",
@@ -200,15 +200,11 @@ export default function PostForm({
                     },
                     code: {
                         class: CodeTool as unknown as ToolConstructable,
-                        config: {
-                            placeholder: "Enter code",
-                        },
+                        config: { placeholder: "Enter code" },
                     },
                     linkTool: {
                         class: LinkTool as unknown as ToolConstructable,
-                        config: {
-                            endpoint: FETCH_URL_ENDPOINT,
-                        },
+                        config: { endpoint: FETCH_URL_ENDPOINT },
                     },
                     video: {
                         class: VideoTool as unknown as ToolConstructable,
@@ -220,9 +216,7 @@ export default function PostForm({
                         },
                     },
                 },
-                onReady: () => {
-                    setIsReady(true);
-                },
+                onReady: () => setIsReady(true),
                 onChange: async (api) => {
                     const data = await api.saver.save();
                     setPreviewContent(data as EditorJsContent);
@@ -244,7 +238,11 @@ export default function PostForm({
         e.preventDefault();
         if (!editorRef.current || !isReady) return;
         if (categoryId === "") {
-            setErrorMessage("Please select a category.");
+            setErrorMessage("Please select a category before publishing.");
+            return;
+        }
+        if (!formData.image) {
+            setErrorMessage("A featured image is required.");
             return;
         }
 
@@ -258,6 +256,9 @@ export default function PostForm({
                 tags,
                 characterIds,
             });
+        } catch (error) {
+            console.error("Failed to save post:", error);
+            setErrorMessage(error instanceof Error ? error.message : "Failed to save post.");
         } finally {
             setIsSaving(false);
         }
@@ -265,289 +266,314 @@ export default function PostForm({
 
     const selectedCategory = categories.find((c) => c.id === categoryId);
     const isWhitenest = selectedCategory?.name === WHITENEST_CATEGORY_NAME;
+    const descriptionRemaining = DESCRIPTION_LIMIT - formData.description.length;
+
+    const inputClass =
+        "w-full bg-transparent border-0 border-b border-zinc-300 dark:border-zinc-700 px-0 py-3 text-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 transition-colors";
+    const fieldLabelClass =
+        "block text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500 mb-1";
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-                <div>
-                    <label
-                        htmlFor="title"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Title
-                    </label>
-                    <input
-                        type="text"
-                        id="title"
-                        required
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
-                        placeholder="Enter post title"
-                    />
+        <form onSubmit={handleSubmit} className="space-y-12 lg:space-y-16">
+            <header className="space-y-2 lg:space-y-3 animate-[fade-up_0.6s_ease-out_both]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-500 dark:text-zinc-500">
+                    {eyebrow}
+                </p>
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-zinc-900 dark:text-zinc-100 leading-[1.05] tracking-tight">
+                    {title}
+                </h1>
+            </header>
+
+            {errorMessage && (
+                <div className="flex items-start gap-3 text-sm text-red-700 dark:text-red-300 border-l-2 border-red-700 dark:border-red-400 pl-4 py-2 animate-[fade-up_0.3s_ease-out_both]">
+                    <span className="font-bold uppercase tracking-[0.3em] text-[10px] mt-0.5">
+                        Error
+                    </span>
+                    <span className="font-serif">{errorMessage}</span>
                 </div>
-                <div>
-                    <label
-                        htmlFor="subtitle"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Subtitle (optional)
-                    </label>
-                    <input
-                        type="text"
-                        id="subtitle"
-                        value={formData.subtitle}
-                        onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
-                        placeholder="Enter post subtitle"
-                    />
-                </div>
-                <div>
-                    <label
-                        htmlFor="date"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Date (optional)
-                    </label>
-                    <input
-                        type="text"
-                        id="date"
-                        value={formData.date}
-                        onChange={handleDateChange}
-                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
-                        placeholder="DD/MM/YYYY"
-                    />
-                </div>
-                <div>
-                    <label
-                        htmlFor="category"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Category
-                    </label>
-                    <select
-                        id="category"
-                        required
-                        value={categoryId === "" ? "" : String(categoryId)}
-                        onChange={(e) =>
-                            setCategoryId(e.target.value ? Number(e.target.value) : "")
-                        }
-                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400"
-                    >
-                        <option value="">Select a category</option>
-                        {categories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                                {c.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label
-                        htmlFor="tags"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Tags (optional)
-                    </label>
-                    <TagsInput
-                        value={tags}
-                        onChange={setTags}
-                        placeholder="Type a tag and press Enter"
-                    />
-                </div>
-                {isWhitenest && (
+            )}
+
+            <Section number="01" label="Masthead">
+                <div className="space-y-8">
                     <div>
-                        <p className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                            Cast (optional)
-                        </p>
-                        <CharacterPicker
-                            value={characterIds}
-                            onChange={setCharacterIds}
-                            placeholder="Search characters by name"
+                        <label htmlFor="title" className={fieldLabelClass}>
+                            Title
+                        </label>
+                        <input
+                            id="title"
+                            type="text"
+                            required
+                            placeholder="—"
+                            autoComplete="off"
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            className={`${inputClass} font-serif text-3xl sm:text-4xl lg:text-5xl leading-[1.1] py-4`}
                         />
                     </div>
-                )}
+                    <div>
+                        <label htmlFor="subtitle" className={fieldLabelClass}>
+                            Subtitle{" "}
+                            <span className="text-zinc-400 dark:text-zinc-600">/ Optional</span>
+                        </label>
+                        <input
+                            id="subtitle"
+                            type="text"
+                            placeholder="A second line, the kind that appears beneath the headline"
+                            autoComplete="off"
+                            value={formData.subtitle}
+                            onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                            className={`${inputClass} text-xl sm:text-2xl`}
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
+                        <div>
+                            <label htmlFor="date" className={fieldLabelClass}>
+                                Date{" "}
+                                <span className="text-zinc-400 dark:text-zinc-600">/ Optional</span>
+                            </label>
+                            <input
+                                id="date"
+                                type="text"
+                                inputMode="numeric"
+                                placeholder="DD / MM / YYYY"
+                                autoComplete="off"
+                                value={formData.date}
+                                onChange={handleDateChange}
+                                className={`${inputClass} tabular-nums`}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="category" className={fieldLabelClass}>
+                                Category
+                            </label>
+                            <div className="relative">
+                                <select
+                                    id="category"
+                                    required
+                                    value={categoryId === "" ? "" : String(categoryId)}
+                                    onChange={(e) =>
+                                        setCategoryId(e.target.value ? Number(e.target.value) : "")
+                                    }
+                                    className={`${inputClass} appearance-none pr-8 cursor-pointer`}
+                                >
+                                    <option value="">Select…</option>
+                                    {categories.map((c) => (
+                                        <option key={c.id} value={c.id}>
+                                            {c.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <span
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"
+                                >
+                                    ▾
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Section>
+
+            <Section number="02" label="Classification">
+                <div className="space-y-8">
+                    <div>
+                        <p className={fieldLabelClass}>
+                            Tags{" "}
+                            <span className="text-zinc-400 dark:text-zinc-600">/ Optional</span>
+                        </p>
+                        <TagsInput
+                            value={tags}
+                            onChange={setTags}
+                            placeholder="Press Enter or comma to add"
+                        />
+                    </div>
+                    {isWhitenest && (
+                        <div>
+                            <p className={fieldLabelClass}>
+                                Cast{" "}
+                                <span className="text-zinc-400 dark:text-zinc-600">
+                                    / Whitenest only
+                                </span>
+                            </p>
+                            <CharacterPicker
+                                value={characterIds}
+                                onChange={setCharacterIds}
+                                placeholder="Search characters by name"
+                            />
+                        </div>
+                    )}
+                </div>
+            </Section>
+
+            <Section number="03" label="Standfirst">
                 <div>
-                    <label
-                        htmlFor="description"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Description
-                    </label>
+                    <div className="flex items-baseline justify-between mb-1">
+                        <label htmlFor="description" className={fieldLabelClass}>
+                            One-line summary
+                        </label>
+                        <span
+                            className={`text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums ${
+                                descriptionRemaining < 0
+                                    ? "text-red-600 dark:text-red-400"
+                                    : descriptionRemaining < 20
+                                      ? "text-amber-600 dark:text-amber-400"
+                                      : "text-zinc-500 dark:text-zinc-500"
+                            }`}
+                        >
+                            {formData.description.length} / {DESCRIPTION_LIMIT}
+                        </span>
+                    </div>
                     <textarea
                         id="description"
                         required
-                        maxLength={100}
+                        rows={3}
+                        maxLength={DESCRIPTION_LIMIT}
+                        placeholder="The standfirst — what this article is about, in a sentence."
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        className="w-full px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 dark:focus:ring-zinc-400 resize-none"
-                        placeholder="Enter short description (max 100 characters)"
-                        rows={3}
+                        className={`${inputClass} resize-none font-serif text-lg leading-relaxed`}
                     />
-                    <p className="mt-1 text-zinc-500 dark:text-zinc-500">
-                        {formData.description.length}/100
-                    </p>
                 </div>
-                <div>
-                    <label
-                        htmlFor="image"
-                        className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
-                    >
-                        Featured Image
-                    </label>
-                    {formData.image ? (
-                        <div className="space-y-3">
-                            <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-zinc-300 dark:border-zinc-700">
-                                <Image
-                                    src={formData.image}
-                                    alt="Featured image preview"
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 800px"
-                                    unoptimized={isLocalUrl(formData.image)}
-                                />
-                            </div>
-                            <button
-                                type="button"
-                                onClick={handleRemoveImage}
-                                className="px-4 py-2 text-lg rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                            >
-                                {initialData ? "Change Image" : "Remove Image"}
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="relative">
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                id="image"
-                                accept="image/jpeg,image/png,image/gif,image/webp"
-                                onChange={handleImageUpload}
-                                disabled={isUploading}
-                                className="hidden"
-                            />
-                            <label
-                                htmlFor="image"
-                                className={`flex flex-col items-center justify-center w-full aspect-video rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
-                            >
-                                {isUploading ? (
-                                    <div className="flex flex-col items-center gap-2">
-                                        <svg
-                                            className="w-8 h-8 text-zinc-400 animate-spin"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            aria-hidden="true"
-                                        >
-                                            <circle
-                                                className="opacity-25"
-                                                cx="12"
-                                                cy="12"
-                                                r="10"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            />
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            />
-                                        </svg>
-                                        <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                                            Uploading...
-                                        </span>
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center gap-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth={1.5}
-                                            stroke="currentColor"
-                                            className="w-8 h-8 text-zinc-400"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-                                            />
-                                        </svg>
-                                        <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                                            Click to upload featured image
-                                        </span>
-                                        <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                                            JPEG, PNG, GIF, WebP (max 5MB)
-                                        </span>
-                                        <span
-                                            id="error-message"
-                                            className="text-red-500 dark:text-red-400"
-                                        >
-                                            {errorMessage}
-                                        </span>
-                                    </div>
-                                )}
-                            </label>
-                        </div>
-                    )}
-                    <input type="hidden" name="image" value={formData.image} required />
-                </div>
-            </div>
-            <div>
-                <label
-                    htmlFor="editorjs"
-                    className="block mb-2 text-lg font-medium text-zinc-900 dark:text-zinc-100"
+            </Section>
+
+            <Section number="04" label="Visual">
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    onChange={handleImageUpload}
+                    disabled={isUploading}
+                    className="hidden"
+                />
+                <button
+                    type="button"
+                    onClick={triggerImagePicker}
+                    aria-label={formData.image ? "Replace featured image" : "Upload featured image"}
+                    className="group relative block w-full aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 cursor-pointer"
                 >
-                    Content
-                </label>
+                    {formData.image ? (
+                        <Image
+                            src={formData.image}
+                            alt="Featured"
+                            fill
+                            sizes="(max-width: 768px) 100vw, 800px"
+                            className="object-cover transition-transform duration-700 group-hover:scale-[1.01]"
+                            unoptimized={isLocalUrl(formData.image)}
+                        />
+                    ) : (
+                        <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            <span className="w-14 h-14 border border-current rounded-full flex items-center justify-center text-2xl font-serif">
+                                +
+                            </span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.4em]">
+                                Add featured image
+                            </span>
+                            <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-600">
+                                JPEG · PNG · GIF · WebP
+                            </span>
+                        </span>
+                    )}
+                    {isUploading && (
+                        <span
+                            aria-hidden="true"
+                            className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-[0.4em]"
+                        >
+                            Uploading…
+                        </span>
+                    )}
+                    <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-zinc-900/5 dark:ring-zinc-100/5"
+                    />
+                </button>
+                <div className="mt-3 flex items-baseline justify-between gap-4 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
+                    <span>{formData.image ? "Featured image set" : "No image yet"}</span>
+                    {formData.image ? (
+                        <button
+                            type="button"
+                            onClick={handleRemoveImage}
+                            className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer"
+                        >
+                            Remove
+                        </button>
+                    ) : (
+                        <span className="text-zinc-400 dark:text-zinc-600">
+                            Click panel to upload
+                        </span>
+                    )}
+                </div>
+                <input type="hidden" name="image" value={formData.image} required />
+            </Section>
+
+            <Section number="05" label="Body">
                 <div
                     id="editorjs"
-                    className="min-h-[400px] md:text-xl text-lg selection:bg-zinc-400 selection:text-black px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                    className="min-h-[400px] -mx-2 px-2 text-lg md:text-xl leading-relaxed text-zinc-900 dark:text-zinc-100 selection:bg-zinc-300 dark:selection:bg-zinc-700"
                 />
-            </div>
-            <div className="flex flex-wrap gap-4 items-center">
-                <button
-                    type="submit"
-                    disabled={!isReady || isSaving || !formData.image}
-                    className="px-6 py-3 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                >
-                    {isSaving ? savingLabel : submitLabel}
-                </button>
+                {!isReady && (
+                    <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
+                        Loading editor…
+                    </p>
+                )}
+            </Section>
+
+            <footer className="flex flex-col-reverse sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-10 border-t border-zinc-200 dark:border-zinc-800">
                 <Link
                     href={cancelHref}
-                    className="px-6 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                    className="text-center sm:text-left px-6 py-3 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                 >
-                    Cancel
+                    Discard
                 </Link>
                 <button
                     type="button"
                     onClick={() => setIsPreviewOpen(true)}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    className="px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                    >
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                    Post Preview
+                    Preview
                 </button>
-            </div>
+                <button
+                    type="submit"
+                    disabled={!isReady || isSaving || isUploading}
+                    className="px-8 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-bold uppercase tracking-[0.4em] disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-zinc-800 dark:hover:bg-white cursor-pointer"
+                >
+                    {isSaving ? savingLabel : submitLabel}
+                </button>
+            </footer>
+
             <PostPreviewSidebar
                 content={previewContent}
                 isOpen={isPreviewOpen}
                 onClose={() => setIsPreviewOpen(false)}
             />
         </form>
+    );
+}
+
+// ─── Section header (mirrors character-form) ─────────────────────────────────
+function Section({
+    number,
+    label,
+    children,
+}: {
+    number: string;
+    label: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <section className="space-y-6 md:space-y-8 animate-[fade-up_0.6s_ease-out_both]">
+            <header className="flex items-baseline gap-4 md:gap-6 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+                <span
+                    className="font-serif text-4xl sm:text-5xl md:text-6xl text-zinc-300 dark:text-zinc-700 leading-none tabular-nums"
+                    aria-hidden="true"
+                >
+                    {number}
+                </span>
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] text-zinc-700 dark:text-zinc-300">
+                    {label}
+                </h2>
+            </header>
+            {children}
+        </section>
     );
 }
