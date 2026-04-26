@@ -12,8 +12,8 @@ export function ThemeToggle() {
             aria-label="Toggle theme"
             className="cursor-pointer font-bold uppercase tracking-[0.4em] text-sm transition-colors"
         >
-            <span className="block dark:hidden">light</span>
-            <span className="hidden dark:block">dark</span>
+            <span className="hidden dark:block">light</span>
+            <span className="block dark:hidden">dark</span>
         </button>
     );
 }

@@ -10,7 +10,7 @@ export default function NavBar() {
     const currentPath = usePathname();
     return (
         <header className="max-w-[1400px] mx-auto border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black">
-            <div className="container px-4 py-4 flex justify-between items-center">
+            <div className="container px-4 py-4 mx-auto flex justify-between items-center">
                 <Link href="/">
                     <Image
                         src="/images/tfp.png"

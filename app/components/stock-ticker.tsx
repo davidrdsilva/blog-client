@@ -30,12 +30,12 @@ export default function StockTicker() {
     return (
         <ul
             aria-label="Live stock ticker"
-            className="hidden lg:flex items-center gap-4 text-xs font-mono"
+            className="hidden lg:flex items-center gap-2 xl:gap-4 text-xs font-mono"
         >
             {stocks.map((s) => {
                 const up = s.change >= 0;
                 return (
-                    <li key={s.symbol} className="flex items-center gap-1.5">
+                    <li key={s.symbol} className="flex items-center gap-1 xl:gap-1.5">
                         <span className="font-bold tracking-wider text-zinc-700 dark:text-zinc-200">
                             {s.symbol}
                         </span>
