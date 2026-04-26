@@ -57,7 +57,7 @@ export default function EditCharacterPage() {
     return (
         <div className="min-h-screen bg-white dark:bg-black">
             <NavBar />
-            <main className="container mx-auto px-6 lg:px-10 py-16 lg:py-24 max-w-7xl">
+            <main className="container mx-auto px-5 sm:px-6 lg:px-10 py-10 lg:py-24 max-w-7xl">
                 {error && (
                     <div className="mb-8 text-sm text-red-700 dark:text-red-300 border-l-2 border-red-700 dark:border-red-400 pl-4 py-2">
                         <span className="font-bold uppercase tracking-[0.3em] text-[10px] mr-3">

@@ -132,7 +132,7 @@ export default function CharacterForm({
     return (
         <form
             onSubmit={handleSubmit}
-            className="grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-12 lg:gap-20"
+            className="grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-10 lg:gap-20"
         >
             <input
                 ref={fileInputRef}
@@ -143,12 +143,12 @@ export default function CharacterForm({
                 className="hidden"
             />
 
-            <aside className="lg:sticky lg:top-12 lg:self-start space-y-8">
-                <header className="space-y-3 animate-[fade-up_0.6s_ease-out_both]">
+            <aside className="lg:sticky lg:top-12 lg:self-start space-y-6 lg:space-y-8">
+                <header className="space-y-2 lg:space-y-3 animate-[fade-up_0.6s_ease-out_both]">
                     <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-500 dark:text-zinc-500">
                         {eyebrow}
                     </p>
-                    <h1 className="font-serif text-4xl md:text-5xl text-zinc-900 dark:text-zinc-100 leading-[1.05] tracking-tight">
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-zinc-900 dark:text-zinc-100 leading-[1.05] tracking-tight">
                         {title}
                     </h1>
                 </header>
@@ -163,7 +163,10 @@ export default function CharacterForm({
                     onRemove={handleRemovePortrait}
                 />
 
-                <div className="space-y-3 animate-[fade-up_0.6s_ease-out_0.3s_both]">
+                {/* Radar lives in the sticky sidebar on desktop only — on mobile
+                    it moves into the Aptitudes section directly under the sliders
+                    that drive it. */}
+                <div className="hidden lg:block space-y-3 animate-[fade-up_0.6s_ease-out_0.3s_both]">
                     <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
                         Aptitude profile
                     </p>
@@ -177,7 +180,7 @@ export default function CharacterForm({
                     </div>
                 </div>
 
-                <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                <div className="hidden lg:block pt-4 border-t border-zinc-200 dark:border-zinc-800">
                     <Link
                         href={cancelHref}
                         className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
@@ -186,7 +189,7 @@ export default function CharacterForm({
                     </Link>
                 </div>
             </aside>
-            <div className="space-y-16">
+            <div className="space-y-12 lg:space-y-16">
                 {errorMessage && (
                     <div className="flex items-start gap-3 text-sm text-red-700 dark:text-red-300 border-l-2 border-red-700 dark:border-red-400 pl-4 py-2 animate-[fade-up_0.3s_ease-out_both]">
                         <span className="font-bold uppercase tracking-[0.3em] text-[10px] mt-0.5">
@@ -299,6 +302,21 @@ export default function CharacterForm({
                             />
                         ))}
                     </div>
+                    {/* Mobile-only echo of the radar so users see the live shape
+                        right under the sliders without scrolling back up. */}
+                    <div className="lg:hidden mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
+                            Aptitude profile
+                        </p>
+                        <div className="-mx-2">
+                            <CharacterRadar
+                                axes={SKILL_KEYS.map((key) => ({
+                                    label: key.toUpperCase(),
+                                    value: skills[key],
+                                }))}
+                            />
+                        </div>
+                    </div>
                 </Section>
 
                 <footer className="flex flex-col-reverse sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-10 border-t border-zinc-200 dark:border-zinc-800">
@@ -333,15 +351,15 @@ function Section({
     children: React.ReactNode;
 }) {
     return (
-        <section className="space-y-8 animate-[fade-up_0.6s_ease-out_both]">
-            <header className="flex items-baseline gap-6 pb-3 border-b border-zinc-200 dark:border-zinc-800">
+        <section className="space-y-6 md:space-y-8 animate-[fade-up_0.6s_ease-out_both]">
+            <header className="flex items-baseline gap-4 md:gap-6 pb-3 border-b border-zinc-200 dark:border-zinc-800">
                 <span
-                    className="font-serif text-5xl md:text-6xl text-zinc-300 dark:text-zinc-700 leading-none tabular-nums"
+                    className="font-serif text-4xl sm:text-5xl md:text-6xl text-zinc-300 dark:text-zinc-700 leading-none tabular-nums"
                     aria-hidden="true"
                 >
                     {number}
                 </span>
-                <h2 className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-700 dark:text-zinc-300">
+                <h2 className="text-[10px] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] text-zinc-700 dark:text-zinc-300">
                     {label}
                 </h2>
             </header>
@@ -373,7 +391,7 @@ function PreviewCard({
                 type="button"
                 onClick={onPick}
                 aria-label={portrait ? "Replace portrait" : "Upload portrait"}
-                className="relative block w-full aspect-4/5 overflow-hidden bg-zinc-100 dark:bg-zinc-900 group focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 cursor-pointer"
+                className="relative block w-full aspect-square sm:aspect-4/5 overflow-hidden bg-zinc-100 dark:bg-zinc-900 group focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 cursor-pointer"
             >
                 {portrait ? (
                     <Image
@@ -498,8 +516,8 @@ function SkillSlider({
     };
 
     return (
-        <div className="grid grid-cols-[minmax(0,7rem)_1fr_auto] items-center gap-6 py-4 border-b border-zinc-200/70 dark:border-zinc-800/70 last:border-b-0 group">
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-700 dark:text-zinc-300 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors">
+        <div className="grid grid-cols-[minmax(0,4.5rem)_1fr_auto] sm:grid-cols-[minmax(0,7rem)_1fr_auto] items-center gap-4 sm:gap-6 py-4 border-b border-zinc-200/70 dark:border-zinc-800/70 last:border-b-0 group">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-zinc-700 dark:text-zinc-300 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors truncate">
                 {name}
             </span>
             <button
@@ -527,11 +545,11 @@ function SkillSlider({
                 />
                 <span
                     aria-hidden="true"
-                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-zinc-900 dark:bg-zinc-100 rounded-full transition-[left] duration-150 ease-out group-hover:scale-125 group-focus-within:scale-150"
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 sm:w-2.5 sm:h-2.5 bg-zinc-900 dark:bg-zinc-100 rounded-full transition-[left] duration-150 ease-out group-hover:scale-125 group-focus-within:scale-150"
                     style={{ left: `${value}%` }}
                 />
             </button>
-            <span className="font-serif text-3xl md:text-4xl tabular-nums text-zinc-900 dark:text-zinc-100 leading-none min-w-[3ch] text-right">
+            <span className="font-serif text-2xl sm:text-3xl md:text-4xl tabular-nums text-zinc-900 dark:text-zinc-100 leading-none min-w-[2.5ch] text-right">
                 {String(value).padStart(2, "0")}
             </span>
         </div>
