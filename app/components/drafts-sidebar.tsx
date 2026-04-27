@@ -9,8 +9,18 @@ import type { Post } from "@/app/types/post";
 
 const PAGE_SIZE = 20;
 const SHORT_MONTHS = [
-    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
 ];
 
 interface DraftsSidebarProps {
@@ -31,10 +41,7 @@ function formatDraftDate(date: Date): string {
     return `${d} ${m} ${y}`;
 }
 
-export default function DraftsSidebar({
-    currentDraftId,
-    onDraftDiscarded,
-}: DraftsSidebarProps) {
+export default function DraftsSidebar({ currentDraftId, onDraftDiscarded }: DraftsSidebarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [drafts, setDrafts] = useState<Post[]>([]);
@@ -150,7 +157,7 @@ export default function DraftsSidebar({
             <aside
                 aria-label="Drafts"
                 aria-hidden={!isOpen}
-                className={`fixed inset-y-0 right-0 z-50 w-full md:w-[26rem] bg-white dark:bg-[#09090b] shadow-2xl flex flex-col md:border-l md:border-zinc-200 dark:border-zinc-800 transform transition-transform duration-300 ease-in-out ${
+                className={`fixed inset-y-0 right-0 z-50 w-full md:w-104 bg-white dark:bg-[#09090b] shadow-2xl flex flex-col md:border-l md:border-zinc-200 dark:border-zinc-800 transform transition-transform duration-300 ease-in-out ${
                     isOpen ? "translate-x-0" : "translate-x-full"
                 }`}
             >
@@ -231,7 +238,7 @@ export default function DraftsSidebar({
                                                     </span>
                                                 )}
                                             </div>
-                                            <h4 className="mt-2 font-serif text-lg leading-snug text-zinc-900 dark:text-zinc-100 line-clamp-2 break-words">
+                                            <h4 className="mt-2 font-serif text-lg leading-snug text-zinc-900 dark:text-zinc-100 line-clamp-2 wrap-break-word">
                                                 {draft.title || (
                                                     <span className="italic text-zinc-500 dark:text-zinc-500">
                                                         Untitled
@@ -310,8 +317,13 @@ export default function DraftsSidebar({
                 type="button"
                 onClick={() => setIsOpen(true)}
                 aria-label="Show drafts"
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.4em] border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                className="relative inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.4em] border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
+                {total && total > 0 && (
+                    <span className="relative inline-flex size-2 rounded-full bg-yellow-500">
+                        <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-yellow-400 opacity-75"></span>
+                    </span>
+                )}
                 <span>Drafts</span>
                 <span
                     aria-hidden="true"

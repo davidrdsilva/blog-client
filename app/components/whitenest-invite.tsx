@@ -4,7 +4,7 @@ import { getLatestWhitenestChapter } from "@/app/lib/api";
 import formatDate from "@/app/utils/format-date";
 import isLocalUrl from "@/app/utils/is-local-url";
 
-const WHITENEST_CATEGORY = "Whitenest";
+const WHITENEST_CATEGORY = "White Nest";
 
 export default async function WhitenestInvite() {
     const chapter = await getLatestWhitenestChapter();
@@ -32,7 +32,7 @@ export default async function WhitenestInvite() {
                 />
                 <div
                     aria-hidden="true"
-                    className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80"
+                    className="absolute inset-0 bg-linear-to-b from-black/70 via-black/40 to-black/80"
                 />
                 <div className="relative z-10 flex flex-col justify-between h-full p-6 md:p-12">
                     <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-white/80">

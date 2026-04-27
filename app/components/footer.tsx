@@ -37,28 +37,25 @@ export default function Footer() {
                             Front Page
                         </Link>
                         <Link
-                            href="/"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
+                            href="/whitenest/1"
+                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm flex items-center gap-2"
                         >
-                            World
+                            <span className="relative inline-flex size-2 rounded-full bg-yellow-500">
+                                <span className="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-yellow-400 opacity-75"></span>
+                            </span>
+                            White Nest
                         </Link>
                         <Link
-                            href="/"
+                            href="/?tags=Bridge%20Falls"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
-                            Politics
+                            Bridge Falls
                         </Link>
                         <Link
-                            href="/"
+                            href="/?tags=Valentino"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
-                            Business
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-                        >
-                            Technology
+                            Valentino
                         </Link>
                     </div>
 
@@ -113,12 +110,6 @@ export default function Footer() {
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Manage Cast
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-                        >
-                            Newsletters
                         </Link>
                     </div>
                 </div>
