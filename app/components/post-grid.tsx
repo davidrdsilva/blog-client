@@ -3,11 +3,9 @@ import { PostCard } from "./post-card";
 
 interface PostGridProps {
     posts: Post[];
-    onDelete?: (postId: string) => void;
-    isDeleting?: boolean;
 }
 
-export function PostGrid({ posts, onDelete, isDeleting }: PostGridProps) {
+export function PostGrid({ posts }: PostGridProps) {
     if (posts.length === 0) return null;
 
     const heroPost = posts[0];
@@ -15,11 +13,11 @@ export function PostGrid({ posts, onDelete, isDeleting }: PostGridProps) {
     const deeperPosts = posts.slice(4);
 
     return (
-        <div className={`flex flex-col ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}>
+        <div className="flex flex-col">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pb-12 border-b border-zinc-200 dark:border-zinc-800">
                 {/* Hero Area */}
                 <div className="lg:col-span-8 lg:border-r border-zinc-200 dark:border-zinc-800 lg:pr-12">
-                    <PostCard post={heroPost} onDelete={onDelete} variant="hero" />
+                    <PostCard post={heroPost} variant="hero" />
                 </div>
 
                 {/* Right Sidebar Area */}
@@ -31,7 +29,6 @@ export function PostGrid({ posts, onDelete, isDeleting }: PostGridProps) {
                         >
                             <PostCard
                                 post={post}
-                                onDelete={onDelete}
                                 variant={index === 0 ? "compact" : "text-only"}
                             />
                         </div>
@@ -42,12 +39,7 @@ export function PostGrid({ posts, onDelete, isDeleting }: PostGridProps) {
             {deeperPosts.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 pt-12">
                     {deeperPosts.map((post) => (
-                        <PostCard
-                            key={post.id}
-                            post={post}
-                            onDelete={onDelete}
-                            variant="standard"
-                        />
+                        <PostCard key={post.id} post={post} variant="standard" />
                     ))}
                 </div>
             )}

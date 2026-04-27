@@ -4,11 +4,9 @@ import type { Post } from "@/app/types/post";
 import formatDate from "@/app/utils/format-date";
 import isLocalUrl from "@/app/utils/is-local-url";
 import truncateDescription from "@/app/utils/truncate-description";
-import { PostCardMenu } from "./post-card-menu";
 
 interface PostCardProps {
     post: Post;
-    onDelete?: (postId: string) => void;
     variant?: "hero" | "standard" | "compact" | "text-only";
 }
 
@@ -16,16 +14,13 @@ function formatViews(views: number): string {
     return `${views.toLocaleString()} ${views === 1 ? "view" : "views"}`;
 }
 
-export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps) {
+export function PostCard({ post, variant = "standard" }: PostCardProps) {
     const formattedDate = formatDate(post.date);
     const viewsLabel = formatViews(post.totalViews);
 
     if (variant === "hero") {
         return (
             <article className="relative group flex flex-col pt-2">
-                <div className="absolute bottom-2 right-2 z-10">
-                    <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
-                </div>
                 <Link href={`/posts/${post.id}`} className="flex flex-col gap-4">
                     <h2 className="text-3xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 leading-tight group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors">
                         {post.title}
@@ -59,9 +54,6 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
     if (variant === "compact") {
         return (
             <article className="relative group flex flex-col pt-2">
-                <div className="absolute top-3 right-2 z-10">
-                    <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
-                </div>
                 <Link href={`/posts/${post.id}`} className="flex flex-col gap-3">
                     <div className="relative w-full aspect-video overflow-hidden border-b border-zinc-200 dark:border-zinc-800 pb-2 mb-1">
                         <Image
@@ -92,9 +84,6 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
     if (variant === "text-only") {
         return (
             <article className="relative group flex flex-col pt-2">
-                <div className="absolute top-0 right-0 z-10">
-                    <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
-                </div>
                 <Link href={`/posts/${post.id}`} className="flex flex-col gap-2">
                     <h2 className="text-lg font-serif text-zinc-900 dark:text-zinc-100 leading-snug group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors pr-6">
                         {post.title}
@@ -115,9 +104,6 @@ export function PostCard({ post, onDelete, variant = "standard" }: PostCardProps
     // Standard variant
     return (
         <article className="relative group flex flex-col pt-2 h-full">
-            <div className="absolute top-3 right-2 z-10">
-                <PostCardMenu postId={post.id} postTitle={post.title} onDelete={onDelete} />
-            </div>
             <Link href={`/posts/${post.id}`} className="flex flex-col gap-3 h-full">
                 <div className="relative w-full aspect-4/3 overflow-hidden border-b border-zinc-200 dark:border-zinc-800 pb-2 mb-1">
                     <Image

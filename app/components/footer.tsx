@@ -94,13 +94,19 @@ export default function Footer() {
 
                     <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3">
                         <h3 className="font-bold text-zinc-900 dark:text-white uppercase tracking-wider text-xs mb-2">
-                            Connect
+                            Pages
                         </h3>
                         <Link
                             href="/posts/new"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Publish with Us
+                        </Link>
+                        <Link
+                            href="/admin/manage-posts"
+                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
+                        >
+                            Manage Articles
                         </Link>
                         <Link
                             href="/admin/characters"
@@ -113,12 +119,6 @@ export default function Footer() {
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Newsletters
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-                        >
-                            Podcasts
                         </Link>
                     </div>
                 </div>

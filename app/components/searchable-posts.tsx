@@ -1,8 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { deletePost } from "@/app/lib/api";
+import { useMemo, useState } from "react";
 import type { Post } from "@/app/types/post";
 import { PostGrid } from "./post-grid";
 import { SearchBar } from "./search-bar";
@@ -52,19 +50,13 @@ export function SearchablePosts({
     initialPosts,
     initialCount = POSTS_PER_PAGE,
 }: SearchablePostsProps) {
-    const router = useRouter();
-    const [isPending, startTransition] = useTransition();
-    const [posts, setPosts] = useState(initialPosts);
     const [searchQuery, setSearchQuery] = useState("");
     const [visibleCount, setVisibleCount] = useState(initialCount);
 
-    useEffect(() => {
-        setPosts(initialPosts);
-        setVisibleCount(initialCount);
-        setSearchQuery("");
-    }, [initialPosts, initialCount]);
-
-    const filteredPosts = useMemo(() => searchPosts(posts, searchQuery), [posts, searchQuery]);
+    const filteredPosts = useMemo(
+        () => searchPosts(initialPosts, searchQuery),
+        [initialPosts, searchQuery],
+    );
 
     const visiblePosts = filteredPosts.slice(0, visibleCount);
     const hasMore = visibleCount < filteredPosts.length;
@@ -76,18 +68,6 @@ export function SearchablePosts({
 
     const handleLoadMore = () => {
         setVisibleCount((prev) => Math.min(prev + POSTS_PER_PAGE, filteredPosts.length));
-    };
-
-    const handleDelete = async (postId: string) => {
-        try {
-            await deletePost(postId);
-            setPosts((prev) => prev.filter((p) => p.id !== postId));
-            startTransition(() => {
-                router.refresh();
-            });
-        } catch (error) {
-            console.error("Failed to delete post:", error);
-        }
     };
 
     return (
@@ -118,7 +98,7 @@ export function SearchablePosts({
                             {filteredPosts.length !== 1 ? "s" : ""}
                         </p>
                     )}
-                    <PostGrid posts={visiblePosts} onDelete={handleDelete} isDeleting={isPending} />
+                    <PostGrid posts={visiblePosts} />
                     {hasMore && (
                         <div className="flex justify-center mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800">
                             <button
