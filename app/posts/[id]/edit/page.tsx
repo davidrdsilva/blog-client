@@ -2,6 +2,7 @@
 
 import { notFound, useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
+import DraftsSidebar from "@/app/components/drafts-sidebar";
 import NavBar from "@/app/components/navbar";
 import PostForm, { type PostFormData } from "@/app/components/post-form";
 import { APIClientError, getPost, updatePost } from "@/app/lib/api";
@@ -34,7 +35,10 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         fetchPost();
     }, [id]);
 
-    const handleSubmit = async (data: PostFormData) => {
+    const handleSubmit = async (
+        data: PostFormData,
+        opts: { asDraft: boolean },
+    ) => {
         try {
             let formattedDate: string | undefined;
             if (data.date && data.date.length === 10) {
@@ -42,7 +46,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 formattedDate = `${y}-${m}-${d}T00:00:00Z`;
             }
 
-            await updatePost(id, {
+            const updated = await updatePost(id, {
                 title: data.title,
                 subtitle: data.subtitle || undefined,
                 description: data.description,
@@ -54,6 +58,13 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                 character_ids: data.characterIds,
             });
 
+            // Drafts: stay on the editor so the user can keep working. Refresh
+            // the in-memory post so the date/category reflect what the server
+            // just persisted (the publish-transition rule may have mutated date).
+            if (opts.asDraft) {
+                setPost(updated);
+                return;
+            }
             router.push(`/posts/${id}`);
         } catch (error) {
             console.error("Error saving post:", error);
@@ -107,6 +118,14 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                     submitLabel="Save changes"
                     savingLabel="Saving…"
                     cancelHref={`/posts/${id}`}
+                    headerExtra={
+                        <DraftsSidebar
+                            currentDraftId={id}
+                            onDraftDiscarded={(discardedId) => {
+                                if (discardedId === id) router.push("/");
+                            }}
+                        />
+                    }
                 />
             </main>
         </div>

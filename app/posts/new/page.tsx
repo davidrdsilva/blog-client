@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import DraftsSidebar from "@/app/components/drafts-sidebar";
 import NavBar from "@/app/components/navbar";
 import PostForm, { type PostFormData } from "@/app/components/post-form";
 import { createPost } from "@/app/lib/api";
@@ -8,7 +9,10 @@ import { createPost } from "@/app/lib/api";
 export default function NewPostPage() {
     const router = useRouter();
 
-    const handleSubmit = async (data: PostFormData) => {
+    const handleSubmit = async (
+        data: PostFormData,
+        opts: { asDraft: boolean },
+    ) => {
         try {
             let formattedDate: string | undefined;
             if (data.date && data.date.length === 10) {
@@ -29,6 +33,12 @@ export default function NewPostPage() {
                 character_ids: data.characterIds.length > 0 ? data.characterIds : undefined,
             });
 
+            // Drafts: keep the editor open against the just-saved record so
+            // subsequent saves update it instead of creating duplicates.
+            if (opts.asDraft) {
+                router.replace(`/posts/${post.id}/edit`);
+                return;
+            }
             router.push(`/posts/${post.id}`);
         } catch (error) {
             console.error("Error saving post:", error);
@@ -46,6 +56,7 @@ export default function NewPostPage() {
                     submitLabel="Publish"
                     savingLabel="Publishing…"
                     cancelHref="/"
+                    headerExtra={<DraftsSidebar />}
                 />
             </main>
         </div>

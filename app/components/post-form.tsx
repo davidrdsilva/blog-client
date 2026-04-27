@@ -40,12 +40,13 @@ interface PostFormProps {
         tags?: string[];
         characterIds?: string[];
     };
-    onSubmit: (data: PostFormData) => Promise<void>;
+    onSubmit: (data: PostFormData, opts: { asDraft: boolean }) => Promise<void>;
     submitLabel: string;
     savingLabel: string;
     cancelHref: string;
     title: string;
     eyebrow?: string;
+    headerExtra?: React.ReactNode;
 }
 
 export default function PostForm({
@@ -56,6 +57,7 @@ export default function PostForm({
     cancelHref,
     title,
     eyebrow = "Admin · Posts",
+    headerExtra,
 }: PostFormProps) {
     const editorRef = useRef<EditorJSType | null>(null);
     const editorInitializing = useRef(false);
@@ -81,7 +83,9 @@ export default function PostForm({
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        getCategories()
+        // Admin form needs to see internal categories (e.g. Drafts) so the
+        // editor can save work-in-progress without publishing.
+        getCategories(undefined, { includeInternal: true })
             .then(setCategories)
             .catch(() => setCategories([]));
     }, []);
@@ -137,6 +141,10 @@ export default function PostForm({
         setFormData((prev) => ({ ...prev, date: value }));
     };
 
+    // Editor.js owns its own DOM and content once instantiated, so we mount it
+    // exactly once. Re-running this effect (e.g. when the parent refreshes
+    // `initialData` after a draft save) would destroy the live editor and the
+    // initialization guard below would block recreation, leaving an empty hole.
     useEffect(() => {
         const initEditor = async () => {
             if (editorRef.current || editorInitializing.current) return;
@@ -231,8 +239,14 @@ export default function PostForm({
                 editorRef.current.destroy();
                 editorRef.current = null;
             }
+            editorInitializing.current = false;
         };
-    }, [initialData?.content]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const selectedCategory = categories.find((c) => c.id === categoryId);
+    const isWhitenest = selectedCategory?.name === WHITENEST_CATEGORY_NAME;
+    const isDraftCategory = selectedCategory?.isInternal === true;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -241,21 +255,25 @@ export default function PostForm({
             setErrorMessage("Please select a category before publishing.");
             return;
         }
-        if (!formData.image) {
-            setErrorMessage("A featured image is required.");
+        // Drafts can be saved without a featured image; published posts can't.
+        if (!isDraftCategory && !formData.image) {
+            setErrorMessage("A featured image is required to publish.");
             return;
         }
 
         setIsSaving(true);
         try {
             const outputData = await editorRef.current.save();
-            await onSubmit({
-                ...formData,
-                content: outputData as EditorJsContent,
-                categoryId: Number(categoryId),
-                tags,
-                characterIds,
-            });
+            await onSubmit(
+                {
+                    ...formData,
+                    content: outputData as EditorJsContent,
+                    categoryId: Number(categoryId),
+                    tags,
+                    characterIds,
+                },
+                { asDraft: isDraftCategory },
+            );
         } catch (error) {
             console.error("Failed to save post:", error);
             setErrorMessage(error instanceof Error ? error.message : "Failed to save post.");
@@ -263,9 +281,6 @@ export default function PostForm({
             setIsSaving(false);
         }
     };
-
-    const selectedCategory = categories.find((c) => c.id === categoryId);
-    const isWhitenest = selectedCategory?.name === WHITENEST_CATEGORY_NAME;
     const descriptionRemaining = DESCRIPTION_LIMIT - formData.description.length;
 
     const inputClass =
@@ -276,12 +291,17 @@ export default function PostForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-12 lg:space-y-16">
             <header className="space-y-2 lg:space-y-3 animate-[fade-up_0.6s_ease-out_both]">
-                <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-500 dark:text-zinc-500">
-                    {eyebrow}
-                </p>
-                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-zinc-900 dark:text-zinc-100 leading-[1.05] tracking-tight">
-                    {title}
-                </h1>
+                <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-2 lg:space-y-3 min-w-0 flex-1">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-500 dark:text-zinc-500">
+                            {eyebrow}
+                        </p>
+                        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-zinc-900 dark:text-zinc-100 leading-[1.05] tracking-tight">
+                            {title}
+                        </h1>
+                    </div>
+                    {headerExtra && <div className="shrink-0 pt-1">{headerExtra}</div>}
+                </div>
             </header>
 
             {errorMessage && (
@@ -359,7 +379,7 @@ export default function PostForm({
                                     <option value="">Select…</option>
                                     {categories.map((c) => (
                                         <option key={c.id} value={c.id}>
-                                            {c.name}
+                                            {c.isInternal ? `· ${c.name}` : c.name}
                                         </option>
                                     ))}
                                 </select>
@@ -503,7 +523,12 @@ export default function PostForm({
                         </span>
                     )}
                 </div>
-                <input type="hidden" name="image" value={formData.image} required />
+                <input
+                    type="hidden"
+                    name="image"
+                    value={formData.image}
+                    required={!isDraftCategory}
+                />
             </Section>
 
             <Section number="05" label="Body">
@@ -537,7 +562,13 @@ export default function PostForm({
                     disabled={!isReady || isSaving || isUploading}
                     className="px-8 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-bold uppercase tracking-[0.4em] disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-zinc-800 dark:hover:bg-white cursor-pointer"
                 >
-                    {isSaving ? savingLabel : submitLabel}
+                    {isDraftCategory
+                        ? isSaving
+                            ? "Saving draft…"
+                            : "Save draft"
+                        : isSaving
+                          ? savingLabel
+                          : submitLabel}
                 </button>
             </footer>
 

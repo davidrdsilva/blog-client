@@ -13,6 +13,13 @@ export interface EditorJsContent {
 export interface Category {
     id: number;
     name: string;
+    isInternal: boolean;
+}
+
+export interface APICategory {
+    id: number;
+    name: string;
+    is_internal: boolean;
 }
 
 export interface Tag {
@@ -107,7 +114,7 @@ export interface APIPost {
     author: string;
     content: EditorJsContent | null;
     category_id: number;
-    category?: Category | null;
+    category?: APICategory | null;
     tags?: Tag[] | null;
     characters?: APICharacter[] | null;
     total_views: number;

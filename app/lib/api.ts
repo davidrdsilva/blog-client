@@ -1,4 +1,5 @@
 import type {
+    APICategory,
     APICharacter,
     Category,
     CategoryWithCount,
@@ -25,7 +26,7 @@ interface APIPost {
     author: string;
     content: EditorJsContent | null;
     category_id: number;
-    category?: Category | null;
+    category?: APICategory | null;
     tags?: Tag[] | null;
     characters?: APICharacter[] | null;
     total_views: number;
@@ -35,7 +36,7 @@ interface APIPost {
 }
 
 interface CategoriesResponse {
-    data: Category[];
+    data: APICategory[];
 }
 
 interface CategoriesCountResponse {
@@ -122,6 +123,14 @@ export interface UpdatePostData {
     character_ids?: string[];
 }
 
+function transformCategory(apiCategory: APICategory): Category {
+    return {
+        id: apiCategory.id,
+        name: apiCategory.name,
+        isInternal: apiCategory.is_internal ?? false,
+    };
+}
+
 function transformCharacter(apiCharacter: APICharacter): Character {
     return {
         id: apiCharacter.id,
@@ -147,7 +156,7 @@ function transformPost(apiPost: APIPost): Post {
         author: apiPost.author,
         content: apiPost.content ?? undefined,
         categoryId: apiPost.category_id,
-        category: apiPost.category ?? undefined,
+        category: apiPost.category ? transformCategory(apiPost.category) : undefined,
         tags: apiPost.tags ?? [],
         characters: (apiPost.characters ?? []).map(transformCharacter),
         totalViews: apiPost.total_views ?? 0,
@@ -221,6 +230,54 @@ export async function getPosts(
     } catch (error) {
         console.error("Error fetching posts:", error);
 
+        return {
+            posts: [],
+            meta: {
+                total: 0,
+                page: 1,
+                limit: 10,
+                totalPages: 0,
+                hasMore: false,
+            },
+            error,
+        };
+    }
+}
+
+// Get a paginated list of draft posts (admin-only). Mirrors getPosts() but
+// hits /api/posts/drafts, which returns posts whose category is flagged
+// is_internal on the server.
+export async function getDrafts(
+    params: GetPostsParams = {},
+): Promise<{ posts: Post[]; meta: PaginationMeta; error?: unknown }> {
+    try {
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.set("page", String(params.page));
+        if (params.limit) searchParams.set("limit", String(params.limit));
+        if (params.search) searchParams.set("search", params.search);
+        if (params.author) searchParams.set("author", params.author);
+        if (params.sortBy) searchParams.set("sortBy", params.sortBy);
+        if (params.sortOrder) searchParams.set("sortOrder", params.sortOrder);
+        if (params.tags && params.tags.length > 0) {
+            for (const tag of params.tags) searchParams.append("tags", tag);
+        }
+
+        const queryString = searchParams.toString();
+        const url = `${API_BASE_URL}/api/posts/drafts${queryString ? `?${queryString}` : ""}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+
+        const data = await handleResponse<PostsResponse>(response);
+        return {
+            posts: data.data.map(transformPost),
+            meta: data.meta,
+        };
+    } catch (error) {
+        console.error("Error fetching drafts:", error);
         return {
             posts: [],
             meta: {
@@ -358,11 +415,17 @@ export function isAPIDownError(error: unknown): boolean {
     return false;
 }
 
-// List categories with optional case-insensitive name search.
-export async function getCategories(search?: string): Promise<Category[]> {
+// List categories with optional case-insensitive name search. Internal
+// categories (e.g. "Drafts") are excluded by default; pass
+// { includeInternal: true } from admin pages that need to show them.
+export async function getCategories(
+    search?: string,
+    opts?: { includeInternal?: boolean },
+): Promise<Category[]> {
     try {
         const url = new URL(`${API_BASE_URL}/api/categories`, "http://placeholder");
         if (search) url.searchParams.set("search", search);
+        if (opts?.includeInternal) url.searchParams.set("include_internal", "true");
         const fetchUrl = `${API_BASE_URL}/api/categories${url.search}`;
         const response = await fetch(fetchUrl, {
             method: "GET",
@@ -370,7 +433,7 @@ export async function getCategories(search?: string): Promise<Category[]> {
             cache: "no-store",
         });
         const data = await handleResponse<CategoriesResponse>(response);
-        return data.data;
+        return data.data.map(transformCategory);
     } catch (error) {
         console.error("Error fetching categories:", error);
         return [];
