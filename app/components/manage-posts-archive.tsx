@@ -118,9 +118,7 @@ export default function ManagePostsArchive({ initialPosts }: ManagePostsArchiveP
 
             {filtered.length === 0 && (
                 <p className="py-16 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
-                    {searchQuery
-                        ? `No articles match "${searchQuery}"`
-                        : "The morgue is empty"}
+                    {searchQuery ? `No articles match "${searchQuery}"` : "The morgue is empty"}
                 </p>
             )}
 
@@ -154,7 +152,6 @@ export default function ManagePostsArchive({ initialPosts }: ManagePostsArchiveP
     );
 }
 
-// ─── Header: eyebrow, big serif italic title, count, search bar ──────────────
 function ArchiveHeader({
     total,
     filteredCount,
@@ -170,18 +167,28 @@ function ArchiveHeader({
     const isFiltered = searchQuery.trim().length > 0;
 
     return (
-        <header className="space-y-8 animate-[fade-up_0.6s_ease-out_both]">
+        <header className="space-y-6 sm:space-y-8 animate-[fade-up_0.6s_ease-out_both]">
             <div className="space-y-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-500 dark:text-zinc-500">
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] text-zinc-500 dark:text-zinc-500">
                     Admin · Editorial Desk
                 </p>
                 <h1 className="font-serif italic text-4xl sm:text-5xl lg:text-6xl text-zinc-900 dark:text-zinc-100 leading-[1.05] tracking-tight">
                     The Morgue
                 </h1>
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
-                    {isFiltered
-                        ? `${filteredCount} of ${total} article${total === 1 ? "" : "s"} match`
-                        : `${total.toLocaleString()} article${total === 1 ? "" : "s"} on file · sectioned by date · indexed by name`}
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
+                    {isFiltered ? (
+                        `${filteredCount} of ${total} article${total === 1 ? "" : "s"} match`
+                    ) : (
+                        <>
+                            <span className="sm:hidden">
+                                {total.toLocaleString()} article{total === 1 ? "" : "s"} on file
+                            </span>
+                            <span className="hidden sm:inline">
+                                {total.toLocaleString()} article{total === 1 ? "" : "s"} on file ·
+                                sectioned by date · indexed by name
+                            </span>
+                        </>
+                    )}
                 </p>
             </div>
 
@@ -201,7 +208,7 @@ function ArchiveHeader({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     aria-hidden="true"
-                    className="text-zinc-400 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"
+                    className="shrink-0 text-zinc-400 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"
                 >
                     <circle cx="11" cy="11" r="7" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -211,15 +218,15 @@ function ArchiveHeader({
                     type="text"
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    placeholder="Search by headline, standfirst, body, author, or section…"
-                    className="flex-1 bg-transparent text-lg sm:text-xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none"
+                    placeholder="Search the archive…"
+                    className="flex-1 min-w-0 bg-transparent text-base sm:text-xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none"
                 />
                 {searchQuery && (
                     <button
                         type="button"
                         onClick={() => onSearchChange("")}
                         aria-label="Clear search"
-                        className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer"
+                        className="shrink-0 text-[10px] font-bold uppercase tracking-[0.3em] sm:tracking-[0.4em] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer"
                     >
                         Clear
                     </button>
@@ -275,44 +282,72 @@ function ArchiveRow({
 
     return (
         <li className="group border-b border-zinc-200 dark:border-zinc-800">
-            <div className="grid grid-cols-[5.5rem_minmax(0,1fr)_auto] sm:grid-cols-[6.5rem_7rem_minmax(0,1fr)_4rem_auto] items-center gap-3 sm:gap-6 py-5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/40 px-3 -mx-3">
-                {/* Date */}
+            {/* Mobile: stacked card — eyebrow row, full-width title, meta footer */}
+            <div className="sm:hidden py-5 px-2 -mx-2 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/40">
+                <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums text-zinc-500 dark:text-zinc-500 whitespace-nowrap">
+                        {dateLabel}
+                    </span>
+                    <div className="flex items-center gap-2 -mr-1">
+                        <Link
+                            href={`/posts/${post.id}/edit`}
+                            className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 active:text-zinc-900 dark:active:text-zinc-100 transition-colors"
+                        >
+                            Edit
+                        </Link>
+                        <button
+                            type="button"
+                            onClick={() => onDeleteRequest(post)}
+                            className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-red-700 dark:text-red-400 active:text-red-900 dark:active:text-red-300 transition-colors cursor-pointer"
+                        >
+                            Pull
+                        </button>
+                    </div>
+                </div>
+                <Link
+                    href={`/posts/${post.id}`}
+                    className="block mt-2 font-serif text-lg leading-snug text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors line-clamp-3 wrap-break-word"
+                >
+                    {post.title}
+                </Link>
+                <p className="mt-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-500">
+                    <span className="truncate text-zinc-700 dark:text-zinc-300">
+                        {sectionLabel}
+                    </span>
+                    <span aria-hidden className="text-zinc-300 dark:text-zinc-700">
+                        ·
+                    </span>
+                    <span className="tabular-nums whitespace-nowrap">{viewsLabel} views</span>
+                </p>
+            </div>
+
+            {/* Desktop: full table row */}
+            <div className="hidden sm:grid grid-cols-[6.5rem_7rem_minmax(0,1fr)_4rem_auto] items-center gap-6 py-5 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/40 px-3 -mx-3">
                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums text-zinc-500 dark:text-zinc-500">
                     {dateLabel}
                 </span>
-
-                {/* Section — desktop only column, mobile shows under title */}
-                <span className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 truncate">
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 truncate">
                     {sectionLabel}
                 </span>
-
-                {/* Title + mobile section */}
-                <div className="min-w-0 sm:col-auto col-start-2">
+                <div className="min-w-0">
                     <Link
                         href={`/posts/${post.id}`}
-                        className="block font-serif text-lg sm:text-xl leading-snug text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors line-clamp-2"
+                        className="block font-serif text-xl leading-snug text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors line-clamp-2"
                     >
                         {post.title}
                     </Link>
-                    <p className="sm:hidden mt-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-500">
-                        {sectionLabel} · {viewsLabel} views
-                    </p>
                 </div>
-
-                {/* Views — desktop only column */}
-                <span className="hidden sm:block text-right text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums text-zinc-500 dark:text-zinc-500">
+                <span className="text-right text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums text-zinc-500 dark:text-zinc-500">
                     {viewsLabel}
                 </span>
-
-                {/* Actions */}
-                <div className="flex items-center gap-1 sm:gap-3 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-within:opacity-100 transition-opacity">
+                <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                     <Link
                         href={`/posts/${post.id}/edit`}
                         className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                     >
                         Edit
                     </Link>
-                    <span className="hidden sm:inline text-zinc-300 dark:text-zinc-700" aria-hidden>
+                    <span className="text-zinc-300 dark:text-zinc-700" aria-hidden>
                         ·
                     </span>
                     <button
