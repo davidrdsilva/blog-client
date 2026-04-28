@@ -102,6 +102,7 @@ export default function MainNavSidebar() {
         };
     }, [isOpen]);
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: pathname identity change is the trigger
     useEffect(() => {
         setIsOpen(false);
     }, [pathname]);
@@ -253,27 +254,25 @@ export default function MainNavSidebar() {
                                                     {indexLabel}
                                                 </span>
                                                 <span
-                                                    className="relative text-[26px] leading-[1.05] font-bold tracking-tight uppercase text-zinc-900 dark:text-zinc-100"
+                                                    className="relative inline-block text-[26px] leading-[1.05] font-bold tracking-tight uppercase text-zinc-900 dark:text-zinc-100"
                                                     style={{ fontFamily: "var(--font-sans)" }}
                                                 >
-                                                    <span className="relative inline-block">
-                                                        {link.label}
-                                                        <span
-                                                            aria-hidden="true"
-                                                            className="absolute left-0 right-0 -bottom-0.5 h-[2px] bg-zinc-900 dark:bg-zinc-100 origin-left scale-x-0 group-hover/link:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
-                                                        />
-                                                    </span>
-                                                    {isLive && (
-                                                        <span className="ml-3 inline-flex items-center gap-1.5 align-middle">
-                                                            <span className="relative inline-flex size-1.5 rounded-full bg-yellow-500">
-                                                                <span className="absolute inline-flex h-1.5 w-1.5 animate-ping rounded-full bg-yellow-400 opacity-75" />
-                                                            </span>
-                                                            <span className="text-[9px] tracking-[0.4em] text-yellow-600 dark:text-yellow-400 font-mono">
-                                                                LIVE
-                                                            </span>
-                                                        </span>
-                                                    )}
+                                                    {link.label}
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className="absolute left-0 right-0 -bottom-0.5 h-[2px] bg-zinc-900 dark:bg-zinc-100 origin-left scale-x-0 group-hover/link:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                                                    />
                                                 </span>
+                                                {isLive && (
+                                                    <span className="ml-2 self-center inline-flex items-center gap-1.5">
+                                                        <span className="relative inline-flex size-1.5 rounded-full bg-red-500">
+                                                            <span className="absolute inset-0 inline-flex animate-ping rounded-full bg-red-400 opacity-75" />
+                                                        </span>
+                                                        <span className="text-[9px] leading-none tracking-[0.4em] text-red-600 dark:text-red-400 font-mono">
+                                                            LIVE
+                                                        </span>
+                                                    </span>
+                                                )}
                                                 <span
                                                     aria-hidden="true"
                                                     className="ml-auto text-zinc-400 dark:text-zinc-600 group-hover/link:text-zinc-900 dark:group-hover/link:text-zinc-100 group-hover/link:translate-x-1 transition-all self-center"
