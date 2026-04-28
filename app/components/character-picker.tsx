@@ -13,6 +13,12 @@ interface CharacterPickerProps {
     placeholder?: string;
 }
 
+interface AnchorRect {
+    top: number;
+    left: number;
+    width: number;
+}
+
 /**
  * CharacterPicker is a multi-select that appends characters to an ordered
  * list. Unlike TagsInput it doesn't allow freetext creation — only existing
@@ -23,25 +29,34 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
     const [suggestions, setSuggestions] = useState<Character[]>([]);
     const [cache, setCache] = useState<Record<string, Character>>({});
     const [isOpen, setIsOpen] = useState(false);
-    const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
+    const [anchorRect, setAnchorRect] = useState<AnchorRect | null>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const anchorRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLUListElement>(null);
 
     // Track the input container's position so the portaled dropdown can
-    // anchor under it. Updates on open and on scroll/resize while open.
+    // anchor under it. rAF-throttled so mobile momentum scroll doesn't jitter
+    // the dropdown position by re-rendering between paint frames.
     useEffect(() => {
         if (!isOpen) return;
+        let raf = 0;
         const measure = () => {
-            if (anchorRef.current) {
-                setAnchorRect(anchorRef.current.getBoundingClientRect());
-            }
+            const el = anchorRef.current;
+            if (!el) return;
+            const r = el.getBoundingClientRect();
+            setAnchorRect({ top: r.bottom, left: r.left, width: r.width });
+        };
+        const schedule = () => {
+            if (raf) cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(measure);
         };
         measure();
-        window.addEventListener("scroll", measure, true);
-        window.addEventListener("resize", measure);
+        window.addEventListener("scroll", schedule, true);
+        window.addEventListener("resize", schedule);
         return () => {
-            window.removeEventListener("scroll", measure, true);
-            window.removeEventListener("resize", measure);
+            if (raf) cancelAnimationFrame(raf);
+            window.removeEventListener("scroll", schedule, true);
+            window.removeEventListener("resize", schedule);
         };
     }, [isOpen]);
 
@@ -79,9 +94,10 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
 
     useEffect(() => {
         const onClickOutside = (e: MouseEvent) => {
-            if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-                setIsOpen(false);
-            }
+            const target = e.target as Node;
+            if (wrapperRef.current?.contains(target)) return;
+            if (listRef.current?.contains(target)) return;
+            setIsOpen(false);
         };
         document.addEventListener("mousedown", onClickOutside);
         return () => document.removeEventListener("mousedown", onClickOutside);
@@ -156,9 +172,10 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
                 filteredSuggestions.length > 0 &&
                 createPortal(
                     <ul
+                        ref={listRef}
                         className="fixed z-50 max-h-64 overflow-auto border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-[#0a0a0a] shadow-2xl"
                         style={{
-                            top: anchorRect.bottom + 4,
+                            top: anchorRect.top + 4,
                             left: anchorRect.left,
                             width: anchorRect.width,
                         }}
@@ -193,7 +210,7 @@ export default function CharacterPicker({ value, onChange, placeholder }: Charac
                             </li>
                         ))}
                     </ul>,
-                    document.body,
+                    document.body
                 )}
 
             <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-500">
