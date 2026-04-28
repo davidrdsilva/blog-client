@@ -4,6 +4,7 @@ import Footer from "@/app/components/footer";
 import MostViewedSection from "@/app/components/most-viewed-section";
 import NavBar from "@/app/components/navbar";
 import { SearchablePosts } from "@/app/components/searchable-posts";
+import SmokingHot from "@/app/components/smoking-hot";
 import WhitenestInvite from "@/app/components/whitenest-invite";
 import { getMostViewedPosts, getPostCountByCategory, getPosts } from "@/app/lib/api";
 
@@ -69,6 +70,7 @@ export default async function Home({ searchParams }: HomeProps) {
                     <span className="hidden md:inline-block">Today's Paper</span>
                 </div>
                 <CategoriesStrip categories={categoryCounts} activeId={activeCategoryId} />
+                <SmokingHot />
                 <SearchablePosts initialPosts={posts} />
                 <WhitenestInvite />
                 <MostViewedSection posts={mostViewedPosts} />
