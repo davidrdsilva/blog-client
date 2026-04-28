@@ -12,7 +12,7 @@ import { calculateReadingTime } from "@/app/utils/calculate-reading-time";
 import formatDate from "@/app/utils/format-date";
 import isLocalUrl from "@/app/utils/is-local-url";
 
-const WHITENEST_CATEGORY = "Whitenest";
+const WHITENEST_CATEGORY = "White Nest";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -121,16 +121,6 @@ export default async function WhitenestChapterPage({
                                 chapters={allChapters}
                                 currentChapter={chapterNumber}
                             />
-                        </div>
-                        <h2 className="text-3xl md:text-5xl font-serif text-zinc-900 dark:text-zinc-100 mb-4 leading-tight">
-                            Chapter {chapterNumber} — {chapter.title}
-                        </h2>
-                        <div className="flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-500">
-                            <span>{formattedDate}</span>
-                            <span aria-hidden="true">•</span>
-                            <span className="font-medium">{chapter.author}</span>
-                            <span aria-hidden="true">•</span>
-                            <span>{readingTime}</span>
                         </div>
                     </header>
 

@@ -55,7 +55,6 @@ export default function PostForm({
     onSubmit,
     submitLabel,
     savingLabel,
-    cancelHref,
     title,
     eyebrow = "Admin · Posts",
     headerExtra,
@@ -299,6 +298,11 @@ export default function PostForm({
         "w-full bg-transparent border-0 border-b border-zinc-300 dark:border-zinc-700 px-0 py-3 text-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 transition-colors";
     const fieldLabelClass =
         "block text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500 mb-1";
+    // Shared box for footer actions: identical padding + a 1px border (transparent
+    // when the variant has no visible border) so all three buttons share the same
+    // computed height. Hierarchy comes from fill, never from size.
+    const footerBtnBase =
+        "inline-flex items-center justify-center px-8 py-4 border text-[10px] font-bold uppercase tracking-[0.4em] transition-colors";
 
     return (
         <form onSubmit={handleSubmit} className="space-y-12 lg:space-y-16">
@@ -557,22 +561,22 @@ export default function PostForm({
 
             <footer className="flex flex-col-reverse sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-10 border-t border-zinc-200 dark:border-zinc-800">
                 <Link
-                    href={cancelHref}
-                    className="text-center sm:text-left px-6 py-3 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                    href="/posts/new"
+                    className={`${footerBtnBase} border-red-700/70 dark:border-red-400/60 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-700 dark:hover:border-red-400`}
                 >
                     Discard
                 </Link>
                 <button
                     type="button"
                     onClick={() => setIsPreviewOpen(true)}
-                    className="px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    className={`${footerBtnBase} border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer`}
                 >
                     Preview
                 </button>
                 <button
                     type="submit"
                     disabled={!isReady || isSaving || isUploading}
-                    className="px-8 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[10px] font-bold uppercase tracking-[0.4em] disabled:opacity-50 disabled:cursor-not-allowed transition-colors hover:bg-zinc-800 dark:hover:bg-white cursor-pointer"
+                    className={`${footerBtnBase} border-zinc-900 dark:border-zinc-100 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-zinc-800 hover:border-zinc-800 dark:hover:bg-white dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
                 >
                     {isDraftCategory
                         ? isSaving

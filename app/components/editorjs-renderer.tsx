@@ -29,14 +29,15 @@ function renderBlock(block: EditorJsBlock, variant: EditorJsVariant) {
         case "header": {
             const data = block.data as { text: string; level: number };
             const level = Math.min(Math.max(data.level, 2), 4) as number;
-            const className = "mt-8 mb-4 font-serif text-zinc-900 dark:text-zinc-100";
+            const className = "mt-8 mb-4 text-zinc-900 dark:text-zinc-100";
+
             switch (level) {
                 case 2:
                     return (
                         <HtmlContent
                             as="h2"
                             html={data.text}
-                            className={`${className} text-3xl md:text-4xl uppercase`}
+                            className={`${className} font-serif text-3xl md:text-4xl uppercase`}
                         />
                     );
                 case 3:
@@ -44,7 +45,7 @@ function renderBlock(block: EditorJsBlock, variant: EditorJsVariant) {
                         <HtmlContent
                             as="h3"
                             html={data.text}
-                            className={`${className} text-2xl md:text-3xl uppercase`}
+                            className={`${className} font-serif text-2xl md:text-3xl uppercase`}
                         />
                     );
                 case 4:
@@ -52,7 +53,11 @@ function renderBlock(block: EditorJsBlock, variant: EditorJsVariant) {
                         <HtmlContent
                             as="h4"
                             html={data.text}
-                            className={`${className} text-xl md:text-2xl uppercase`}
+                            className={
+                                variant === "whitenest"
+                                    ? "text-xl md:text-2xl uppercase font-bold text-right"
+                                    : "font-serif text-xl md:text-2xl uppercase"
+                            }
                         />
                     );
                 default:
