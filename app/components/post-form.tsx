@@ -546,7 +546,7 @@ export default function PostForm({
             <Section number="05" label="Body">
                 <div
                     id="editorjs"
-                    className="min-h-[400px] -mx-2 px-2 text-lg md:text-xl leading-relaxed text-zinc-900 dark:text-zinc-100 selection:bg-zinc-300 dark:selection:bg-zinc-700"
+                    className="min-h-[400px] -mx-2 px-2 text-lg md:text-xl leading-relaxed text-zinc-900 dark:text-zinc-100"
                 />
                 {!isReady && (
                     <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
@@ -593,7 +593,6 @@ export default function PostForm({
     );
 }
 
-// ─── Section header (mirrors character-form) ─────────────────────────────────
 function Section({
     number,
     label,

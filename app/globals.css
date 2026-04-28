@@ -133,6 +133,27 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Highlighter-yellow selection across the editor and all its nested blocks.
+   !important is required to override Editor.js's runtime-injected
+   `.codex-editor ::selection { background-color: #d4ecff }` style tag,
+   which lands unlayered and out-ranks anything Tailwind's @layer puts in. */
+#editorjs ::selection,
+#editorjs::selection {
+    background-color: rgba(250, 204, 21, 0.127) !important;
+}
+
+#editorjs ::-moz-selection,
+#editorjs::-moz-selection {
+    background-color: rgba(250, 204, 21, 0.127) !important;
+}
+
+/* Cross-block selection: Editor.js stops using native ::selection and instead
+   paints `.ce-block__content` with a solid #e1f2ff background while marking
+   each block with `ce-block--selected`. Override that with the same yellow. */
+#editorjs .ce-block--selected .ce-block__content {
+    background: rgba(250, 204, 21, 0.127) !important;
+}
+
 /* Video tool caption placeholder */
 .video-caption:empty::before {
     content: attr(data-placeholder);
