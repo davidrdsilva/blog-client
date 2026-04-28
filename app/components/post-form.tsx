@@ -5,6 +5,7 @@ import type { ToolConstructable } from "@editorjs/editorjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import CategorySelect from "@/app/components/category-select";
 import CharacterPicker from "@/app/components/character-picker";
 import PostPreviewSidebar from "@/app/components/post-preview-sidebar";
 import TagsInput from "@/app/components/tags-input";
@@ -298,9 +299,6 @@ export default function PostForm({
         "w-full bg-transparent border-0 border-b border-zinc-300 dark:border-zinc-700 px-0 py-3 text-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 transition-colors";
     const fieldLabelClass =
         "block text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500 mb-1";
-    // Shared box for footer actions: identical padding + a 1px border (transparent
-    // when the variant has no visible border) so all three buttons share the same
-    // computed height. Hierarchy comes from fill, never from size.
     const footerBtnBase =
         "inline-flex items-center justify-center px-8 py-4 border text-[10px] font-bold uppercase tracking-[0.4em] transition-colors";
 
@@ -382,30 +380,12 @@ export default function PostForm({
                             <label htmlFor="category" className={fieldLabelClass}>
                                 Category
                             </label>
-                            <div className="relative">
-                                <select
-                                    id="category"
-                                    required
-                                    value={categoryId === "" ? "" : String(categoryId)}
-                                    onChange={(e) =>
-                                        setCategoryId(e.target.value ? Number(e.target.value) : "")
-                                    }
-                                    className={`${inputClass} appearance-none pr-8 cursor-pointer`}
-                                >
-                                    <option value="">Select…</option>
-                                    {categories.map((c) => (
-                                        <option key={c.id} value={c.id}>
-                                            {c.isInternal ? `· ${c.name}` : c.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <span
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"
-                                >
-                                    ▾
-                                </span>
-                            </div>
+                            <CategorySelect
+                                id="category"
+                                categories={categories}
+                                value={categoryId}
+                                onChange={setCategoryId}
+                            />
                         </div>
                     </div>
                 </div>
