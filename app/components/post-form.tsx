@@ -24,6 +24,7 @@ export interface PostFormData {
     date?: string;
     categoryId: number;
     tags: string[];
+
     // Cast for Whitenest chapters; empty/ignored on other categories.
     characterIds: string[];
 }
@@ -60,7 +61,6 @@ export default function PostForm({
     headerExtra,
 }: PostFormProps) {
     const editorRef = useRef<EditorJSType | null>(null);
-    const editorInitializing = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isReady, setIsReady] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -141,15 +141,16 @@ export default function PostForm({
         setFormData((prev) => ({ ...prev, date: value }));
     };
 
-    // Editor.js owns its own DOM and content once instantiated, so we mount it
-    // exactly once. Re-running this effect (e.g. when the parent refreshes
-    // `initialData` after a draft save) would destroy the live editor and the
-    // initialization guard below would block recreation, leaving an empty hole.
+    // Editor.js owns its own DOM once instantiated. In Strict Mode the effect
+    // mounts → unmounts → re-mounts; the cancelled flag bails out of the first
+    // run if it loses the race, and the destroy() awaits isReady so a tear-down
+    // never collides with internal init.
+    // biome-ignore lint/correctness/useExhaustiveDependencies: initialData.content seeds the editor exactly once on mount; re-running would tear down user edits
     useEffect(() => {
-        const initEditor = async () => {
-            if (editorRef.current || editorInitializing.current) return;
-            editorInitializing.current = true;
+        let cancelled = false;
+        let localEditor: EditorJSType | null = null;
 
+        const initEditor = async () => {
             const [
                 { default: EditorJS },
                 { default: Header },
@@ -172,7 +173,9 @@ export default function PostForm({
                 import("@/app/components/editorjs-video-tool"),
             ]);
 
-            editorRef.current = new EditorJS({
+            if (cancelled) return;
+
+            localEditor = new EditorJS({
                 holder: "editorjs",
                 placeholder: "Begin the article…",
                 data: initialData?.content,
@@ -224,22 +227,31 @@ export default function PostForm({
                         },
                     },
                 },
-                onReady: () => setIsReady(true),
+                onReady: () => {
+                    if (cancelled) return;
+                    setIsReady(true);
+                },
                 onChange: async (api) => {
                     const data = await api.saver.save();
                     setPreviewContent(data as EditorJsContent);
                 },
             });
+
+            editorRef.current = localEditor;
         };
 
         initEditor();
 
         return () => {
-            if (editorRef.current?.destroy) {
-                editorRef.current.destroy();
-                editorRef.current = null;
-            }
-            editorInitializing.current = false;
+            cancelled = true;
+            const editor = localEditor;
+            if (!editor) return;
+            editorRef.current = null;
+            editor.isReady
+                .then(() => editor.destroy?.())
+                .catch(() => {
+                    // EditorJS rejects isReady when destroyed mid-init; safe to ignore.
+                });
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -272,7 +284,7 @@ export default function PostForm({
                     tags,
                     characterIds,
                 },
-                { asDraft: isDraftCategory },
+                { asDraft: isDraftCategory }
             );
         } catch (error) {
             console.error("Failed to save post:", error);
