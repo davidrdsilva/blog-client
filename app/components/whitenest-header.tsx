@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import MainNavSidebar from "./main-nav-sidebar";
 import { ThemeToggle } from "./theme-toggle";
 
 interface WhitenestHeaderProps {
@@ -20,17 +21,21 @@ export default function WhitenestHeader({ variant = "overlay" }: WhitenestHeader
             }
         >
             <div className="max-w-[1400px] mx-auto px-4 py-4 flex justify-between items-center">
-                <Link href="/" aria-label="The Falls Post — back to home">
-                    <Image
-                        src="/images/tfp.png"
-                        alt="The Falls Post"
-                        width={180}
-                        height={90}
-                        sizes="(max-width: 768px) 140px, 180px"
-                        className={isOverlay ? "" : "invert dark:invert-0"}
-                        priority
-                    />
-                </Link>
+                <div className="flex items-center gap-4 sm:gap-6">
+                    <MainNavSidebar />
+                    <Link href="/" aria-label="The Falls Post — back to home">
+                        <Image
+                            src="/images/tfp.png"
+                            alt="The Falls Post"
+                            width={180}
+                            height={90}
+                            sizes="(max-width: 768px) 140px, 180px"
+                            className={isOverlay ? "" : "invert dark:invert-0"}
+                            priority
+                        />
+                    </Link>
+                </div>
+
                 <ThemeToggle />
             </div>
         </header>

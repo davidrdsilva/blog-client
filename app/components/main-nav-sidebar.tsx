@@ -74,12 +74,21 @@ function formatMasthead(date: Date): { weekday: string; long: string } {
     };
 }
 
+const textColors = {
+    default: "bg-zinc-900 dark:bg-zinc-100",
+    whitenestBgColors: "bg-white",
+    whitenestTextColors: "text-white",
+};
+
 export default function MainNavSidebar() {
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [todayLabel, setTodayLabel] = useState<{ weekday: string; long: string } | null>(null);
     const closeBtnRef = useRef<HTMLButtonElement | null>(null);
     const pathname = usePathname();
+    const isWhitenestChapter = pathname?.startsWith("/whitenest/") ?? false;
+
+    console.log(isWhitenestChapter);
 
     useEffect(() => {
         setMounted(true);
@@ -116,11 +125,19 @@ export default function MainNavSidebar() {
             className="group relative flex items-center gap-3 px-3 py-2 -ml-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 rounded"
         >
             <span className="flex flex-col gap-[5px] w-5">
-                <span className="block h-px w-full bg-zinc-900 dark:bg-zinc-100 transition-transform duration-300 group-hover:translate-x-[2px]" />
-                <span className="block h-px w-3/4 bg-zinc-900 dark:bg-zinc-100 transition-all duration-300 group-hover:w-full" />
-                <span className="block h-px w-full bg-zinc-900 dark:bg-zinc-100 transition-transform duration-300 group-hover:-translate-x-[2px]" />
+                <span
+                    className={`block h-px w-full ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-transform duration-300 group-hover:translate-x-[2px]`}
+                />
+                <span
+                    className={`block h-px w-3/4 ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-all duration-300 group-hover:w-full`}
+                />
+                <span
+                    className={`block h-px w-full ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-transform duration-300 group-hover:-translate-x-[2px]`}
+                />
             </span>
-            <span className="hidden sm:inline text-[11px] uppercase tracking-[0.4em] font-bold text-zinc-900 dark:text-zinc-100">
+            <span
+                className={`hidden sm:inline text-[11px] uppercase tracking-[0.4em] font-bold ${isWhitenestChapter ? textColors.whitenestTextColors : "text-zinc-900 dark:text-zinc-100"}`}
+            >
                 Index
             </span>
         </button>

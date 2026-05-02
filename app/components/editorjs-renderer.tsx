@@ -55,7 +55,7 @@ function renderBlock(block: EditorJsBlock, variant: EditorJsVariant) {
                             html={data.text}
                             className={
                                 variant === "whitenest"
-                                    ? "text-xl md:text-2xl uppercase font-bold text-right"
+                                    ? "text-xl md:text-2xl uppercase font-bold text-right mb-4 mt-4"
                                     : "font-serif text-xl md:text-2xl uppercase"
                             }
                         />
