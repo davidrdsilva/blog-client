@@ -27,10 +27,7 @@ export function PostGrid({ posts }: PostGridProps) {
                             key={post.id}
                             className={`pb-6 ${index !== secondaryPosts.length - 1 ? "border-b border-zinc-200 dark:border-zinc-800 mb-6" : ""}`}
                         >
-                            <PostCard
-                                post={post}
-                                variant={index === 0 ? "compact" : "text-only"}
-                            />
+                            <PostCard post={post} variant={index === 0 ? "compact" : "text-only"} />
                         </div>
                     ))}
                 </div>

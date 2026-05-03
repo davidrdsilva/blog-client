@@ -55,7 +55,7 @@ export function SearchablePosts({
 
     const filteredPosts = useMemo(
         () => searchPosts(initialPosts, searchQuery),
-        [initialPosts, searchQuery],
+        [initialPosts, searchQuery]
     );
 
     const visiblePosts = filteredPosts.slice(0, visibleCount);

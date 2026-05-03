@@ -9,10 +9,7 @@ import { createPost } from "@/app/lib/api";
 export default function NewPostPage() {
     const router = useRouter();
 
-    const handleSubmit = async (
-        data: PostFormData,
-        opts: { asDraft: boolean },
-    ) => {
+    const handleSubmit = async (data: PostFormData, opts: { asDraft: boolean }) => {
         try {
             let formattedDate: string | undefined;
             if (data.date && data.date.length === 10) {

@@ -1,4 +1,4 @@
-const { Jimp } = require('jimp');
+const { Jimp } = require("jimp");
 
 async function checkColor(filepath) {
     try {
@@ -23,9 +23,13 @@ async function checkColor(filepath) {
                 }
             }
         }
-        console.log(`${filepath}: Dark=${darkPixels}, White=${whitePixels}, Transparent=${transparentPixels}`);
-    } catch (e) { console.error(e.message); }
+        console.log(
+            `${filepath}: Dark=${darkPixels}, White=${whitePixels}, Transparent=${transparentPixels}`
+        );
+    } catch (e) {
+        console.error(e.message);
+    }
 }
 
-checkColor('public/images/tfp.png');
-checkColor('public/images/logo.png');
+checkColor("public/images/tfp.png");
+checkColor("public/images/logo.png");

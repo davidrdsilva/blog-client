@@ -90,8 +90,7 @@ export default function CharacterRadar({ axes, max = 100, size = 280 }: Characte
                 const x = cx + labelRadius * Math.cos(a);
                 const y = cy + labelRadius * Math.sin(a);
                 const cosA = Math.cos(a);
-                const anchor =
-                    Math.abs(cosA) < 0.15 ? "middle" : cosA > 0 ? "start" : "end";
+                const anchor = Math.abs(cosA) < 0.15 ? "middle" : cosA > 0 ? "start" : "end";
                 return (
                     <text
                         key={axis.label}

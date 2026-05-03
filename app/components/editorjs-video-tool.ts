@@ -155,8 +155,12 @@ export default class VideoTool {
 
         const captionEl = document.createElement("div");
         captionEl.setAttribute("data-video-caption", "true");
-        captionEl.setAttribute("data-placeholder", this.config.captionPlaceholder ?? "Video caption");
-        captionEl.className = "video-caption mt-2 text-center text-sm text-zinc-500 dark:text-zinc-500 outline-none";
+        captionEl.setAttribute(
+            "data-placeholder",
+            this.config.captionPlaceholder ?? "Video caption"
+        );
+        captionEl.className =
+            "video-caption mt-2 text-center text-sm text-zinc-500 dark:text-zinc-500 outline-none";
         captionEl.contentEditable = this.readOnly ? "false" : "true";
         if (caption) captionEl.innerText = caption;
 

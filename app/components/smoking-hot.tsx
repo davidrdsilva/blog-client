@@ -98,9 +98,7 @@ export default function SmokingHot() {
         <section
             aria-label="Smoking hot — just published"
             className={`mb-6 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                visible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 -translate-y-2"
+                visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
             }`}
         >
             <article className="relative border-t border-b border-zinc-200 dark:border-zinc-800 py-4 sm:py-5">
@@ -173,8 +171,14 @@ export default function SmokingHot() {
                         aria-label="Dismiss notification"
                         className="relative size-7 shrink-0 cursor-pointer flex items-center justify-center text-zinc-400 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 rounded-sm"
                     >
-                        <span aria-hidden="true" className="absolute h-px w-3.5 bg-current rotate-45" />
-                        <span aria-hidden="true" className="absolute h-px w-3.5 bg-current -rotate-45" />
+                        <span
+                            aria-hidden="true"
+                            className="absolute h-px w-3.5 bg-current rotate-45"
+                        />
+                        <span
+                            aria-hidden="true"
+                            className="absolute h-px w-3.5 bg-current -rotate-45"
+                        />
                     </button>
                 </div>
             </article>

@@ -163,7 +163,7 @@ export default function TagsInput({ value, onChange, placeholder }: TagsInputPro
                             </li>
                         ))}
                     </ul>,
-                    document.body,
+                    document.body
                 )}
 
             <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 dark:text-zinc-500">
