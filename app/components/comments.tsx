@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Comment } from "@/app/lib/api";
 
+import { useCommentsToggle } from "@/app/components/post-shell";
 import { APIClientError, getComments } from "@/app/lib/api";
 import formatDate from "@/app/utils/format-date";
 
@@ -14,7 +15,7 @@ export default function Comments({ postId }: CommentsProps) {
     const [comments, setComments] = useState<Comment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isOpen, setIsOpen] = useState(false);
+    const { isOpen, setIsOpen } = useCommentsToggle();
 
     useEffect(() => {
         const fetchComments = async () => {
