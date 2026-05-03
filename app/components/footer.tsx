@@ -61,31 +61,19 @@ export default function Footer() {
 
                     <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3">
                         <h3 className="font-bold text-zinc-900 dark:text-white uppercase tracking-wider text-xs mb-2">
-                            About Us
+                            White Nest
                         </h3>
                         <Link
-                            href="/"
+                            href="/admin/whitenest/manage-chapters"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
-                            Our Story
+                            Manage Chapters
                         </Link>
                         <Link
-                            href="/"
+                            href="/admin/characters"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
-                            Careers
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-                        >
-                            Contact Us
-                        </Link>
-                        <Link
-                            href="/"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-                        >
-                            Advertise
+                            Manage Cast
                         </Link>
                     </div>
 
@@ -104,12 +92,6 @@ export default function Footer() {
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
                         >
                             Manage Articles
-                        </Link>
-                        <Link
-                            href="/admin/characters"
-                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-                        >
-                            Manage Cast
                         </Link>
                     </div>
                 </div>

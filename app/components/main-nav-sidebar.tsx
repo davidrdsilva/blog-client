@@ -31,12 +31,10 @@ const SECTIONS: SidebarSection[] = [
     },
     {
         eyebrow: "Section B",
-        title: "About Us",
+        title: "White Nest",
         links: [
-            { label: "Our Story", href: "/" },
-            { label: "Careers", href: "/" },
-            { label: "Contact Us", href: "/" },
-            { label: "Advertise", href: "/" },
+            { label: "Manage Chapters", href: "/admin/whitenest/manage-chapters" },
+            { label: "Manage Cast", href: "/admin/characters" },
         ],
     },
     {
@@ -45,8 +43,6 @@ const SECTIONS: SidebarSection[] = [
         links: [
             { label: "Publish with Us", href: "/posts/new" },
             { label: "Manage Articles", href: "/admin/manage-posts" },
-            { label: "Manage Chapters", href: "/admin/whitenest/manage-chapters" },
-            { label: "Manage Cast", href: "/admin/characters" },
         ],
     },
 ];
@@ -305,11 +301,8 @@ export default function MainNavSidebar() {
                 </nav>
 
                 <footer className="px-8 py-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[10px] uppercase tracking-[0.35em] text-zinc-500 dark:text-zinc-400 font-mono">
-                    <span>Pressed in Bridge Falls</span>
-                    <span className="flex items-center gap-2">
-                        <span className="size-1.5 rounded-full bg-emerald-500" />
-                        On the Wire
-                    </span>
+                    <span>Pressed in Europe</span>
+                    <span>On the Wire</span>
                 </footer>
             </aside>
         </div>
