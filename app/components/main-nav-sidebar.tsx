@@ -45,6 +45,7 @@ const SECTIONS: SidebarSection[] = [
         links: [
             { label: "Publish with Us", href: "/posts/new" },
             { label: "Manage Articles", href: "/admin/manage-posts" },
+            { label: "Manage Chapters", href: "/admin/whitenest/manage-chapters" },
             { label: "Manage Cast", href: "/admin/characters" },
         ],
     },
@@ -87,8 +88,6 @@ export default function MainNavSidebar() {
     const closeBtnRef = useRef<HTMLButtonElement | null>(null);
     const pathname = usePathname();
     const isWhitenestChapter = pathname?.startsWith("/whitenest/") ?? false;
-
-    console.log(isWhitenestChapter);
 
     useEffect(() => {
         setMounted(true);

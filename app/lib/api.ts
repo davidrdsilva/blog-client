@@ -144,7 +144,6 @@ function transformCharacter(apiCharacter: APICharacter): Character {
     };
 }
 
-// Transform API post to frontend Post type
 function transformPost(apiPost: APIPost): Post {
     return {
         id: apiPost.id,
@@ -189,7 +188,6 @@ async function handleResponse<T>(response: Response): Promise<T> {
     return response.json();
 }
 
-// Get paginated list of posts
 export async function getPosts(
     params: GetPostsParams = {}
 ): Promise<{ posts: Post[]; meta: PaginationMeta; error?: unknown }> {
@@ -218,7 +216,8 @@ export async function getPosts(
         const response = await fetch(url, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-            cache: "no-store", // Prevent Next.js from caching during build
+            // Prevent Next.js from caching during build
+            cache: "no-store",
         });
 
         const data = await handleResponse<PostsResponse>(response);
@@ -244,11 +243,8 @@ export async function getPosts(
     }
 }
 
-// Get a paginated list of draft posts (admin-only). Mirrors getPosts() but
-// hits /api/posts/drafts, which returns posts whose category is flagged
-// is_internal on the server.
 export async function getDrafts(
-    params: GetPostsParams = {},
+    params: GetPostsParams = {}
 ): Promise<{ posts: Post[]; meta: PaginationMeta; error?: unknown }> {
     try {
         const searchParams = new URLSearchParams();
@@ -292,7 +288,6 @@ export async function getDrafts(
     }
 }
 
-// Get up to 5 posts similar to the given one (ranked by shared tag count).
 export async function getSimilarPosts(id: string): Promise<Post[]> {
     try {
         const response = await fetch(`${API_BASE_URL}/api/posts/${id}/similar`, {
@@ -308,7 +303,6 @@ export async function getSimilarPosts(id: string): Promise<Post[]> {
     }
 }
 
-// Get the 5 most viewed posts of all time (no pagination).
 export async function getMostViewedPosts(): Promise<Post[]> {
     try {
         const response = await fetch(`${API_BASE_URL}/api/posts/most-viewed`, {
@@ -324,7 +318,6 @@ export async function getMostViewedPosts(): Promise<Post[]> {
     }
 }
 
-// Get a single post by ID
 export async function getPost(id: string): Promise<Post> {
     const response = await fetch(`${API_BASE_URL}/api/posts/${id}`, {
         method: "GET",
@@ -335,7 +328,6 @@ export async function getPost(id: string): Promise<Post> {
     return transformPost(data.data);
 }
 
-// Get comments for a post
 export async function getComments(postId: string): Promise<Comment[]> {
     const response = await fetch(`${API_BASE_URL}/api/comments?postId=${postId}`, {
         method: "GET",
@@ -346,7 +338,6 @@ export async function getComments(postId: string): Promise<Comment[]> {
     return data.data || [];
 }
 
-// Create a new post
 export async function createPost(postData: CreatePostData): Promise<Post> {
     const response = await fetch(`${API_BASE_URL}/api/posts`, {
         method: "POST",
@@ -358,7 +349,6 @@ export async function createPost(postData: CreatePostData): Promise<Post> {
     return transformPost(data.data);
 }
 
-// Update an existing post
 export async function updatePost(id: string, postData: UpdatePostData): Promise<Post> {
     const response = await fetch(`${API_BASE_URL}/api/posts/${id}`, {
         method: "PUT",
@@ -370,7 +360,6 @@ export async function updatePost(id: string, postData: UpdatePostData): Promise<
     return transformPost(data.data);
 }
 
-// Delete a post
 export async function deletePost(id: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/api/posts/${id}`, {
         method: "DELETE",
@@ -385,9 +374,7 @@ export async function deletePost(id: string): Promise<void> {
     }
 }
 
-// Helper function to check if error indicates API is down/unreachable
 export function isAPIDownError(error: unknown): boolean {
-    // Check for TypeError which fetch throws for network failures
     if (error instanceof TypeError) {
         // Common network error messages
         const networkErrorPatterns = [
@@ -415,12 +402,9 @@ export function isAPIDownError(error: unknown): boolean {
     return false;
 }
 
-// List categories with optional case-insensitive name search. Internal
-// categories (e.g. "Drafts") are excluded by default; pass
-// { includeInternal: true } from admin pages that need to show them.
 export async function getCategories(
     search?: string,
-    opts?: { includeInternal?: boolean },
+    opts?: { includeInternal?: boolean }
 ): Promise<Category[]> {
     try {
         const url = new URL(`${API_BASE_URL}/api/categories`, "http://placeholder");
@@ -440,7 +424,6 @@ export async function getCategories(
     }
 }
 
-// List tags with optional case-insensitive name search.
 export async function getTags(search?: string): Promise<Tag[]> {
     try {
         const fetchUrl = search
@@ -459,7 +442,6 @@ export async function getTags(search?: string): Promise<Tag[]> {
     }
 }
 
-// Total posts grouped by category (used by the homepage categories strip).
 export async function getPostCountByCategory(): Promise<CategoryWithCount[]> {
     try {
         const response = await fetch(`${API_BASE_URL}/api/posts/count/by-category`, {
@@ -499,8 +481,6 @@ function transformChapterRef(ref: APIWhitenestChapterRef | null): WhitenestChapt
     };
 }
 
-// Get a Whitenest chapter by its serial number along with prev/next refs.
-// Returns null when no chapter has that number.
 export async function getWhitenestChapter(number: number): Promise<WhitenestChapter | null> {
     const response = await fetch(`${API_BASE_URL}/api/whitenest/chapters/${number}`, {
         method: "GET",
@@ -531,7 +511,6 @@ interface APIWhitenestChaptersResponse {
     data: APIWhitenestChapterSummary[];
 }
 
-// List every Whitenest chapter, ordered by chapter number ASC.
 export async function getWhitenestChapters(): Promise<WhitenestChapterSummary[]> {
     const response = await fetch(`${API_BASE_URL}/api/whitenest/chapters`, {
         method: "GET",
@@ -549,7 +528,29 @@ export async function getWhitenestChapters(): Promise<WhitenestChapterSummary[]>
     }));
 }
 
-// Get the most recent Whitenest chapter, or null if the series has no chapters yet.
+export async function reorderWhitenestChapters(orderedPostIds: string[]): Promise<void> {
+    const order = orderedPostIds.map((post_id, index) => ({
+        post_id,
+        number: index + 1,
+    }));
+
+    const response = await fetch(`${API_BASE_URL}/api/whitenest/chapters/order`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order }),
+    });
+
+    if (response.status === 204) return;
+
+    // Non-204: drain the body for an error envelope and throw.
+    const errorData = (await response.json().catch(() => null)) as APIError | null;
+    throw new APIClientError(
+        errorData?.error?.code || (response.ok ? "UNEXPECTED_RESPONSE" : "REORDER_FAILED"),
+        errorData?.error?.message || `Reorder failed with status ${response.status}`,
+        errorData?.error?.details
+    );
+}
+
 export async function getLatestWhitenestChapter(): Promise<Post | null> {
     try {
         const { posts } = await getPosts({
@@ -564,8 +565,6 @@ export async function getLatestWhitenestChapter(): Promise<Post | null> {
         return null;
     }
 }
-
-// ---------- Characters ----------
 
 interface APICharacterListResponse {
     data: APICharacter[];
