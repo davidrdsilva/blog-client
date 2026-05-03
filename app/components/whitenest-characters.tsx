@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Character, CharacterSkills } from "@/app/types/post";
 import CharacterRadar from "./character-radar";
 
@@ -159,9 +159,7 @@ export default function WhitenestCharacters({ characters }: WhitenestCharactersP
                                     {active.location}
                                 </p>
 
-                                <p className="text-base text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                                    {active.description}
-                                </p>
+                                <ScrollableDescription text={active.description} />
 
                                 <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
                                     <p className="text-xs font-bold uppercase tracking-[0.4em] text-zinc-500 mb-4">
@@ -182,5 +180,42 @@ export default function WhitenestCharacters({ characters }: WhitenestCharactersP
                 </div>
             </div>
         </section>
+    );
+}
+
+function ScrollableDescription({ text }: { text: string }) {
+    const ref = useRef<HTMLDivElement | null>(null);
+    const [showShadow, setShowShadow] = useState(false);
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: rerun when text changes to recompute overflow
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const update = () => {
+            const overflows = el.scrollHeight - el.clientHeight > 1;
+            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+            setShowShadow(overflows && !atBottom);
+        };
+        update();
+        el.addEventListener("scroll", update, { passive: true });
+        const ro = new ResizeObserver(update);
+        ro.observe(el);
+        return () => {
+            el.removeEventListener("scroll", update);
+            ro.disconnect();
+        };
+    }, [text]);
+
+    return (
+        <div
+            ref={ref}
+            className={`max-h-64 overflow-y-auto pr-2 -mr-2 text-base text-zinc-700 dark:text-zinc-300 leading-relaxed transition-shadow duration-200 ${
+                showShadow
+                    ? "shadow-[inset_0_-16px_16px_-16px_rgba(0,0,0,0.18)] dark:shadow-[inset_0_-16px_16px_-16px_rgba(0,0,0,0.7)]"
+                    : ""
+            }`}
+        >
+            {text}
+        </div>
     );
 }

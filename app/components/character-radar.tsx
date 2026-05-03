@@ -30,12 +30,12 @@ export default function CharacterRadar({ axes, max = 100, size = 280 }: Characte
     };
 
     const ringPath = (ratio: number) =>
-        axes
+        `${axes
             .map((_, i) => {
                 const p = pointOnRing(i, ratio);
                 return `${i === 0 ? "M" : "L"}${p.x},${p.y}`;
             })
-            .join(" ") + " Z";
+            .join(" ")} Z`;
 
     const valuePoints = axes
         .map((axis, i) => {
