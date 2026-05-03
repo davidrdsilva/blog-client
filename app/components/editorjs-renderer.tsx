@@ -30,13 +30,16 @@ function blockToHtml(block: EditorJsBlock, variant: EditorJsVariant): string | n
             const base = "mt-8 mb-4 text-zinc-900 dark:text-zinc-100";
             let cls: string;
             if (level === 2) {
-                cls = `${base} font-serif text-3xl md:text-4xl uppercase`;
+                cls =
+                    variant === "whitenest"
+                        ? `${base} font-serif text-3xl md:text-4xl uppercase text-center`
+                        : `${base} font-serif text-3xl md:text-4xl uppercase`;
             } else if (level === 3) {
                 cls = `${base} font-serif text-2xl md:text-3xl uppercase`;
             } else {
                 cls =
                     variant === "whitenest"
-                        ? "text-xl md:text-2xl uppercase font-bold text-right mb-4 mt-4"
+                        ? "text-xl md:text-2xl uppercase font-bold text-right"
                         : "font-serif text-xl md:text-2xl uppercase";
             }
             return `<h${level} class="${escAttr(cls)}">${data.text}</h${level}>`;
