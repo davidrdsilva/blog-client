@@ -2,10 +2,11 @@
 
 import { notFound, useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
+import { ConfirmModal } from "@/app/components/confirm-modal";
 import DraftsSidebar from "@/app/components/drafts-sidebar";
 import NavBar from "@/app/components/navbar";
 import PostForm, { type PostFormData } from "@/app/components/post-form";
-import { APIClientError, getPost, updatePost } from "@/app/lib/api";
+import { APIClientError, deletePost, getPost, updatePost } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
 
 interface EditPostPageProps {
@@ -17,6 +18,9 @@ export default function EditPostPage({ params }: EditPostPageProps) {
     const router = useRouter();
     const [post, setPost] = useState<Post | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -35,10 +39,7 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         fetchPost();
     }, [id]);
 
-    const handleSubmit = async (
-        data: PostFormData,
-        opts: { asDraft: boolean },
-    ) => {
+    const handleSubmit = async (data: PostFormData, opts: { asDraft: boolean }) => {
         try {
             let formattedDate: string | undefined;
             if (data.date && data.date.length === 10) {
@@ -72,6 +73,19 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         }
     };
 
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        setDeleteError(null);
+        try {
+            await deletePost(id);
+            router.push("/admin/manage-posts");
+        } catch (error) {
+            console.error("Failed to delete post:", error);
+            setDeleteError(error instanceof Error ? error.message : "Failed to delete this post.");
+            setIsDeleting(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="min-h-screen bg-white dark:bg-black">
@@ -101,6 +115,14 @@ export default function EditPostPage({ params }: EditPostPageProps) {
         <div className="min-h-screen bg-white dark:bg-black">
             <NavBar />
             <main className="container mx-auto px-5 sm:px-6 lg:px-10 py-10 lg:py-24 max-w-4xl">
+                {deleteError && (
+                    <div className="mb-8 flex items-start gap-3 text-sm text-red-700 dark:text-red-300 border-l-2 border-red-700 dark:border-red-400 pl-4 py-2">
+                        <span className="font-bold uppercase tracking-[0.3em] text-[10px] mt-0.5">
+                            Error
+                        </span>
+                        <span className="font-serif">{deleteError}</span>
+                    </div>
+                )}
                 <PostForm
                     title={editTitle}
                     initialData={{
@@ -116,8 +138,13 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                     }}
                     onSubmit={handleSubmit}
                     submitLabel="Save changes"
-                    savingLabel="Saving…"
+                    savingLabel="Saving..."
                     cancelHref={`/posts/${id}`}
+                    onDelete={() => {
+                        setDeleteError(null);
+                        setIsDeleteModalOpen(true);
+                    }}
+                    deleteLabel="Delete post"
                     headerExtra={
                         <DraftsSidebar
                             currentDraftId={id}
@@ -128,6 +155,20 @@ export default function EditPostPage({ params }: EditPostPageProps) {
                     }
                 />
             </main>
+            <ConfirmModal
+                isOpen={isDeleteModalOpen}
+                title="Delete this article"
+                message={
+                    post.title
+                        ? `Permanently delete "${post.title}"? Comments and assets attached to this article go with it.`
+                        : "Permanently delete this post? Comments and assets attached to it go with it."
+                }
+                confirmLabel={isDeleting ? "Deleting…" : "Delete"}
+                cancelLabel="Cancel"
+                variant="danger"
+                onConfirm={handleDelete}
+                onCancel={() => !isDeleting && setIsDeleteModalOpen(false)}
+            />
         </div>
     );
 }

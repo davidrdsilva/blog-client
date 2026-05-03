@@ -81,14 +81,14 @@ export function ConfirmModal({
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                        className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                     >
                         {cancelLabel}
                     </button>
                     <button
                         type="button"
                         onClick={onConfirm}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${confirmButtonStyles}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${confirmButtonStyles}`}
                     >
                         {confirmLabel}
                     </button>

@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
-import { ConfirmModal } from "@/app/components/confirm-modal";
-import { deletePost } from "@/app/lib/api";
 import type { Post } from "@/app/types/post";
 
 const PAGE_SIZE = 25;
@@ -26,8 +24,6 @@ interface ManagePostsArchiveProps {
     initialPosts: Post[];
 }
 
-// Extract searchable text from Editor.js blocks — mirrors the homepage's
-// behaviour so a query for words in the article body matches here too.
 function extractTextFromContent(post: Post): string {
     if (!post.content?.blocks) return "";
     return post.content.blocks
@@ -61,12 +57,9 @@ function searchPosts(posts: Post[], query: string): Post[] {
 }
 
 export default function ManagePostsArchive({ initialPosts }: ManagePostsArchiveProps) {
-    const [posts, setPosts] = useState<Post[]>(initialPosts);
+    const [posts] = useState<Post[]>(initialPosts);
     const [searchQuery, setSearchQuery] = useState("");
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-    const [error, setError] = useState<string | null>(null);
-    const [pendingDelete, setPendingDelete] = useState<Post | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const filtered = useMemo(() => searchPosts(posts, searchQuery), [posts, searchQuery]);
     const visiblePosts = filtered.slice(0, visibleCount);
@@ -81,21 +74,6 @@ export default function ManagePostsArchive({ initialPosts }: ManagePostsArchiveP
         setVisibleCount((c) => Math.min(c + PAGE_SIZE, filtered.length));
     };
 
-    const handleDelete = async () => {
-        if (!pendingDelete) return;
-        setIsDeleting(true);
-        try {
-            await deletePost(pendingDelete.id);
-            setPosts((prev) => prev.filter((p) => p.id !== pendingDelete.id));
-            setPendingDelete(null);
-        } catch (err) {
-            console.error("Failed to delete post:", err);
-            setError(err instanceof Error ? err.message : "Failed to delete post.");
-        } finally {
-            setIsDeleting(false);
-        }
-    };
-
     return (
         <div className="space-y-10 lg:space-y-14">
             <ArchiveHeader
@@ -105,16 +83,7 @@ export default function ManagePostsArchive({ initialPosts }: ManagePostsArchiveP
                 onSearchChange={handleSearchChange}
             />
 
-            {error && (
-                <div className="flex items-start gap-3 text-sm text-red-700 dark:text-red-300 border-l-2 border-red-700 dark:border-red-400 pl-4 py-2">
-                    <span className="font-bold uppercase tracking-[0.3em] text-[10px] mt-0.5">
-                        Error
-                    </span>
-                    <span className="font-serif">{error}</span>
-                </div>
-            )}
-
-            <ArchiveTable posts={visiblePosts} onDeleteRequest={setPendingDelete} />
+            <ArchiveTable posts={visiblePosts} />
 
             {filtered.length === 0 && (
                 <p className="py-16 text-center text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
@@ -133,21 +102,6 @@ export default function ManagePostsArchive({ initialPosts }: ManagePostsArchiveP
                     </button>
                 </div>
             )}
-
-            <ConfirmModal
-                isOpen={pendingDelete !== null}
-                title="Pull article from the morgue"
-                message={
-                    pendingDelete
-                        ? `Permanently delete "${pendingDelete.title}"? Comments and assets attached to this article go with it.`
-                        : ""
-                }
-                confirmLabel={isDeleting ? "Deleting…" : "Delete"}
-                cancelLabel="Cancel"
-                variant="danger"
-                onConfirm={handleDelete}
-                onCancel={() => !isDeleting && setPendingDelete(null)}
-            />
         </div>
     );
 }
@@ -236,19 +190,12 @@ function ArchiveHeader({
     );
 }
 
-// ─── Archive table ───────────────────────────────────────────────────────────
-function ArchiveTable({
-    posts,
-    onDeleteRequest,
-}: {
-    posts: Post[];
-    onDeleteRequest: (post: Post) => void;
-}) {
+function ArchiveTable({ posts }: { posts: Post[] }) {
     if (posts.length === 0) return null;
     return (
         <ul className="border-t border-zinc-200 dark:border-zinc-800">
             {posts.map((post) => (
-                <ArchiveRow key={post.id} post={post} onDeleteRequest={onDeleteRequest} />
+                <ArchiveRow key={post.id} post={post} />
             ))}
         </ul>
     );
@@ -269,13 +216,7 @@ function formatViewsCompact(views: number): string {
     return `${(views / 1_000_000).toFixed(1)}M`;
 }
 
-function ArchiveRow({
-    post,
-    onDeleteRequest,
-}: {
-    post: Post;
-    onDeleteRequest: (post: Post) => void;
-}) {
+function ArchiveRow({ post }: { post: Post }) {
     const dateLabel = formatArchiveDate(post.date);
     const sectionLabel = post.category?.name ?? "Uncategorized";
     const viewsLabel = formatViewsCompact(post.totalViews);
@@ -288,21 +229,12 @@ function ArchiveRow({
                     <span className="text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums text-zinc-500 dark:text-zinc-500 whitespace-nowrap">
                         {dateLabel}
                     </span>
-                    <div className="flex items-center gap-2 -mr-1">
-                        <Link
-                            href={`/posts/${post.id}/edit`}
-                            className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 active:text-zinc-900 dark:active:text-zinc-100 transition-colors"
-                        >
-                            Edit
-                        </Link>
-                        <button
-                            type="button"
-                            onClick={() => onDeleteRequest(post)}
-                            className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-red-700 dark:text-red-400 active:text-red-900 dark:active:text-red-300 transition-colors cursor-pointer"
-                        >
-                            Pull
-                        </button>
-                    </div>
+                    <Link
+                        href={`/posts/${post.id}/edit`}
+                        className="-mr-1 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 active:text-zinc-900 dark:active:text-zinc-100 transition-colors"
+                    >
+                        Edit
+                    </Link>
                 </div>
                 <Link
                     href={`/posts/${post.id}`}
@@ -340,23 +272,13 @@ function ArchiveRow({
                 <span className="text-right text-[10px] font-bold uppercase tracking-[0.3em] tabular-nums text-zinc-500 dark:text-zinc-500">
                     {viewsLabel}
                 </span>
-                <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                <div className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                     <Link
                         href={`/posts/${post.id}/edit`}
                         className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                     >
                         Edit
                     </Link>
-                    <span className="text-zinc-300 dark:text-zinc-700" aria-hidden>
-                        ·
-                    </span>
-                    <button
-                        type="button"
-                        onClick={() => onDeleteRequest(post)}
-                        className="px-2 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-red-700 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors cursor-pointer"
-                    >
-                        Pull
-                    </button>
                 </div>
             </div>
         </li>

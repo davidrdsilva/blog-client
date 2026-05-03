@@ -49,6 +49,8 @@ interface PostFormProps {
     title: string;
     eyebrow?: string;
     headerExtra?: React.ReactNode;
+    onDelete?: () => void;
+    deleteLabel?: string;
 }
 
 export default function PostForm({
@@ -59,6 +61,8 @@ export default function PostForm({
     title,
     eyebrow = "Admin · Posts",
     headerExtra,
+    onDelete,
+    deleteLabel = "Delete",
 }: PostFormProps) {
     const editorRef = useRef<EditorJSType | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,8 +87,6 @@ export default function PostForm({
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        // Admin form needs to see internal categories (e.g. Drafts) so the
-        // editor can save work-in-progress without publishing.
         getCategories(undefined, { includeInternal: true })
             .then(setCategories)
             .catch(() => setCategories([]));
@@ -539,7 +541,17 @@ export default function PostForm({
                 )}
             </Section>
 
-            <footer className="flex flex-col-reverse sm:flex-row sm:justify-end items-stretch sm:items-center gap-3 pt-10 border-t border-zinc-200 dark:border-zinc-800">
+            <footer className="flex flex-col-reverse sm:flex-row sm:items-center gap-3 pt-10 border-t border-zinc-200 dark:border-zinc-800">
+                {onDelete && (
+                    <button
+                        type="button"
+                        onClick={onDelete}
+                        disabled={isSaving}
+                        className={`${footerBtnBase} sm:mr-auto border-red-700 dark:border-red-500 text-red-700 dark:text-red-400 hover:bg-red-700 hover:text-white dark:hover:bg-red-500 dark:hover:text-zinc-950 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
+                    >
+                        {deleteLabel}
+                    </button>
+                )}
                 <Link
                     href="/posts/new"
                     className={`${footerBtnBase} border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 cursor-pointer`}

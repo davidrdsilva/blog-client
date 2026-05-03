@@ -10,10 +10,6 @@ export const revalidate = 0;
 const PAGE_SIZE = 50;
 const MAX_PAGES = 100;
 
-// Fetch every non-Whitenest post via paginated calls to /api/posts (the
-// endpoint caps at 50/page). Letting the client filter locally matches the
-// homepage's search behaviour, which spans title/subtitle/description/body —
-// the server's tsvector index only covers title/subtitle/description.
 async function fetchAllNonWhitenestPosts(): Promise<Post[]> {
     const all: Post[] = [];
     for (let page = 1; page <= MAX_PAGES; page++) {
