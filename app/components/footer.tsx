@@ -93,6 +93,12 @@ export default function Footer() {
                         >
                             Manage Articles
                         </Link>
+                        <Link
+                            href="/changelog"
+                            className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
+                        >
+                            Changelog
+                        </Link>
                     </div>
                 </div>
 

@@ -27,6 +27,7 @@ const SECTIONS: SidebarSection[] = [
             { label: "White Nest", href: "/whitenest/1", accent: "live" },
             { label: "Bridge Falls", href: "/?tags=Bridge%20Falls" },
             { label: "Valentino", href: "/?tags=Valentino" },
+            { label: "Changelog", href: "/changelog" },
         ],
     },
     {
