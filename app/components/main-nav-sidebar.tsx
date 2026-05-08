@@ -46,6 +46,11 @@ const SECTIONS: SidebarSection[] = [
             { label: "Manage Articles", href: "/admin/manage-posts" },
         ],
     },
+    {
+        eyebrow: "Section D",
+        title: "Maintenance",
+        links: [{ label: "System Logs", href: "/admin/maintenance/logs" }],
+    },
 ];
 
 const WEEKDAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
@@ -81,7 +86,10 @@ const textColors = {
 export default function MainNavSidebar() {
     const [isOpen, setIsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
-    const [todayLabel, setTodayLabel] = useState<{ weekday: string; long: string } | null>(null);
+    const [todayLabel, setTodayLabel] = useState<{
+        weekday: string;
+        long: string;
+    } | null>(null);
     const closeBtnRef = useRef<HTMLButtonElement | null>(null);
     const pathname = usePathname();
     const isWhitenestChapter = pathname?.startsWith("/whitenest/") ?? false;
@@ -120,15 +128,15 @@ export default function MainNavSidebar() {
             aria-expanded={isOpen}
             className="group relative flex items-center gap-3 px-3 py-2 -ml-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 rounded"
         >
-            <span className="flex flex-col gap-[5px] w-5">
+            <span className="flex flex-col gap-1.25 w-5">
                 <span
-                    className={`block h-px w-full ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-transform duration-300 group-hover:translate-x-[2px]`}
+                    className={`block h-px w-full ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-transform duration-300 group-hover:translate-x-0.5`}
                 />
                 <span
                     className={`block h-px w-3/4 ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-all duration-300 group-hover:w-full`}
                 />
                 <span
-                    className={`block h-px w-full ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-transform duration-300 group-hover:-translate-x-[2px]`}
+                    className={`block h-px w-full ${isWhitenestChapter ? textColors.whitenestBgColors : textColors.default} transition-transform duration-300 group-hover:-translate-x-0.5`}
                 />
             </span>
             <span
@@ -225,7 +233,9 @@ export default function MainNavSidebar() {
                         <div
                             key={section.title}
                             className={`mb-8 ${isOpen ? "animate-[fade-up_0.6s_cubic-bezier(0.22,1,0.36,1)_both]" : ""}`}
-                            style={{ animationDelay: isOpen ? `${180 + sIndex * 90}ms` : "0ms" }}
+                            style={{
+                                animationDelay: isOpen ? `${180 + sIndex * 90}ms` : "0ms",
+                            }}
                         >
                             <div className="flex items-baseline gap-3 mb-4">
                                 <span
@@ -273,7 +283,7 @@ export default function MainNavSidebar() {
                                                     {link.label}
                                                     <span
                                                         aria-hidden="true"
-                                                        className="absolute left-0 right-0 -bottom-0.5 h-[2px] bg-zinc-900 dark:bg-zinc-100 origin-left scale-x-0 group-hover/link:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                                                        className="absolute left-0 right-0 -bottom-0.5 h-0.5 bg-zinc-900 dark:bg-zinc-100 origin-left scale-x-0 group-hover/link:scale-x-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
                                                     />
                                                 </span>
                                                 {isLive && (

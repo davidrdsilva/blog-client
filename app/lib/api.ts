@@ -12,6 +12,7 @@ import type {
     WhitenestChapterRef,
     WhitenestChapterSummary,
 } from "@/app/types/post";
+import type { SystemLogEntry, SystemLogLevel, SystemLogsSnapshot } from "@/app/types/system-log";
 
 const API_BASE_URL = typeof window === "undefined" ? process.env.NEXT_PUBLIC_API_URL || "" : "";
 
@@ -669,6 +670,71 @@ export async function uploadImage(file: File): Promise<string> {
         );
     }
     return data.file.url;
+}
+
+interface APISystemLogEntry {
+    timestamp: string;
+    level: string;
+    message: string;
+    fields?: Record<string, unknown> | null;
+}
+
+interface APISystemLogsResponse {
+    data: APISystemLogEntry[];
+    capacity: number;
+    count: number;
+}
+
+const KNOWN_LEVELS: SystemLogLevel[] = ["DEBUG", "INFO", "WARN", "ERROR"];
+
+function normalizeLevel(raw: string): SystemLogLevel {
+    const upper = raw.toUpperCase();
+    return (KNOWN_LEVELS as string[]).includes(upper) ? (upper as SystemLogLevel) : "INFO";
+}
+
+function transformSystemLogEntry(entry: APISystemLogEntry): SystemLogEntry {
+    return {
+        timestamp: new Date(entry.timestamp),
+        level: normalizeLevel(entry.level),
+        message: entry.message,
+        fields: entry.fields ?? undefined,
+    };
+}
+
+export interface GetSystemLogsParams {
+    level?: SystemLogLevel[];
+    limit?: number;
+    since?: string;
+}
+
+export async function getSystemLogs(params: GetSystemLogsParams = {}): Promise<SystemLogsSnapshot> {
+    try {
+        const searchParams = new URLSearchParams();
+        if (params.level && params.level.length > 0) {
+            searchParams.set("level", params.level.join(","));
+        }
+        if (params.limit) searchParams.set("limit", String(params.limit));
+        if (params.since) searchParams.set("since", params.since);
+
+        const queryString = searchParams.toString();
+        const url = `${API_BASE_URL}/api/admin/maintenance/system-logs${queryString ? `?${queryString}` : ""}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            cache: "no-store",
+        });
+
+        const data = await handleResponse<APISystemLogsResponse>(response);
+        return {
+            entries: data.data.map(transformSystemLogEntry),
+            capacity: data.capacity,
+            count: data.count,
+        };
+    } catch (error) {
+        console.error("Error fetching system logs:", error);
+        return { entries: [], capacity: 0, count: 0 };
+    }
 }
 
 // Export API base URL for Editor.js configuration
