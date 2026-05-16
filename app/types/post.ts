@@ -59,6 +59,8 @@ export interface CharacterSkills {
     endurance: number;
 }
 
+export type CharacterStatus = "alive" | "dead" | "missing";
+
 export interface Character {
     id: string;
     fullName: string;
@@ -68,6 +70,9 @@ export interface Character {
     location: string;
     portrait: string;
     skills: CharacterSkills;
+    status?: CharacterStatus;
+    affiliation?: string;
+    killCount?: number;
 }
 
 export interface WhitenestChapterRef {
@@ -100,6 +105,9 @@ export interface APICharacter {
     location: string;
     portrait: string;
     skills: CharacterSkills;
+    status?: CharacterStatus | null;
+    affiliation?: string | null;
+    kill_count?: number | null;
     createdAt: string;
     updatedAt: string;
 }

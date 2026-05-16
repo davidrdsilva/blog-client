@@ -142,6 +142,9 @@ function transformCharacter(apiCharacter: APICharacter): Character {
         location: apiCharacter.location,
         portrait: apiCharacter.portrait,
         skills: apiCharacter.skills,
+        status: apiCharacter.status ?? undefined,
+        affiliation: apiCharacter.affiliation ?? undefined,
+        killCount: apiCharacter.kill_count ?? undefined,
     };
 }
 

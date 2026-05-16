@@ -20,8 +20,13 @@ function escText(value: string): string {
     return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// Editor.js inline tools (bold, italic, link, marker) emit HTML; embed it raw.
-// Block tools (code) emit plain text; escape it.
+/**
+ * Editor.js inline tools (bold, italic, link, marker) emit HTML; embed it raw.
+ * Block tools (code) emit plain text; escape it.
+ * @param block EditorJsBlock
+ * @param variant EditorJsVariant
+ * @returns string | null
+ */
 function blockToHtml(block: EditorJsBlock, variant: EditorJsVariant): string | null {
     switch (block.type) {
         case "header": {
@@ -46,7 +51,7 @@ function blockToHtml(block: EditorJsBlock, variant: EditorJsVariant): string | n
         }
         case "paragraph": {
             const data = block.data as { text: string };
-            const spacing = variant === "whitenest" ? "indent-8 mb-1" : "mb-4";
+            const spacing = variant === "whitenest" ? "md:indent-8 mb-1" : "mb-4";
             const cls = `${spacing} text-xl md:text-2xl text-zinc-700 dark:text-zinc-300 leading-normal [&_a]:text-blue-600 dark:[&_a]:text-blue-400 [&_a]:underline`;
             return `<p class="${escAttr(cls)}">${data.text}</p>`;
         }
@@ -175,10 +180,15 @@ type Run =
     | { kind: "html"; html: string; key: string }
     | { kind: "node"; node: ReactNode; key: string };
 
-// Long chapters (~400+ blocks) caused hydration mismatches because the RSC
-// payload couldn't stay in sync with the streamed HTML at that tree size.
-// Collapsing consecutive text-only blocks into a single dangerouslySetInnerHTML
-// string keeps the RSC tree small while preserving rendering.
+/**
+ * Long chapters (~400+ blocks) caused hydration mismatches because the RSC
+ * payload couldn't stay in sync with the streamed HTML at that tree size.
+ * Collapsing consecutive text-only blocks into a single dangerouslySetInnerHTML
+ * string keeps the RSC tree small while preserving rendering.
+ * @param blocks
+ * @param variant
+ * @returns
+ */
 function buildRuns(blocks: EditorJsBlock[], variant: EditorJsVariant): Run[] {
     const runs: Run[] = [];
     let buffer: string[] = [];

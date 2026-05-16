@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Character, CharacterSkills } from "@/app/types/post";
 import CharacterRadar from "./character-radar";
@@ -174,6 +175,29 @@ export default function WhitenestCharacters({ characters }: WhitenestCharactersP
                                         }))}
                                     />
                                 </div>
+
+                                <Link
+                                    href={`/characters/${active.id}`}
+                                    className="group inline-flex items-center justify-between gap-3 pt-4 mt-auto border-t border-zinc-200 dark:border-zinc-800 text-xs font-bold uppercase tracking-[0.4em] text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                                >
+                                    <span>View full dossier</span>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
+                                        className="transition-transform duration-300 group-hover:translate-x-1"
+                                    >
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                        <polyline points="12 5 19 12 12 19" />
+                                    </svg>
+                                </Link>
                             </div>
                         </div>
                     )}
