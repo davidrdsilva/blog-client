@@ -96,6 +96,24 @@ export interface WhitenestChapter {
     cast: Character[];
 }
 
+export type CharacterGalleryFileType = "image" | "video";
+
+export interface CharacterGalleryItem {
+    id: string;
+    characterId: string;
+    fileUrl: string;
+    fileType: CharacterGalleryFileType;
+    createdAt: Date;
+}
+
+export interface APICharacterGalleryItem {
+    id: string;
+    character_id: string;
+    file_url: string;
+    file_type: CharacterGalleryFileType;
+    createdAt: string;
+}
+
 export interface APICharacter {
     id: string;
     full_name: string;

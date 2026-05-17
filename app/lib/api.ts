@@ -1,10 +1,13 @@
 import type {
     APICategory,
     APICharacter,
+    APICharacterGalleryItem,
     Category,
     CategoryWithCount,
     Character,
+    CharacterGalleryItem,
     CharacterSkills,
+    CharacterStatus,
     EditorJsContent,
     Post,
     Tag,
@@ -586,9 +589,22 @@ export interface CharacterPayload {
     location: string;
     portrait: string;
     skills: CharacterSkills;
+    status?: CharacterStatus;
+    affiliation?: string;
+    kill_count?: number;
 }
 
 export type CharacterUpdatePayload = Partial<CharacterPayload>;
+
+function transformGalleryItem(api: APICharacterGalleryItem): CharacterGalleryItem {
+    return {
+        id: api.id,
+        characterId: api.character_id,
+        fileUrl: api.file_url,
+        fileType: api.file_type,
+        createdAt: new Date(api.createdAt),
+    };
+}
 
 export async function getCharacters(search?: string): Promise<Character[]> {
     const url = new URL(`${API_BASE_URL}/api/characters`, "http://placeholder");
@@ -634,6 +650,36 @@ export async function updateCharacter(
     });
     const data = await handleResponse<APICharacterSingleResponse>(response);
     return transformCharacter(data.data);
+}
+
+interface APICharacterGalleryListResponse {
+    data: APICharacterGalleryItem[];
+}
+
+export async function uploadCharacterGallery(
+    id: string,
+    files: File[]
+): Promise<CharacterGalleryItem[]> {
+    const form = new FormData();
+    for (const file of files) {
+        form.append("files", file);
+    }
+    const response = await fetch(`${API_BASE_URL}/api/characters/${id}/upload-gallery`, {
+        method: "PUT",
+        body: form,
+    });
+    const data = await handleResponse<APICharacterGalleryListResponse>(response);
+    return (data.data ?? []).map(transformGalleryItem);
+}
+
+export async function getCharacterGallery(id: string): Promise<CharacterGalleryItem[]> {
+    const response = await fetch(`${API_BASE_URL}/api/characters/${id}/gallery`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+    });
+    const data = await handleResponse<APICharacterGalleryListResponse>(response);
+    return (data.data ?? []).map(transformGalleryItem);
 }
 
 export async function deleteCharacter(id: string): Promise<void> {

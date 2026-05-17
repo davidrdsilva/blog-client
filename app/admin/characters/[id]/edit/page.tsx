@@ -3,14 +3,17 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CharacterForm, { type CharacterFormData } from "@/app/components/character-form";
+import CharacterGalleryManager from "@/app/components/character-gallery-manager";
 import NavBar from "@/app/components/navbar";
-import { getCharacter, updateCharacter } from "@/app/lib/api";
+import { getCharacter, getCharacterGallery, updateCharacter } from "@/app/lib/api";
+import type { CharacterGalleryItem } from "@/app/types/post";
 
 export default function EditCharacterPage() {
     const router = useRouter();
     const params = useParams<{ id: string }>();
     const id = params.id;
     const [initial, setInitial] = useState<CharacterFormData | null>(null);
+    const [gallery, setGallery] = useState<CharacterGalleryItem[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -18,7 +21,10 @@ export default function EditCharacterPage() {
         let cancelled = false;
         (async () => {
             try {
-                const character = await getCharacter(id);
+                const [character, galleryItems] = await Promise.all([
+                    getCharacter(id),
+                    getCharacterGallery(id).catch(() => [] as CharacterGalleryItem[]),
+                ]);
                 if (cancelled) return;
                 setInitial({
                     fullName: character.fullName,
@@ -28,7 +34,11 @@ export default function EditCharacterPage() {
                     location: character.location,
                     portrait: character.portrait,
                     skills: character.skills,
+                    status: character.status,
+                    affiliation: character.affiliation,
+                    killCount: character.killCount,
                 });
+                setGallery(galleryItems);
             } catch (err) {
                 console.error("Failed to load character:", err);
                 if (!cancelled) {
@@ -50,6 +60,9 @@ export default function EditCharacterPage() {
             location: data.location,
             portrait: data.portrait,
             skills: data.skills,
+            status: data.status,
+            affiliation: data.affiliation,
+            kill_count: data.killCount,
         });
         router.push("/admin/characters");
     };
@@ -71,18 +84,24 @@ export default function EditCharacterPage() {
                         Loading…
                     </p>
                 ) : initial ? (
-                    <CharacterForm
-                        title={
-                            initial.fullName
-                                ? `Edit · ${initial.shortName || initial.fullName}`
-                                : "Edit character"
-                        }
-                        initialData={initial}
-                        onSubmit={handleSubmit}
-                        submitLabel="Save changes"
-                        savingLabel="Saving…"
-                        cancelHref="/admin/characters"
-                    />
+                    <>
+                        <CharacterForm
+                            title={
+                                initial.fullName
+                                    ? `Edit · ${initial.shortName || initial.fullName}`
+                                    : "Edit character"
+                            }
+                            initialData={initial}
+                            onSubmit={handleSubmit}
+                            submitLabel="Save changes"
+                            savingLabel="Saving…"
+                            cancelHref="/admin/characters"
+                        />
+                        <CharacterGalleryManager
+                            characterId={id}
+                            initialItems={gallery}
+                        />
+                    </>
                 ) : null}
             </main>
         </div>

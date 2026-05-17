@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { uploadImage } from "@/app/lib/api";
-import type { CharacterSkills } from "@/app/types/post";
+import type { CharacterSkills, CharacterStatus } from "@/app/types/post";
 import isLocalUrl from "@/app/utils/is-local-url";
 import CharacterRadar from "./character-radar";
 
@@ -34,7 +34,17 @@ export interface CharacterFormData {
     location: string;
     portrait: string;
     skills: CharacterSkills;
+    status?: CharacterStatus;
+    affiliation?: string;
+    killCount?: number;
 }
+
+const STATUS_OPTIONS: { value: "" | CharacterStatus; label: string }[] = [
+    { value: "", label: "Unknown" },
+    { value: "alive", label: "Active" },
+    { value: "dead", label: "Deceased" },
+    { value: "missing", label: "Missing" },
+];
 
 interface CharacterFormProps {
     initialData?: CharacterFormData;
@@ -66,6 +76,12 @@ export default function CharacterForm({
         occupation: initialData?.occupation ?? "",
         location: initialData?.location ?? "",
         portrait: initialData?.portrait ?? "",
+        status: (initialData?.status ?? "") as CharacterStatus | "",
+        affiliation: initialData?.affiliation ?? "",
+        killCount:
+            initialData?.killCount !== undefined && initialData?.killCount !== null
+                ? String(initialData.killCount)
+                : "",
     });
     const [skills, setSkills] = useState<CharacterSkills>(initialData?.skills ?? DEFAULT_SKILLS);
 
@@ -107,6 +123,15 @@ export default function CharacterForm({
         }
         setIsSaving(true);
         try {
+            const trimmedAffiliation = formData.affiliation.trim();
+            const trimmedKillCount = formData.killCount.trim();
+            const parsedKills =
+                trimmedKillCount === "" ? undefined : Number.parseInt(trimmedKillCount, 10);
+            if (parsedKills !== undefined && (Number.isNaN(parsedKills) || parsedKills < 0)) {
+                setErrorMessage("Confirmed kills must be a non-negative whole number.");
+                setIsSaving(false);
+                return;
+            }
             await onSubmit({
                 fullName: formData.fullName.trim(),
                 shortName: formData.shortName.trim(),
@@ -115,6 +140,9 @@ export default function CharacterForm({
                 location: formData.location.trim(),
                 portrait: formData.portrait,
                 skills,
+                status: formData.status === "" ? undefined : formData.status,
+                affiliation: trimmedAffiliation === "" ? undefined : trimmedAffiliation,
+                killCount: parsedKills,
             });
         } catch (error) {
             console.error("Failed to save character:", error);
@@ -314,6 +342,68 @@ export default function CharacterForm({
                                     label: key.toUpperCase(),
                                     value: skills[key],
                                 }))}
+                            />
+                        </div>
+                    </div>
+                </Section>
+
+                <Section number="04" label="Dossier">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                        <div>
+                            <label htmlFor="status" className={fieldLabelClass}>
+                                Status
+                            </label>
+                            <select
+                                id="status"
+                                value={formData.status}
+                                onChange={(e) =>
+                                    setFormData({
+                                        ...formData,
+                                        status: e.target.value as CharacterStatus | "",
+                                    })
+                                }
+                                className={`${inputClass} appearance-none bg-no-repeat bg-[length:0.65rem_0.65rem] bg-[right_0.25rem_center] bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22><path fill=%22none%22 stroke=%22currentColor%22 stroke-width=%221.5%22 d=%22M2 4 L6 8 L10 4%22/></svg>')] pr-6`}
+                            >
+                                {STATUS_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="killCount" className={fieldLabelClass}>
+                                Confirmed kills
+                            </label>
+                            <input
+                                id="killCount"
+                                type="number"
+                                min={0}
+                                step={1}
+                                inputMode="numeric"
+                                placeholder="—"
+                                value={formData.killCount}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, killCount: e.target.value })
+                                }
+                                className={`${inputClass} font-serif text-2xl md:text-3xl tabular-nums`}
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label htmlFor="affiliation" className={fieldLabelClass}>
+                                Affiliation
+                            </label>
+                            <input
+                                id="affiliation"
+                                type="text"
+                                maxLength={100}
+                                placeholder="Faction, family, agency"
+                                autoComplete="off"
+                                value={formData.affiliation}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, affiliation: e.target.value })
+                                }
+                                className={inputClass}
                             />
                         </div>
                     </div>

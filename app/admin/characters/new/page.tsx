@@ -17,6 +17,9 @@ export default function NewCharacterPage() {
             location: data.location,
             portrait: data.portrait,
             skills: data.skills,
+            status: data.status,
+            affiliation: data.affiliation,
+            kill_count: data.killCount,
         });
         router.push("/admin/characters");
     };

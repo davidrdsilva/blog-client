@@ -1,8 +1,14 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import CharacterGallerySlideshow from "@/app/components/character-gallery-slideshow";
 import CharacterRadar from "@/app/components/character-radar";
-import { APIClientError, getCharacter } from "@/app/lib/api";
-import type { Character, CharacterSkills, CharacterStatus } from "@/app/types/post";
+import { APIClientError, getCharacter, getCharacterGallery } from "@/app/lib/api";
+import type {
+    Character,
+    CharacterGalleryItem,
+    CharacterSkills,
+    CharacterStatus,
+} from "@/app/types/post";
 import BackLink from "./back-link";
 import CursorGlow from "./cursor-glow";
 
@@ -36,8 +42,14 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
     const { id } = await params;
 
     let character: Character;
+    let gallery: CharacterGalleryItem[] = [];
     try {
-        character = await getCharacter(id);
+        const [c, g] = await Promise.all([
+            getCharacter(id),
+            getCharacterGallery(id).catch(() => [] as CharacterGalleryItem[]),
+        ]);
+        character = c;
+        gallery = g;
     } catch (error) {
         if (
             error instanceof APIClientError &&
@@ -56,10 +68,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
 
     return (
         <div className="relative min-h-screen text-zinc-100 isolate overflow-x-hidden">
-            <div
-                aria-hidden="true"
-                className="fixed inset-0 md:right-1/2 -z-10 overflow-hidden"
-            >
+            <div aria-hidden="true" className="fixed inset-0 md:right-1/2 -z-10 overflow-hidden">
                 <Image
                     src={character.portrait}
                     alt=""
@@ -285,6 +294,24 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
                                         />
                                     </div>
                                 </section>
+
+                                {gallery.length > 0 && (
+                                    <section
+                                        className="animate-[fade-up_0.75s_ease-out_both]"
+                                        style={{ animationDelay: "500ms" }}
+                                    >
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <p className="text-xs font-bold uppercase tracking-[0.4em] text-white/50 md:text-zinc-500">
+                                                Surveillance
+                                            </p>
+                                            <span className="block flex-1 h-px bg-white/10 md:bg-zinc-200" />
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/40 md:text-zinc-400 tabular-nums">
+                                                {gallery.length.toString().padStart(2, "0")}
+                                            </span>
+                                        </div>
+                                        <CharacterGallerySlideshow items={gallery} />
+                                    </section>
+                                )}
 
                                 <section
                                     aria-hidden="true"
