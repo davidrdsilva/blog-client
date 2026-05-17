@@ -186,7 +186,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
                                 </header>
 
                                 <dl
-                                    className="grid grid-cols-2 gap-x-6 gap-y-6 border-y border-white/10 md:border-zinc-200 py-6 animate-[fade-up_0.7s_ease-out_both]"
+                                    className="grid grid-cols-2 gap-x-6 gap-y-6 md:gap-3 border-y border-white/10 md:border-0 py-6 md:py-0 animate-[fade-up_0.7s_ease-out_both]"
                                     style={{ animationDelay: "320ms" }}
                                 >
                                     <Field label="Status" index={0}>
@@ -206,7 +206,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
                                                     />
                                                 </span>
                                                 <span
-                                                    className={`text-sm font-bold uppercase tracking-[0.2em] ${statusMeta.text}`}
+                                                    className={`text-sm md:text-lg font-bold uppercase tracking-[0.2em] ${statusMeta.text}`}
                                                 >
                                                     {statusMeta.label}
                                                 </span>
@@ -218,7 +218,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
 
                                     <Field label="Affiliation" index={1}>
                                         {character.affiliation ? (
-                                            <span className="text-sm text-white md:text-zinc-900">
+                                            <span className="text-sm md:text-lg text-white md:text-zinc-900">
                                                 {character.affiliation}
                                             </span>
                                         ) : (
@@ -227,14 +227,14 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
                                     </Field>
 
                                     <Field label="Location" index={2}>
-                                        <span className="text-sm text-white md:text-zinc-900">
+                                        <span className="text-sm md:text-lg text-white md:text-zinc-900">
                                             {character.location}
                                         </span>
                                     </Field>
 
                                     <Field label="Confirmed kills" index={3}>
                                         {typeof character.killCount === "number" ? (
-                                            <span className="font-serif text-3xl leading-none text-white md:text-zinc-900 tabular-nums">
+                                            <span className="font-serif text-3xl md:text-5xl lg:text-6xl leading-none text-white md:text-zinc-900 tabular-nums">
                                                 {character.killCount.toString().padStart(2, "0")}
                                             </span>
                                         ) : (
@@ -332,19 +332,19 @@ function Field({
     children: React.ReactNode;
 }) {
     return (
-        <div className="group flex flex-col gap-2 min-w-0 relative">
-            <div className="flex items-center gap-2">
-                <span className="font-serif text-[10px] text-white/30 md:text-zinc-400 tabular-nums">
+        <div className="group flex flex-col gap-2 min-w-0 relative md:gap-3 md:p-5 lg:p-6 md:bg-zinc-50 md:border md:border-zinc-200 md:hover:border-zinc-900 md:hover:bg-white transition-colors">
+            <div className="flex items-center gap-2 md:gap-3">
+                <span className="font-serif text-[10px] md:text-2xl lg:text-3xl text-white/30 md:text-zinc-300 tabular-nums leading-none">
                     {(index + 1).toString().padStart(2, "0")}
                 </span>
-                <dt className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/50 group-hover:text-white/80 md:text-zinc-500 md:group-hover:text-zinc-900 transition-colors">
+                <dt className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-white/50 group-hover:text-white/80 md:text-zinc-500 md:group-hover:text-zinc-900 transition-colors">
                     {label}
                 </dt>
             </div>
-            <dd className="min-w-0">{children}</dd>
+            <dd className="min-w-0 md:pt-1">{children}</dd>
             <span
                 aria-hidden="true"
-                className="block h-px w-0 bg-white/40 md:bg-zinc-900 group-hover:w-8 transition-[width] duration-500 ease-out"
+                className="block md:hidden h-px w-0 bg-white/40 group-hover:w-8 transition-[width] duration-500 ease-out"
             />
         </div>
     );
