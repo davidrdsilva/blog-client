@@ -10,14 +10,19 @@ const VIDEO_FALLBACK_DWELL_MS = 8000;
 
 interface CharacterGallerySlideshowProps {
     items: CharacterGalleryItem[];
+    variant?: "framed" | "fill";
 }
 
-export default function CharacterGallerySlideshow({ items }: CharacterGallerySlideshowProps) {
+export default function CharacterGallerySlideshow({
+    items,
+    variant = "framed",
+}: CharacterGallerySlideshowProps) {
     const safeItems = useMemo(() => items ?? [], [items]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+    const isFill = variant === "fill";
 
     const advance = useCallback(() => {
         setActiveIndex((i) => (safeItems.length === 0 ? 0 : (i + 1) % safeItems.length));
@@ -80,6 +85,90 @@ export default function CharacterGallerySlideshow({ items }: CharacterGallerySli
     );
 
     if (safeItems.length === 0) return null;
+
+    if (isFill) {
+        return (
+            <section
+                className="relative w-full h-full overflow-hidden bg-black animate-[fade-up_1.2s_ease-out_both]"
+                aria-label="Character surveillance feed"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+            >
+                {safeItems.map((item, index) => {
+                    const isActive = index === activeIndex;
+                    return (
+                        <div
+                            key={item.id}
+                            aria-hidden={!isActive}
+                            className={`absolute inset-0 transition-opacity duration-700 ease-out ${
+                                isActive ? "opacity-100" : "opacity-0"
+                            }`}
+                        >
+                            {item.fileType === "video" ? (
+                                <video
+                                    ref={(el) => {
+                                        videoRefs.current[index] = el;
+                                    }}
+                                    src={item.fileUrl}
+                                    muted
+                                    playsInline
+                                    preload="auto"
+                                    onEnded={handleVideoEnded}
+                                    onLoadedMetadata={() => handleVideoLoadedMetadata(index)}
+                                    className={`w-full h-full object-cover transition-transform duration-6000 ease-out ${
+                                        isActive ? "scale-100" : "scale-105"
+                                    }`}
+                                />
+                            ) : (
+                                <Image
+                                    src={item.fileUrl}
+                                    alt=""
+                                    fill
+                                    sizes="50vw"
+                                    unoptimized={isLocalUrl(item.fileUrl)}
+                                    priority={index === 0}
+                                    className={`object-cover transition-transform duration-6000 ease-out ${
+                                        isActive ? "scale-100" : "scale-105"
+                                    }`}
+                                />
+                            )}
+                        </div>
+                    );
+                })}
+
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-linear-to-b from-black/30 via-transparent to-black/55"
+                />
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.55)_85%)]"
+                />
+
+                {safeItems.length > 1 && (
+                    <div className="absolute inset-x-0 bottom-24 flex items-center justify-center gap-2 px-4">
+                        {safeItems.map((item, index) => {
+                            const isActive = index === activeIndex;
+                            return (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => setActiveIndex(index)}
+                                    aria-label={`Go to slide ${index + 1}`}
+                                    aria-current={isActive ? "true" : undefined}
+                                    className={`h-px transition-all duration-300 ease-out cursor-pointer ${
+                                        isActive
+                                            ? "w-10 bg-white"
+                                            : "w-5 bg-white/40 hover:bg-white/70"
+                                    }`}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
+            </section>
+        );
+    }
 
     return (
         <section

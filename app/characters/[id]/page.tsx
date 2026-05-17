@@ -68,22 +68,19 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
 
     return (
         <div className="relative min-h-screen text-zinc-100 isolate overflow-x-hidden">
-            <div aria-hidden="true" className="fixed inset-0 md:right-1/2 -z-10 overflow-hidden">
+            <div aria-hidden="true" className="md:hidden fixed inset-0 -z-10 overflow-hidden">
                 <Image
                     src={character.portrait}
                     alt=""
                     fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="100vw"
                     priority
                     unoptimized
                     className="object-cover object-center scale-105 animate-[fade-up_1.2s_ease-out_both]"
                 />
 
-                <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/65 to-black/95 md:hidden" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.6)_85%)] md:hidden" />
-
-                <div className="hidden md:block absolute inset-0 bg-linear-to-r from-black/25 via-transparent to-black/15" />
-                <div className="hidden md:block absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-white/30 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/65 to-black/95" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.6)_85%)]" />
 
                 <svg
                     aria-hidden="true"
@@ -95,6 +92,43 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
                         <feColorMatrix type="saturate" values="0" />
                     </filter>
                     <rect width="100%" height="100%" filter="url(#grain)" />
+                </svg>
+            </div>
+
+            <div className="hidden md:block fixed inset-y-0 left-0 right-1/2 overflow-hidden">
+                {gallery.length > 0 ? (
+                    <CharacterGallerySlideshow items={gallery} variant="fill" />
+                ) : (
+                    <div className="relative w-full h-full">
+                        <Image
+                            src={character.portrait}
+                            alt=""
+                            fill
+                            sizes="50vw"
+                            priority
+                            unoptimized
+                            className="object-cover object-center scale-105 animate-[fade-up_1.2s_ease-out_both]"
+                        />
+                        <div
+                            aria-hidden="true"
+                            className="absolute inset-0 bg-linear-to-r from-black/25 via-transparent to-black/15"
+                        />
+                    </div>
+                )}
+                <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-0 right-0 w-px bg-linear-to-b from-transparent via-white/30 to-transparent"
+                />
+                <svg
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 w-full h-full opacity-[0.06] mix-blend-overlay"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <filter id="grain-desktop">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" />
+                        <feColorMatrix type="saturate" values="0" />
+                    </filter>
+                    <rect width="100%" height="100%" filter="url(#grain-desktop)" />
                 </svg>
             </div>
 
@@ -116,7 +150,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
                 <div className="flex items-end justify-between text-[10px] font-bold uppercase tracking-[0.5em] text-white/55">
                     <span>File N&ordm; {fileCode}</span>
                     <span className="font-serif-light tracking-[0.3em] normal-case italic text-white/40">
-                        eyes only
+                        Gallery
                     </span>
                 </div>
             </div>
@@ -297,7 +331,7 @@ export default async function CharacterPage({ params }: { params: Promise<{ id: 
 
                                 {gallery.length > 0 && (
                                     <section
-                                        className="animate-[fade-up_0.75s_ease-out_both]"
+                                        className="md:hidden animate-[fade-up_0.75s_ease-out_both]"
                                         style={{ animationDelay: "500ms" }}
                                     >
                                         <div className="flex items-center gap-3 mb-4">
