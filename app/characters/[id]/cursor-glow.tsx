@@ -25,16 +25,28 @@ export default function CursorGlow() {
     }, []);
 
     return (
-        <div
-            ref={ref}
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 transition-opacity duration-300"
-            style={{
-                opacity: pos ? 1 : 0,
-                background: pos
-                    ? `radial-gradient(520px circle at ${pos.x}px ${pos.y}px, rgba(255,255,255,0.07), transparent 45%)`
-                    : undefined,
-            }}
-        />
+        <>
+            <div
+                ref={ref}
+                aria-hidden="true"
+                className="md:hidden pointer-events-none absolute inset-0 transition-opacity duration-300"
+                style={{
+                    opacity: pos ? 1 : 0,
+                    background: pos
+                        ? `radial-gradient(520px circle at ${pos.x}px ${pos.y}px, rgba(255,255,255,0.07), transparent 45%)`
+                        : undefined,
+                }}
+            />
+            <div
+                aria-hidden="true"
+                className="hidden md:block pointer-events-none absolute inset-0 transition-opacity duration-300"
+                style={{
+                    opacity: pos ? 1 : 0,
+                    background: pos
+                        ? `radial-gradient(520px circle at ${pos.x}px ${pos.y}px, rgba(9,9,11,0.04), transparent 45%)`
+                        : undefined,
+                }}
+            />
+        </>
     );
 }

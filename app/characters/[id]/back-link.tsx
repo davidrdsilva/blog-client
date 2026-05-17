@@ -22,7 +22,7 @@ export default function BackLink({ fallbackHref, label = "Back" }: BackLinkProps
         <button
             type="button"
             onClick={handleClick}
-            className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.4em] text-white/60 hover:text-white transition-colors mb-8 cursor-pointer"
+            className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.4em] text-white/60 hover:text-white md:text-zinc-500 md:hover:text-zinc-900 transition-colors mb-8 cursor-pointer"
         >
             <svg
                 xmlns="http://www.w3.org/2000/svg"
