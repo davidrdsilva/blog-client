@@ -6,10 +6,9 @@ import { getStocks, type Stock } from "@/app/lib/stocks";
 const TICK_MS = 3000;
 
 /**
- * StockTicker shows the four fictional tickers (PLOR, GSAQ, DCK, FRLTTI)
- * with a price and a directional indicator. We seed state empty and populate
- * inside useEffect so server-rendered HTML doesn't disagree with the first
- * client render — Math.random() would otherwise cause a hydration mismatch.
+ * Editorial-style market strip rendered below the masthead. State is seeded
+ * empty and populated inside useEffect so server-rendered HTML doesn't
+ * disagree with the first client render — getStocks() uses Math.random().
  */
 export default function StockTicker() {
     const [stocks, setStocks] = useState<Stock[]>([]);
@@ -23,19 +22,23 @@ export default function StockTicker() {
     }, []);
 
     if (stocks.length === 0) {
-        // Reserve space so the navbar doesn't reflow on first tick.
-        return <div aria-hidden="true" className="hidden lg:flex h-5 w-[420px]" />;
+        return <div aria-hidden="true" className="h-9" />;
     }
 
     return (
         <ul
             aria-label="Live stock ticker"
-            className="hidden lg:flex items-center gap-2 xl:gap-4 text-xs font-mono"
+            className="flex flex-nowrap items-center justify-center gap-x-6 sm:flex-wrap sm:gap-x-8 lg:gap-x-12 sm:gap-y-2 px-3 sm:px-4 py-2 text-[10px] sm:text-xs font-mono whitespace-nowrap"
         >
-            {stocks.map((s) => {
+            {stocks.map((s, i) => {
                 const up = s.change >= 0;
                 return (
-                    <li key={s.symbol} className="flex items-center gap-1 xl:gap-1.5">
+                    <li
+                        key={s.symbol}
+                        className={`${
+                            i < 2 ? "flex" : "hidden sm:flex"
+                        } items-center gap-1 sm:gap-1.5 shrink-0`}
+                    >
                         <span className="font-bold tracking-wider text-zinc-700 dark:text-zinc-200">
                             {s.symbol}
                         </span>
