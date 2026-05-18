@@ -23,8 +23,8 @@ const SECTIONS: SidebarSection[] = [
         eyebrow: "Section A",
         title: "Sections",
         links: [
-            { label: "Front Page", href: "/" },
-            { label: "White Nest", href: "/whitenest/1", accent: "live" },
+            { label: "Front Page", href: "/", accent: "live" },
+            { label: "White Nest", href: "/whitenest/latest" },
             { label: "Bridge Falls", href: "/?tags=Bridge%20Falls" },
             { label: "Valentino", href: "/?tags=Valentino" },
             { label: "Changelog", href: "/changelog" },

@@ -177,7 +177,7 @@ export default function CharacterGallerySlideshow({
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
         >
-            <div className="relative w-full aspect-4/3 md:aspect-3/2">
+            <div className="relative w-full aspect-9/16 md:aspect-3/2">
                 {safeItems.map((item, index) => {
                     const isActive = index === activeIndex;
                     return (

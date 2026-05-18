@@ -37,7 +37,7 @@ export default function Footer() {
                             Front Page
                         </Link>
                         <Link
-                            href="/whitenest/1"
+                            href="/whitenest/latest"
                             className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm flex items-center gap-2"
                         >
                             <span className="relative inline-flex size-2 rounded-full bg-yellow-500">
