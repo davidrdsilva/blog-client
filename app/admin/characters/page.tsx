@@ -93,7 +93,7 @@ export default function AdminCharactersPage() {
                                     alt=""
                                     width={64}
                                     height={64}
-                                    className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                                    className="w-16 h-16 rounded-full object-cover shrink-0"
                                     unoptimized
                                 />
                                 <div className="flex-1 min-w-0">
@@ -104,7 +104,7 @@ export default function AdminCharactersPage() {
                                         {character.occupation} · {character.location}
                                     </p>
                                 </div>
-                                <div className="flex gap-2 flex-shrink-0">
+                                <div className="flex gap-2 shrink-0">
                                     <Link
                                         href={`/admin/characters/${character.id}/edit`}
                                         className="px-3 py-1 rounded text-sm border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"

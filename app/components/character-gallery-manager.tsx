@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import CharacterGallerySidebar from "@/app/components/character-gallery-sidebar";
 import { uploadCharacterGallery } from "@/app/lib/api";
 import type { CharacterGalleryItem } from "@/app/types/post";
 import isLocalUrl from "@/app/utils/is-local-url";
@@ -29,6 +30,7 @@ export default function CharacterGalleryManager({
     const [pending, setPending] = useState<PendingFile[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [sidebarIndex, setSidebarIndex] = useState<number | null>(null);
 
     useEffect(() => {
         return () => {
@@ -248,11 +250,40 @@ export default function CharacterGalleryManager({
                                 <span className="absolute bottom-2 right-2 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] bg-black/70 text-white">
                                     {item.fileType}
                                 </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setSidebarIndex(i)}
+                                    aria-label={`View item ${String(i + 1).padStart(2, "0")} in sidebar`}
+                                    className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-black/70 text-white hover:bg-black transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-4 h-4"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                                        />
+                                    </svg>
+                                </button>
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
+
+            <CharacterGallerySidebar
+                items={items}
+                initialIndex={sidebarIndex}
+                isOpen={sidebarIndex !== null}
+                onClose={() => setSidebarIndex(null)}
+            />
         </section>
     );
 }

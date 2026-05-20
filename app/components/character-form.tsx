@@ -362,7 +362,7 @@ export default function CharacterForm({
                                         status: e.target.value as CharacterStatus | "",
                                     })
                                 }
-                                className={`${inputClass} appearance-none bg-no-repeat bg-[length:0.65rem_0.65rem] bg-[right_0.25rem_center] bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22><path fill=%22none%22 stroke=%22currentColor%22 stroke-width=%221.5%22 d=%22M2 4 L6 8 L10 4%22/></svg>')] pr-6`}
+                                className={`${inputClass} appearance-none bg-no-repeat bg-size-[0.65rem_0.65rem] bg-position-[right_0.25rem_center] bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 12 12%22><path fill=%22none%22 stroke=%22currentColor%22 stroke-width=%221.5%22 d=%22M2 4 L6 8 L10 4%22/></svg>')] pr-6`}
                             >
                                 {STATUS_OPTIONS.map((opt) => (
                                     <option key={opt.value} value={opt.value}>
