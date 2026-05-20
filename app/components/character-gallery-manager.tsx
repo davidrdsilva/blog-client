@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import CharacterGallerySidebar from "@/app/components/character-gallery-sidebar";
-import { uploadCharacterGallery } from "@/app/lib/api";
+import { ConfirmModal } from "@/app/components/confirm-modal";
+import { deleteCharacterGalleryFiles, uploadCharacterGallery } from "@/app/lib/api";
 import type { CharacterGalleryItem } from "@/app/types/post";
 import isLocalUrl from "@/app/utils/is-local-url";
 
@@ -31,6 +32,10 @@ export default function CharacterGalleryManager({
     const [isUploading, setIsUploading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [sidebarIndex, setSidebarIndex] = useState<number | null>(null);
+    const [isSelectMode, setIsSelectMode] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -68,6 +73,48 @@ export default function CharacterGalleryManager({
     const clearPending = () => {
         for (const p of pending) URL.revokeObjectURL(p.previewUrl);
         setPending([]);
+    };
+
+    const enterSelectMode = () => {
+        setIsSelectMode(true);
+        setSelectedIds(new Set());
+    };
+
+    const exitSelectMode = () => {
+        setIsSelectMode(false);
+        setSelectedIds(new Set());
+    };
+
+    const toggleSelected = (id: string) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const selectAll = () => {
+        setSelectedIds(new Set(items.map((item) => item.id)));
+    };
+
+    const handleDelete = async () => {
+        if (selectedIds.size === 0) return;
+        const ids = Array.from(selectedIds);
+        setIsDeleting(true);
+        setErrorMessage("");
+        try {
+            await deleteCharacterGalleryFiles(ids);
+            setItems((prev) => prev.filter((item) => !selectedIds.has(item.id)));
+            setIsConfirmOpen(false);
+            exitSelectMode();
+        } catch (err) {
+            console.error("Failed to delete gallery files:", err);
+            setErrorMessage(err instanceof Error ? err.message : "Failed to delete gallery files.");
+            setIsConfirmOpen(false);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     const handleUpload = async () => {
@@ -128,11 +175,21 @@ export default function CharacterGalleryManager({
                 <button
                     type="button"
                     onClick={handlePick}
-                    disabled={isUploading}
+                    disabled={isUploading || isSelectMode}
                     className="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.4em] border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-900 dark:hover:border-zinc-100 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     Select files
                 </button>
+                {items.length > 0 && !isSelectMode && (
+                    <button
+                        type="button"
+                        onClick={enterSelectMode}
+                        disabled={isUploading}
+                        className="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.4em] border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-900 dark:hover:border-zinc-100 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Select
+                    </button>
+                )}
                 {pending.length > 0 && (
                     <>
                         <button
@@ -210,19 +267,64 @@ export default function CharacterGalleryManager({
             )}
 
             <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500 mb-4">
-                    Stored
-                </p>
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-500">
+                        Stored
+                    </p>
+                    {isSelectMode && items.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-3 ml-auto">
+                            <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-700 dark:text-zinc-300 tabular-nums">
+                                {selectedIds.size.toString().padStart(2, "0")} selected
+                            </span>
+                            <button
+                                type="button"
+                                onClick={
+                                    selectedIds.size === items.length
+                                        ? () => setSelectedIds(new Set())
+                                        : selectAll
+                                }
+                                disabled={isDeleting}
+                                className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {selectedIds.size === items.length ? "Clear all" : "Select all"}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={exitSelectMode}
+                                disabled={isDeleting}
+                                className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsConfirmOpen(true)}
+                                disabled={isDeleting || selectedIds.size === 0}
+                                className="px-5 py-2.5 bg-red-700 dark:bg-red-600 text-white text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-red-800 dark:hover:bg-red-500 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isDeleting
+                                    ? "Deleting…"
+                                    : `Delete ${selectedIds.size.toString().padStart(2, "0")}`}
+                            </button>
+                        </div>
+                    )}
+                </div>
                 {items.length === 0 ? (
                     <p className="text-sm font-serif-light italic text-zinc-500 dark:text-zinc-500">
                         Nothing yet. Upload images or video clips to populate the dossier slideshow.
                     </p>
                 ) : (
                     <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {items.map((item, i) => (
+                        {items.map((item, i) => {
+                            const isSelected = selectedIds.has(item.id);
+                            return (
                             <li
                                 key={item.id}
-                                className="relative group aspect-square overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900"
+                                className={`relative group aspect-square overflow-hidden border bg-zinc-100 dark:bg-zinc-900 transition-shadow ${
+                                    isSelectMode && isSelected
+                                        ? "border-zinc-900 dark:border-zinc-100 ring-2 ring-zinc-900 dark:ring-zinc-100 ring-offset-2 ring-offset-white dark:ring-offset-black"
+                                        : "border-zinc-200 dark:border-zinc-800"
+                                }`}
                             >
                                 {item.fileType === "video" ? (
                                     <video
@@ -244,36 +346,78 @@ export default function CharacterGalleryManager({
                                         className="object-cover"
                                     />
                                 )}
-                                <span className="absolute top-2 left-2 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] bg-black/70 text-white tabular-nums">
-                                    {String(i + 1).padStart(2, "0")}
-                                </span>
-                                <span className="absolute bottom-2 right-2 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] bg-black/70 text-white">
+                                {!isSelectMode && (
+                                    <span className="absolute top-2 left-2 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] bg-black/70 text-white tabular-nums z-20">
+                                        {String(i + 1).padStart(2, "0")}
+                                    </span>
+                                )}
+                                <span className="absolute bottom-2 right-2 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.3em] bg-black/70 text-white z-20">
                                     {item.fileType}
                                 </span>
-                                <button
-                                    type="button"
-                                    onClick={() => setSidebarIndex(i)}
-                                    aria-label={`View item ${String(i + 1).padStart(2, "0")} in sidebar`}
-                                    className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-black/70 text-white hover:bg-black transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={1.5}
-                                        stroke="currentColor"
-                                        className="w-4 h-4"
-                                        aria-hidden="true"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                                {isSelectMode ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleSelected(item.id)}
+                                            disabled={isDeleting}
+                                            aria-pressed={isSelected}
+                                            aria-label={`${isSelected ? "Deselect" : "Select"} item ${String(i + 1).padStart(2, "0")}`}
+                                            className="absolute inset-0 z-10 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 dark:focus-visible:ring-zinc-100 disabled:cursor-not-allowed"
                                         />
-                                    </svg>
-                                </button>
+                                        <span
+                                            aria-hidden="true"
+                                            className={`absolute top-2 left-2 w-7 h-7 flex items-center justify-center text-[11px] font-bold uppercase tracking-[0.3em] border-2 z-20 pointer-events-none ${
+                                                isSelected
+                                                    ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-100"
+                                                    : "bg-black/40 text-white border-white/70"
+                                            }`}
+                                        >
+                                            {isSelected ? (
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    strokeWidth={2.5}
+                                                    stroke="currentColor"
+                                                    className="w-4 h-4"
+                                                    aria-hidden="true"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        d="M4.5 12.75l6 6 9-13.5"
+                                                    />
+                                                </svg>
+                                            ) : null}
+                                        </span>
+                                    </>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSidebarIndex(i)}
+                                        aria-label={`View item ${String(i + 1).padStart(2, "0")} in sidebar`}
+                                        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-black/70 text-white hover:bg-black transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white z-20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={1.5}
+                                            stroke="currentColor"
+                                            className="w-4 h-4"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                                            />
+                                        </svg>
+                                    </button>
+                                )}
                             </li>
-                        ))}
+                            );
+                        })}
                     </ul>
                 )}
             </div>
@@ -283,6 +427,21 @@ export default function CharacterGalleryManager({
                 initialIndex={sidebarIndex}
                 isOpen={sidebarIndex !== null}
                 onClose={() => setSidebarIndex(null)}
+            />
+
+            <ConfirmModal
+                isOpen={isConfirmOpen}
+                title="Delete gallery files"
+                message={`Permanently remove ${selectedIds.size} file${
+                    selectedIds.size === 1 ? "" : "s"
+                } from this character's gallery? This cannot be undone.`}
+                confirmLabel={isDeleting ? "Deleting…" : "Delete"}
+                cancelLabel="Cancel"
+                variant="danger"
+                onConfirm={handleDelete}
+                onCancel={() => {
+                    if (!isDeleting) setIsConfirmOpen(false);
+                }}
             />
         </section>
     );

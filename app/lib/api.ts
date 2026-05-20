@@ -696,6 +696,22 @@ export async function deleteCharacter(id: string): Promise<void> {
     }
 }
 
+export async function deleteCharacterGalleryFiles(ids: string[]): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/characters/files`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: ids }),
+    });
+    if (!response.ok && response.status !== 204) {
+        const errorData = (await response.json().catch(() => null)) as APIError | null;
+        throw new APIClientError(
+            errorData?.error?.code || "UNKNOWN_ERROR",
+            errorData?.error?.message || `Request failed with status ${response.status}`,
+            errorData?.error?.details
+        );
+    }
+}
+
 // uploadImage POSTs a file to /api/upload using the Editor.js Image Tool's
 // FormData shape and returns the resulting URL. Shared by post + character forms.
 interface EditorJsUploadResponse {
