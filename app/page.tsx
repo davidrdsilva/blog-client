@@ -64,7 +64,7 @@ export default async function Home({ searchParams }: HomeProps) {
     return (
         <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100">
             <NavBar />
-            <main className="container mx-auto px-4 max-w-[1400px]">
+            <main className="container mx-auto px-4 max-w-350">
                 <div className="py-2 border-b-2 border-black dark:border-white mb-6 mt-4 flex flex-col md:flex-row justify-between items-center text-xs font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-200">
                     <span>{formattedDate}</span>
                     <span className="hidden md:inline-block">Today's Paper</span>

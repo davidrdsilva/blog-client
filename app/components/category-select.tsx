@@ -216,7 +216,7 @@ export default function CategorySelect({
                                     >
                                         <span
                                             aria-hidden="true"
-                                            className={`absolute left-0 top-0 bottom-0 w-[2px] transition-colors ${
+                                            className={`absolute left-0 top-0 bottom-0 w-0.5 transition-colors ${
                                                 isActive
                                                     ? "bg-zinc-900 dark:bg-zinc-100"
                                                     : "bg-transparent"

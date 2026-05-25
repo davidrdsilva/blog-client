@@ -176,7 +176,7 @@ export default function SystemLogsFeed({ initialEntries, capacity }: SystemLogsF
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         aria-hidden="true"
-                        className="shrink-0 w-[18px] h-[18px] text-zinc-400 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"
+                        className="shrink-0 w-4.5 h-4.5 text-zinc-400 dark:text-zinc-600 group-focus-within:text-zinc-900 dark:group-focus-within:text-zinc-100 transition-colors"
                     >
                         <circle cx="11" cy="11" r="7" />
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -235,7 +235,7 @@ function LogRow({ entry }: { entry: SystemLogEntry }) {
         <li className="group relative border-b border-zinc-200 dark:border-zinc-800">
             <span
                 aria-hidden
-                className={`absolute left-0 top-0 bottom-0 w-[3px] ${LEVEL_RAIL[entry.level]}`}
+                className={`absolute left-0 top-0 bottom-0 w-0.75 ${LEVEL_RAIL[entry.level]}`}
             />
             <div className="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-[8.5rem_5.5rem_minmax(0,1fr)_auto] items-start gap-3 sm:gap-6 py-4 sm:py-5 pl-4 sm:pl-6 pr-2 sm:pr-3 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/40">
                 <div className="hidden sm:flex flex-col leading-none gap-1">

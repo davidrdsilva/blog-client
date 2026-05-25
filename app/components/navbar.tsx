@@ -6,7 +6,7 @@ import { ThemeToggle } from "./theme-toggle";
 
 export default function NavBar() {
     return (
-        <header className="max-w-[1400px] mx-auto bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800">
+        <header className="max-w-350 mx-auto bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800">
             <div className="container mx-auto px-3 sm:px-4 py-5 sm:py-7 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-6">
                 <div className="justify-self-start">
                     <MainNavSidebar />
@@ -20,7 +20,7 @@ export default function NavBar() {
                             height={180}
                             priority
                             sizes="(max-width: 640px) 220px, (max-width: 1024px) 480px, 720px"
-                            className="invert dark:invert-0 w-full max-w-[220px] sm:max-w-[420px] md:max-w-[560px] lg:max-w-[720px] h-auto"
+                            className="invert dark:invert-0 w-full max-w-55 sm:max-w-105 md:max-w-140 lg:max-w-180 h-auto"
                         />
                     </Link>
                 </div>

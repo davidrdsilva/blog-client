@@ -20,7 +20,7 @@ export default function WhitenestHeader({ variant = "overlay" }: WhitenestHeader
                     : "sticky top-0 z-30 bg-white/95 dark:bg-black/95 backdrop-blur border-b border-zinc-200 dark:border-zinc-800"
             }
         >
-            <div className="max-w-[1400px] mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="max-w-350 mx-auto px-4 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-4 sm:gap-6">
                     <MainNavSidebar />
                     <Link href="/" aria-label="The Falls Post — back to home">

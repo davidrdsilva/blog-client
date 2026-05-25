@@ -35,9 +35,9 @@ export default function ApiError({
         <div className="min-h-screen bg-zinc-50 dark:bg-black">
             <NavBar />
             <div
-                className={`flex flex-col items-center justify-center min-h-[400px] w-full p-8 ${className}`}
+                className={`flex flex-col items-center justify-center min-h-100 w-full p-8 ${className}`}
             >
-                <div className="text-center max-w-[500px] animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="text-center max-w-125 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="flex justify-center mx-auto mb-6">
                         <Image
                             src="/icons/broken.svg"

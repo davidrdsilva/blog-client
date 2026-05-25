@@ -66,7 +66,7 @@ export default function CharacterRadar({ axes, max = 100, size = 320 }: Characte
     return (
         <svg
             viewBox={`${-padX} ${-padY} ${size + 2 * padX} ${size + 2 * padY}`}
-            className="w-full max-w-[440px] mx-auto select-none"
+            className="w-full max-w-110 mx-auto select-none"
             role="img"
             aria-label="Character skills radar chart"
             onMouseLeave={() => setHovered(null)}

@@ -108,7 +108,7 @@ function renderMediaBlock(block: EditorJsBlock): ReactNode {
                             alt={data.caption || ""}
                             width={0}
                             height={0}
-                            className="max-w-full max-h-[500px] object-contain"
+                            className="max-w-full max-h-125 object-contain"
                             sizes="(max-width: 768px) 100vw, 800px"
                             style={{ width: "auto", height: "auto" }}
                         />
@@ -136,7 +136,7 @@ function renderMediaBlock(block: EditorJsBlock): ReactNode {
                         src={videoUrl}
                         controls
                         preload="metadata"
-                        className="w-full rounded-lg max-h-[500px] bg-zinc-100 dark:bg-zinc-900"
+                        className="w-full rounded-lg max-h-125 bg-zinc-100 dark:bg-zinc-900"
                     >
                         <track kind="captions" />
                     </video>

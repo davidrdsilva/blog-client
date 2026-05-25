@@ -146,7 +146,10 @@ export default function CharacterGallerySidebar({
                         <span className="tabular-nums text-zinc-700 dark:text-zinc-300">
                             {indexLabel}
                         </span>
-                        <span aria-hidden="true" className="h-px w-6 bg-zinc-300 dark:bg-zinc-700" />
+                        <span
+                            aria-hidden="true"
+                            className="h-px w-6 bg-zinc-300 dark:bg-zinc-700"
+                        />
                         <span className="tabular-nums">of {totalLabel}</span>
                         <span
                             aria-hidden="true"
@@ -164,7 +167,7 @@ export default function CharacterGallerySidebar({
                             key={current.id}
                             className="animate-[fade-up_0.5s_cubic-bezier(0.22,1,0.36,1)_both]"
                         >
-                            <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                            <div className="relative w-full aspect-4/5 sm:aspect-3/4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden">
                                 {current.fileType === "video" ? (
                                     <video
                                         src={current.fileUrl}
@@ -198,9 +201,7 @@ export default function CharacterGallerySidebar({
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            setSelectedIndex(
-                                                (i) => (i - 1 + total) % total,
-                                            )
+                                            setSelectedIndex((i) => (i - 1 + total) % total)
                                         }
                                         aria-label="Previous item"
                                         className="px-4 py-2 text-[10px] font-bold uppercase tracking-[0.4em] border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:border-zinc-900 dark:hover:border-zinc-100 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer"

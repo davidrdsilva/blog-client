@@ -112,7 +112,7 @@ export default function SmokingHot() {
                             <span className="absolute inset-0 inline-flex animate-ping rounded-full bg-red-500 opacity-75" />
                         </span>
 
-                        <div className="relative size-14 sm:size-[72px] shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                        <div className="relative size-14 sm:size-18 shrink-0 overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                             {post.image && (
                                 <Image
                                     src={post.image}
@@ -131,7 +131,7 @@ export default function SmokingHot() {
                                 </span>
                                 <span
                                     aria-hidden="true"
-                                    className="size-[3px] rounded-full bg-zinc-300 dark:bg-zinc-700"
+                                    className="size-0.75 rounded-full bg-zinc-300 dark:bg-zinc-700"
                                 />
                                 <span className="text-zinc-500 dark:text-zinc-400 tabular-nums">
                                     {ago}
@@ -140,9 +140,9 @@ export default function SmokingHot() {
                                     <>
                                         <span
                                             aria-hidden="true"
-                                            className="hidden sm:inline-block size-[3px] rounded-full bg-zinc-300 dark:bg-zinc-700"
+                                            className="hidden sm:inline-block size-0.75 rounded-full bg-zinc-300 dark:bg-zinc-700"
                                         />
-                                        <span className="hidden sm:inline text-zinc-500 dark:text-zinc-400 truncate max-w-[200px]">
+                                        <span className="hidden sm:inline text-zinc-500 dark:text-zinc-400 truncate max-w-50">
                                             {categoryName}
                                         </span>
                                     </>

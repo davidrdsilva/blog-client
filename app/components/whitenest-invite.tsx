@@ -19,7 +19,7 @@ export default async function WhitenestInvite() {
         >
             <Link
                 href={`/whitenest/${chapter.whitenestChapterNumber}`}
-                className="group relative block overflow-hidden h-[420px] md:h-[560px]"
+                className="group relative block overflow-hidden h-105 md:h-140"
             >
                 <Image
                     src={chapter.image}

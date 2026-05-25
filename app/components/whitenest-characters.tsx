@@ -122,7 +122,7 @@ export default function WhitenestCharacters({ characters }: WhitenestCharactersP
 
                     {active && (
                         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr]">
-                            <div className="relative aspect-square md:aspect-auto md:min-h-[420px]">
+                            <div className="relative aspect-square md:aspect-auto md:min-h-105">
                                 <Image
                                     src={active.portrait}
                                     alt={active.fullName}
